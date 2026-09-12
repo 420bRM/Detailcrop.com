@@ -51,6 +51,7 @@ off switch, and `navigator.doNotTrack` is honoured.
 | blob8 | anonymous id | double8 | output height (fixed only) |
 | blob9 | desktop / mobile | double9 | quality |
 | | | double10 | 1 = demo plate only |
+| | | double11 | feed-grid tiles (0 = free crops) |
 
 ### Querying
 

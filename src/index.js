@@ -75,7 +75,8 @@ async function recordEvent(request, env) {
       num(d.ow),     // double7  output width  (fixed mode only)
       num(d.oh),     // double8  output height (fixed mode only)
       num(d.q),      // double9  quality
-      num(d.sample)  // double10 1 = only the demo plate was exported
+      num(d.sample), // double10 1 = only the demo plate was exported
+      num(d.grid)    // double11 tiles, when a feed grid was used (0 = free crops)
     ]
   });
 

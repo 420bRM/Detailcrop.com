@@ -359,7 +359,16 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
               </div>
             </div>
 
-            <p class="sub" data-i="outSize"></p>
+            <p class="sub" data-i="feedHd"></p>
+          <div class="seg" id="feedseg">
+            <button type="button" data-feed="3" data-i="feed3"></button>
+            <button type="button" data-feed="6" data-i="feed6"></button>
+            <button type="button" data-feed="9" data-i="feed9"></button>
+            <button type="button" data-feed="0" data-i="feedOff"></button>
+          </div>
+          <p class="hint" id="feedNote" hidden data-i="feedNote" style="margin-top:8px"></p>
+
+          <p class="sub" data-i="outSize"></p>
             <div class="seg" id="outseg">
               <button type="button" data-out="native" data-i="outNative"></button>
               <button type="button" data-out="fixed" data-i="outFixed"></button>
@@ -517,6 +526,10 @@ const I18N = {
     autoPlace:"Auto-place", spread:"Spread out", confirmNext:"Confirm & next →",
     settings:"Settings", ratio:"Crop ratio", custom:"Custom",
     free:"Free",
+    feedHd:"Instagram feed split",
+    feed3:"3 posts", feed6:"6 posts", feed9:"9 posts", feedOff:"off",
+    feedNote:"Numbers are the ORDER TO POST, not the reading order. Post no.1 first — a profile grid stacks newest first, so the bottom-right piece has to go up before the top-left one.",
+    feedTiles:(n)=>`${n} tiles · drag the block to reframe`,
     outSize:"Output size", outNative:"Original pixels", outFixed:"Fixed size",
     fixedNote:"Fixed size needs a locked ratio. Crops smaller than this get scaled up, which softens them.",
     format:"Format", quality:"Quality", naming:"File names",
@@ -573,6 +586,10 @@ const I18N = {
     autoPlace:"자동 배치", spread:"고르게 펼치기", confirmNext:"확정하고 다음 →",
     settings:"설정", ratio:"크롭 비율", custom:"직접 입력",
     free:"자유",
+    feedHd:"인스타 피드 분할",
+    feed3:"3분할", feed6:"6분할", feed9:"9분할", feedOff:"끄기",
+    feedNote:"번호는 읽는 순서가 아니라 올리는 순서입니다. 1번부터 차례로 올리세요 — 프로필은 최신 글이 왼쪽 위에 오기 때문에, 오른쪽 아래 조각을 먼저 올려야 그림이 맞습니다.",
+    feedTiles:(n)=>`${n}조각 · 블록을 끌어 위치를 잡으세요`,
     outSize:"출력 크기", outNative:"원본 해상도", outFixed:"고정 크기",
     fixedNote:"고정 크기는 비율이 잠겨 있어야 씁니다. 이보다 작은 상자는 확대되어 흐려집니다.",
     format:"포맷", quality:"품질", naming:"파일명",
@@ -629,6 +646,10 @@ const I18N = {
     autoPlace:"自動配置", spread:"均等に広げる", confirmNext:"確定して次へ →",
     settings:"設定", ratio:"切り抜き比率", custom:"手入力",
     free:"自由",
+    feedHd:"インスタ フィード分割",
+    feed3:"3分割", feed6:"6分割", feed9:"9分割", feedOff:"オフ",
+    feedNote:"番号は読む順ではなく投稿する順です。1番から順に投稿してください — プロフィールは新しい投稿が左上に来るため、右下のピースを先に上げないと絵が合いません。",
+    feedTiles:(n)=>`${n}ピース · ブロックをドラッグして位置を決めます`,
     outSize:"出力サイズ", outNative:"元の解像度", outFixed:"固定サイズ",
     fixedNote:"固定サイズは比率を固定しているときだけ使えます。これより小さいボックスは拡大されて甘くなります。",
     format:"形式", quality:"画質", naming:"ファイル名",
@@ -893,6 +914,89 @@ function layoutBoxes(item, n, spread){
   }));
 }
 
+/* ---------- Instagram feed grid ----------
+   Contiguous tiles that reassemble into one picture on the profile grid.
+   Tiles keep the chosen ratio; the block moves and scales as one object,
+   because a puzzle stops being a puzzle the moment a tile drifts. */
+const FEED_COLS = 3;
+
+function feedRows(n){ return Math.max(1, Math.round(n / FEED_COLS)); }
+
+/* Instagram stacks newest first, so the last tile read is the first posted. */
+function postNumber(item, i){
+  return item.grid ? item.boxes.length - i : i + 1;
+}
+
+function buildGridBoxes(item){
+  const g = item.grid;
+  if (!g) return;
+  const r = ratioVal();
+  const gr = item.gridRect;
+  const tw = (gr.w * item.w) / g.cols;      // tile width in source px
+  const th = tw / r;                        // ratio is w:h
+  const out = [];
+  for (let ry = 0; ry < g.rows; ry++){
+    for (let cx = 0; cx < g.cols; cx++){
+      out.push({
+        x: (gr.x * item.w + cx * tw) / item.w,
+        y: (gr.y * item.h + ry * th) / item.h,
+        w: tw / item.w,
+        h: th / item.h
+      });
+    }
+  }
+  item.boxes = out;
+}
+
+function gridBlockH(item){
+  const g = item.grid;
+  const tw = (item.gridRect.w * item.w) / g.cols;
+  return (tw / ratioVal()) * g.rows / item.h;
+}
+
+function clampGrid(item){
+  const gr = item.gridRect;
+  gr.w = clamp(gr.w, 0.12, 1);
+  let h = gridBlockH(item);
+  if (h > 1){                               // too tall to fit: shrink to height
+    gr.w = gr.w / h;
+    h = gridBlockH(item);
+  }
+  gr.x = clamp(gr.x, 0, Math.max(0, 1 - gr.w));
+  gr.y = clamp(gr.y, 0, Math.max(0, 1 - h));
+  buildGridBoxes(item);
+}
+
+function applyFeedGrid(n){
+  const it = cur();
+  if (!it) return;
+  if (!n){                                  // off: back to free crops
+    it.grid = null; it.gridRect = null;
+    it.boxes = layoutBoxes(it, 1, false);
+    S.sel = 0;
+    render();
+    return;
+  }
+  // These buttons are explicitly Instagram, so they set the feed ratio.
+  // Changing the ratio afterwards rebuilds the grid at that ratio.
+  setRatioSilent("4:5");
+  it.grid = {cols: FEED_COLS, rows: feedRows(n)};
+  it.gridRect = {x: 0.04, y: 0.04, w: 0.92};
+  clampGrid(it);
+  const h = gridBlockH(it);
+  it.gridRect.y = clamp((1 - h) / 2, 0, 1);
+  it.gridRect.x = clamp((1 - it.gridRect.w) / 2, 0, 1);
+  clampGrid(it);
+  S.sel = 0;
+  render();
+}
+
+function setRatioSilent(id){
+  S.ratioId = id;
+  const p = RATIO_PRESETS.find(x => x.id === id);
+  if (p && p.w){ S.rw = p.w; S.rh = p.h; }
+}
+
 function placeNewBox(item){
   const size = defaultBoxSize(item, item.boxes.length >= 4);
   const cands = [];
@@ -916,6 +1020,7 @@ function placeNewBox(item){
 
 // re-fit every box to the current ratio, keeping the centre
 function refitBoxes(item){
+  if (item.grid) return;                    // grid tiles are rebuilt, not refitted
   if (!ratioLocked()) return;
   for (const b of item.boxes){
     const cx = b.x + b.w/2, cy = b.y + b.h/2;
@@ -1102,7 +1207,7 @@ function renderStage(){
     el.dataset.sel = String(i === S.sel);
     el.dataset.dim = String(i !== S.sel);
     el.style.setProperty("--bc", `var(${BOX_COLORS[i % BOX_COLORS.length]})`);
-    el.innerHTML = `<div class="edge"></div><div class="win"></div><div class="tag">${i+1}</div><div class="grip" data-grip="1"></div>`;
+    el.innerHTML = `<div class="edge"></div><div class="win"></div><div class="tag">${postNumber(it,i)}</div><div class="grip" data-grip="1"></div>`;
     stage.appendChild(el);
   });
   positionBoxes();
@@ -1141,7 +1246,13 @@ function renderRail(){
     }
   }
   Array.from(seg.children).forEach(b =>
-    b.setAttribute("aria-pressed", String(+b.dataset.n === it.boxes.length)));
+    b.setAttribute("aria-pressed", String(!it.grid && +b.dataset.n === it.boxes.length)));
+
+  const fseg = $("#feedseg");
+  const active = it.grid ? it.grid.cols * it.grid.rows : 0;
+  Array.from(fseg.children).forEach(b =>
+    b.setAttribute("aria-pressed", String(+b.dataset.feed === active)));
+  $("#feedNote").hidden = !it.grid;
 
   // crop previews
   const crops = $("#crops");
@@ -1163,7 +1274,7 @@ function renderRail(){
     pv.style.backgroundPosition = `${px}% ${py}%`;
     const cap = document.createElement("span");
     cap.className = "cap";
-    cap.textContent = String(i + 1);
+    cap.textContent = String(postNumber(it, i));
     btn.append(pv, cap);
     btn.addEventListener("click", () => { S.sel = i; renderStage(); renderRail(); });
     crops.appendChild(btn);
@@ -1258,6 +1369,7 @@ function removeItem(i){
 
 function setCount(n){
   const it = cur();
+  if (it.grid){ it.grid = null; it.gridRect = null; it.boxes = []; }
   if (n === it.boxes.length) return;
   if (n < it.boxes.length){
     it.boxes.length = n;
@@ -1275,6 +1387,8 @@ function setRatio(id){
   const p = RATIO_PRESETS.find(x => x.id === id);
   if (p && p.w){ S.rw = p.w; S.rh = p.h; }
   if (id === "free" && S.outMode === "fixed") S.outMode = "native";
+  if (id === "free") S.items.forEach(i => { if (i.grid){ i.grid = null; i.gridRect = null; } });
+  S.items.forEach(i => { if (i.grid) clampGrid(i); });
   refitAll();
   render();
   savePrefs();
@@ -1282,10 +1396,22 @@ function setRatio(id){
 
 function nudge(dir, big){
   const it = cur();
+  const step = (big ? 0.02 : 0.0025);
+  if (it.grid){
+    const gr = it.gridRect;
+    if (dir === "left")  gr.x -= step;
+    if (dir === "right") gr.x += step;
+    if (dir === "up")    gr.y -= step;
+    if (dir === "down")  gr.y += step;
+    if (dir === "bigger")  gr.w *= (big ? 1.08 : 1.02);
+    if (dir === "smaller") gr.w *= (big ? 0.926 : 0.9804);
+    clampGrid(it);
+    afterBoxChange();
+    return;
+  }
   const b = it.boxes[S.sel];
   if (!b) return;
-  const stepX = (big ? 0.02 : 0.0025);
-  const stepY = (big ? 0.02 : 0.0025);
+  const stepX = step, stepY = step;
   if (dir === "left")  b.x = clamp(b.x - stepX, 0, 1 - b.w);
   if (dir === "right") b.x = clamp(b.x + stepX, 0, 1 - b.w);
   if (dir === "up")    b.y = clamp(b.y - stepY, 0, 1 - b.h);
@@ -1337,11 +1463,12 @@ function afterBoxChange(){
       const b = it.boxes[idx];
       const isGrip = !!e.target.dataset.grip;
       drag = {
-        mode: isGrip ? "resize" : "move",
+        mode: it.grid ? (isGrip ? "gridsize" : "gridmove") : (isGrip ? "resize" : "move"),
         idx,
         rect,
         startX: e.clientX, startY: e.clientY,
-        ox: b.x, oy: b.y, ow: b.w, oh: b.h
+        ox: b.x, oy: b.y, ow: b.w, oh: b.h,
+        gr: it.gridRect ? Object.assign({}, it.gridRect) : null
       };
       stage.setPointerCapture(e.pointerId);
       e.preventDefault();
@@ -1349,10 +1476,18 @@ function afterBoxChange(){
     }
 
     // clicking bare image: jump the selected box there
+    if (!rect.width) return;
+    const nx = (e.clientX - rect.left) / rect.width;
+    const ny = (e.clientY - rect.top) / rect.height;
+    if (it.grid){
+      it.gridRect.x = nx - it.gridRect.w / 2;
+      it.gridRect.y = ny - gridBlockH(it) / 2;
+      clampGrid(it);
+      afterBoxChange();
+      return;
+    }
     const b = it.boxes[S.sel];
-    if (b && rect.width){
-      const nx = (e.clientX - rect.left) / rect.width;
-      const ny = (e.clientY - rect.top) / rect.height;
+    if (b){
       b.x = clamp(nx - b.w/2, 0, 1 - b.w);
       b.y = clamp(ny - b.h/2, 0, 1 - b.h);
       afterBoxChange();
@@ -1367,7 +1502,14 @@ function afterBoxChange(){
     const dx = (e.clientX - drag.startX) / drag.rect.width;
     const dy = (e.clientY - drag.startY) / drag.rect.height;
 
-    if (drag.mode === "move"){
+    if (drag.mode === "gridmove"){
+      it.gridRect.x = drag.gr.x + dx;
+      it.gridRect.y = drag.gr.y + dy;
+      clampGrid(it);
+    } else if (drag.mode === "gridsize"){
+      it.gridRect.w = drag.gr.w + dx;
+      clampGrid(it);
+    } else if (drag.mode === "move"){
       b.x = clamp(drag.ox + dx, 0, 1 - b.w);
       b.y = clamp(drag.oy + dy, 0, 1 - b.h);
     } else {
@@ -1400,6 +1542,13 @@ function afterBoxChange(){
     const it = cur(); if (!it) return;
     const b = it.boxes[S.sel]; if (!b) return;
     e.preventDefault();
+    if (it.grid){
+      const gr = it.gridRect;
+      if (e.ctrlKey || e.metaKey) gr.w *= (e.deltaY > 0 ? 0.97 : 1.03);
+      else { gr.x += (e.deltaX || 0) * 0.0006; gr.y += (e.deltaY || 0) * 0.0006; }
+      clampGrid(it); afterBoxChange();
+      return;
+    }
     if (e.ctrlKey || e.metaKey){
       resizeBox(b, b.w * (e.deltaY > 0 ? 0.97 : 1.03), it);
     } else {
@@ -1471,9 +1620,15 @@ function extFor(mime){
 function sanitize(s){
   return s.replace(/[\x00-\x1f\x7f<>:"/\\|?*]+/g, "_").replace(/\s+/g, " ").replace(/^[. ]+|[. ]+$/g, "").slice(0, 120) || "crop";
 }
+const PATTERN_DEFAULT = "{name}-d{n}";
+const PATTERN_GRID    = "{name}-post{nn}";
+
 function fileNameFor(item, idx, imgIdx, ow, oh){
-  const n = idx + 1;
-  const out = S.pattern
+  const n = postNumber(item, idx);
+  // Feed tiles are posted in a strict order, so say so in the name — unless
+  // the user has written their own pattern, which always wins.
+  const pattern = (item.grid && S.pattern === PATTERN_DEFAULT) ? PATTERN_GRID : S.pattern;
+  const out = pattern
     .replace(/\{name\}/g, item.name)
     .replace(/\{nn\}/g, String(n).padStart(2, "0"))
     .replace(/\{n\}/g, String(n))
@@ -1576,6 +1731,7 @@ async function runExport(only){
       crops: entries.length,
       sample: targets.every(t => t.isSample) ? 1 : 0,
       ratio: S.ratioId, fmt: S.fmt, out: S.outMode,
+      grid: targets.reduce((a, t) => Math.max(a, t.grid ? t.boxes.length : 0), 0),
       ow: S.outMode === "fixed" ? S.ow : 0,
       oh: S.outMode === "fixed" ? S.oh : 0,
       q: S.quality
@@ -1665,14 +1821,18 @@ document.addEventListener("drop", e => {
 
 $("#autoBtn").addEventListener("click", () => {
   const it = cur();
+  it.grid = null; it.gridRect = null;
   it.boxes = layoutBoxes(it, Math.max(1, it.boxes.length), false);
   render();
 });
 $("#spreadBtn").addEventListener("click", () => {
   const it = cur();
+  it.grid = null; it.gridRect = null;
   it.boxes = layoutBoxes(it, Math.max(1, it.boxes.length), true);
   render();
 });
+Array.from($("#feedseg").children).forEach(b =>
+  b.addEventListener("click", () => applyFeedGrid(+b.dataset.feed)));
 $("#nextBtn").addEventListener("click", confirmNext);
 
 $("#rw").addEventListener("input", e => {
