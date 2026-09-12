@@ -7,10 +7,11 @@
  * 1 KB, so it could not receive one by accident.
  */
 
-import { statsPage } from "./stats.js";
+import { statsPage, todayJSON } from "./stats.js";
 
 const ALLOWED_EVENTS = new Set(["visit", "add", "export"]);
 const MAX_BODY = 1024;
+const BOT_UA = /bot|crawler|spider|crawl|slurp|headless|phantom|puppeteer|playwright|python-requests|curl\/|wget|scrapy|monitor|preview|fetch|http-client|axios|okhttp/;
 
 export default {
   async fetch(request, env) {
@@ -24,6 +25,7 @@ export default {
     }
 
     if (url.pathname === "/stats") return statsPage(request, env);
+    if (url.pathname === "/api/today") return todayJSON(request, env);
 
     return env.ASSETS.fetch(request);
   }
@@ -47,6 +49,9 @@ async function recordEvent(request, env) {
     return noContent();
   }
   if (!d || typeof d !== "object" || !ALLOWED_EVENTS.has(d.e)) return noContent();
+
+  const ua = (request.headers.get("user-agent") || "").toLowerCase();
+  if (!ua || BOT_UA.test(ua)) return noContent();
 
   const str = (v, max) => (typeof v === "string" ? v.slice(0, max) : "");
   const num = (v) => {

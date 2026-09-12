@@ -42,8 +42,23 @@ The API token comes from **My Profile -> API Tokens -> Create Token ->
 Create Custom Token**, with one permission: **Account -> Account Analytics ->
 Read**. Nothing else. `CF_ACCOUNT_ID` is already set in `wrangler.jsonc`.
 
-The dashboard shows a banner when today's visits are more than triple the
-running average, which is the case you actually want to catch.
+The dashboard leads with today's number, yesterday's comparison and today's
+countries, and flags a banner when today is more than triple the running
+average — the case you actually want to catch.
+
+### Today's numbers on the site itself
+
+Open `https://detailcrop.com/?admin=<STATS_KEY>` once. The key is kept in that
+browser and a small line appears in the footer with today's visits and
+countries. Visitors never see it: an empty public counter is worse than none.
+Clear it with `localStorage.removeItem("dc.admin")`.
+
+### Bots
+
+Crawlers are excluded twice over: the page skips the beacon when
+`navigator.webdriver` is set (which is what headless Chrome, Playwright and
+Puppeteer report), and the Worker drops anything whose user agent looks
+automated. Numbers before this was added include scanner traffic.
 
 ## Usage stats
 
@@ -120,4 +135,3 @@ ORDER BY visits DESC
 Analytics Engine samples at high volume. When that starts happening,
 weight aggregates by `_sample_interval`
 (`SUM(_sample_interval * double2) / SUM(_sample_interval)`).
-

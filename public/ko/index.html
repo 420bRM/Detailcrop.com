@@ -301,6 +301,14 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
 .footSide{display:flex; flex-direction:column; gap:5px}
 .footSide p{margin:0}
 
+.todayLine{
+  margin-top:10px; padding-top:9px; border-top:1px solid var(--line-soft);
+  font-size:12px; color:var(--muted); display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 10px;
+}
+.todayNum{font-size:16px; font-weight:700; color:var(--amber); font-variant-numeric:tabular-nums}
+.todayGeo{color:var(--teal); font-variant-numeric:tabular-nums; letter-spacing:.02em}
+.todayGeo::before{content:"·"; color:var(--muted); margin:0 7px 0 3px}
+
 .sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
 </style>
 </head>
@@ -492,6 +500,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
     <p data-i="footFree"></p>
     <p><span data-i="footContact"></span> <a id="mailLink" href="#">&#8230;</a></p>
     <p style="margin-top:6px"><span data-i="footStats"></span> <button type="button" class="linkbtn" id="statsToggle"></button></p>
+    <p class="todayLine" id="todayLine" hidden></p>
   </div>
 </footer>
 
@@ -554,6 +563,7 @@ const I18N = {
     dims:(w,h)=>`${w} × ${h} px`,
     footPrivacy:"Runs entirely in your browser. Your images are never uploaded.",
     footFree:"Free to use.",
+    todayVisits:"visits today", todayPeople:" people", todayExports:"exports",
     footContact:"Advertising &amp; partnerships:",
     footStats:"Anonymous usage stats — image sizes, batch size and the settings you pick. Never the images themselves.",
     statsOn:"turn off",
@@ -614,6 +624,7 @@ const I18N = {
     dims:(w,h)=>`${w} × ${h} px`,
     footPrivacy:"모든 처리가 브라우저 안에서 이루어집니다. 이미지는 업로드되지 않습니다.",
     footFree:"무료로 쓰세요.",
+    todayVisits:"오늘 방문", todayPeople:"명", todayExports:"내보내기",
     footContact:"광고·제휴 문의:",
     footStats:"익명 사용 통계 — 이미지 크기, 장수, 고른 설정만 기록합니다. 이미지 자체는 기록하지 않습니다.",
     statsOn:"끄기",
@@ -674,6 +685,7 @@ const I18N = {
     dims:(w,h)=>`${w} × ${h} px`,
     footPrivacy:"処理はすべてブラウザ内で行われます。画像がアップロードされることはありません。",
     footFree:"無料で使えます。",
+    todayVisits:"本日の訪問", todayPeople:"人", todayExports:"書き出し",
     footContact:"広告・提携のお問い合わせ:",
     footStats:"匿名の利用統計 — 画像サイズ、枚数、選んだ設定のみ。画像そのものは記録しません。",
     statsOn:"オフにする",
@@ -1934,7 +1946,11 @@ function statsSave(){
   try { localStorage.setItem(STATS_KEY, JSON.stringify(STATS)); } catch {}
 }
 function statsMuted(){
-  return !!STATS.off || navigator.doNotTrack === "1" || window.doNotTrack === "1";
+  // navigator.webdriver is true in Playwright/Puppeteer/Selenium, which is what
+  // most crawlers that execute JS are driving. Cheap, and it keeps scanner hits
+  // out of the numbers.
+  return !!STATS.off || navigator.webdriver === true
+      || navigator.doNotTrack === "1" || window.doNotTrack === "1";
 }
 function median(list){
   if (!list.length) return 0;
@@ -1967,6 +1983,45 @@ $("#statsToggle").addEventListener("click", () => {
   statsSave();
   paintStatsToggle();
 });
+
+/* =====================================================================
+   Today's numbers, for the owner only.
+   Visible when this browser holds the stats key (set once by opening
+   /?admin=<STATS_KEY>). Visitors never see it — a public counter showing
+   single digits is worse than no counter.
+   ===================================================================== */
+const ADMIN_KEY = "dc.admin";
+function adminKey(){
+  try { return localStorage.getItem(ADMIN_KEY) || ""; } catch { return ""; }
+}
+(function captureAdminKey(){
+  try {
+    const u = new URL(location.href);
+    const k = u.searchParams.get("admin");
+    if (k){
+      localStorage.setItem(ADMIN_KEY, k);
+      u.searchParams.delete("admin");
+      history.replaceState(null, "", u.pathname + (u.search || "") + u.hash);
+    }
+  } catch {}
+})();
+async function paintToday(){
+  const key = adminKey();
+  const el = $("#todayLine");
+  if (!el || !key) return;
+  try {
+    const r = await fetch("/api/today?k=" + encodeURIComponent(key));
+    if (!r.ok) return;
+    const d = await r.json();
+    const flags = (d.countries || []).slice(0, 6)
+      .map(c => `${c.c || "?"} ${c.n}`).join("  ·  ");
+    el.innerHTML = `<span class="todayNum">${d.visits}</span> ${T().todayVisits}` +
+      (d.people ? ` · ${d.people}${T().todayPeople}` : "") +
+      (d.exports ? ` · ${T().todayExports} ${d.exports}` : "") +
+      (flags ? `<span class="todayGeo">${flags}</span>` : "");
+    el.hidden = false;
+  } catch {}
+}
 
 /* Contact. Assembled at runtime so the served HTML holds no scrapable address.
    To change it, edit the three parts below and nothing else. */
@@ -2072,6 +2127,7 @@ document.addEventListener("keydown", e => {
   applyLang();
   renderSettings();
   wireMail();
+  paintToday();
   STATS.visits = (STATS.visits || 0) + 1;
   statsSave();
   paintStatsToggle();
