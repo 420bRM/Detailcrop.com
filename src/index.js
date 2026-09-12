@@ -27,7 +27,15 @@ export default {
     if (url.pathname === "/stats") return statsPage(request, env);
     if (url.pathname === "/api/today") return todayJSON(request, env);
 
-    return env.ASSETS.fetch(request);
+    // The site answers on *.workers.dev too. Every page canonicals to the real
+    // domain, but tell crawlers outright rather than relying on that alone.
+    const res = await env.ASSETS.fetch(request);
+    if (url.hostname.endsWith(".workers.dev")) {
+      const out = new Response(res.body, res);
+      out.headers.set("x-robots-tag", "noindex, nofollow");
+      return out;
+    }
+    return res;
   }
 };
 

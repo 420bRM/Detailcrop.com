@@ -135,8 +135,12 @@ function render(R, failed, weakKey) {
       <i style="height:${Math.max(2, Math.round(v / peak * 100))}%"></i></div>`;
   }).join("");
 
-  const geo = (R.todayGeo.rows || []).map(r =>
-    `<span class="chip"><b>${esc(r.country || "?")}</b>${n0(r.visits)}</span>`).join("");
+  const geoRows = R.todayGeo.rows || [];
+  const geoShown = geoRows.reduce((a, r) => a + (Number(r.visits) || 0), 0);
+  const geoRest = Math.max(0, tv - geoShown);
+  const geo = geoRows.map(r =>
+    `<span class="chip"><b>${esc(r.country || "?")}</b>${n0(r.visits)}</span>`).join("")
+    + (geoRest ? `<span class="chip rest"><b>기타</b>${n0(geoRest)}</span>` : "");
 
   return `
   ${weakKey ? `<div class="warnbar">이 페이지의 키가 짧습니다. <code>STATS_KEY</code>를 긴 무작위 문자열로 바꾸세요.</div>` : ""}
@@ -249,6 +253,7 @@ section{margin-top:32px}
 .chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:11px}
 .chip{background:var(--sunk);border:1px solid var(--line);border-radius:100px;padding:2px 9px;font-size:11.5px;color:var(--ink2);font-variant-numeric:tabular-nums}
 .chip b{color:var(--teal);font-weight:600;margin-right:5px}
+.chip.rest b{color:var(--muted)}
 .heroChart{display:flex;flex-direction:column;gap:5px;min-width:0}
 .axis{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted)}
 .strip30{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px;margin-top:12px}
@@ -311,11 +316,15 @@ export async function todayJSON(request, env) {
                  GROUP BY country ORDER BY visits DESC LIMIT 6`)
   ]);
   const t = (tot.rows || [])[0] || {};
+  const visits = Math.round(Number(t.visits) || 0);
+  const countries = (geo.rows || []).map(r => ({ c: r.country || "?", n: Math.round(Number(r.visits) || 0) }));
+  const shown = countries.reduce((a, c) => a + c.n, 0);
   const body = {
-    visits: Math.round(Number(t.visits) || 0),
+    visits,
     people: Math.round(Number(t.people) || 0),
     exports: Math.round(Number(t.exports) || 0),
-    countries: (geo.rows || []).map(r => ({ c: r.country || "?", n: Math.round(Number(r.visits) || 0) }))
+    countries,
+    rest: Math.max(0, visits - shown)   // countries beyond the top 6
   };
 
   const res = Response.json(body, {

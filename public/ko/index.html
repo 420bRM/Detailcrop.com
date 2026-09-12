@@ -19,6 +19,7 @@
 <link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/">
 <link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/">
 <link rel="alternate" hreflang="x-default" href="https://detailcrop.com/">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"DetailCrop","url":"https://detailcrop.com/ko/","inLanguage":"ko","description":"여러 장의 이미지에서 같은 비율의 확대컷을 한 장당 여러 개씩 잡아 zip 하나로 내려받습니다. 모든 처리가 브라우저 안에서 끝나며 업로드가 없습니다.","applicationCategory":"MultimediaApplication","applicationSubCategory":"Image editor","operatingSystem":"Any (modern web browser)","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["이미지 한 장당 최대 6컷","작업 전체에 같은 비율 고정","인스타 피드 3·6·9분할","모든 컷을 zip 하나로 내보내기","브라우저 안에서 처리 — 업로드 없음"],"permissions":"No account, no upload; images are processed locally in the browser"}</script>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -316,7 +317,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
 <div class="wrap">
 
 <header class="bar">
-  <h1 class="brand">Detail<em>Crop</em></h1>
+  <h1 class="brand">Detail<em>Crop</em><span class="sr" data-i="h1sr"></span></h1>
   <p class="tagline" data-i="tagline"></p>
   <span class="spacer"></span>
   <div class="headBtns">
@@ -564,6 +565,7 @@ const I18N = {
     footPrivacy:"Runs entirely in your browser. Your images are never uploaded.",
     footFree:"Free to use.",
     todayVisits:"visits today", todayPeople:" people", todayExports:"exports",
+    h1sr:" — batch detail crops from every image, exported as one zip",
     footContact:"Advertising &amp; partnerships:",
     footStats:"Anonymous usage stats — image sizes, batch size and the settings you pick. Never the images themselves.",
     statsOn:"turn off",
@@ -625,6 +627,7 @@ const I18N = {
     footPrivacy:"모든 처리가 브라우저 안에서 이루어집니다. 이미지는 업로드되지 않습니다.",
     footFree:"무료로 쓰세요.",
     todayVisits:"오늘 방문", todayPeople:"명", todayExports:"내보내기",
+    h1sr:" — 여러 이미지에서 확대컷을 한 번에 뽑아 zip으로 내보내기",
     footContact:"광고·제휴 문의:",
     footStats:"익명 사용 통계 — 이미지 크기, 장수, 고른 설정만 기록합니다. 이미지 자체는 기록하지 않습니다.",
     statsOn:"끄기",
@@ -686,6 +689,7 @@ const I18N = {
     footPrivacy:"処理はすべてブラウザ内で行われます。画像がアップロードされることはありません。",
     footFree:"無料で使えます。",
     todayVisits:"本日の訪問", todayPeople:"人", todayExports:"書き出し",
+    h1sr:" — 複数画像からディテールカットを一括で切り出しzipで書き出し",
     footContact:"広告・提携のお問い合わせ:",
     footStats:"匿名の利用統計 — 画像サイズ、枚数、選んだ設定のみ。画像そのものは記録しません。",
     statsOn:"オフにする",
@@ -2014,7 +2018,9 @@ async function paintToday(){
     if (!r.ok) return;
     const d = await r.json();
     const flags = (d.countries || []).slice(0, 6)
-      .map(c => `${c.c || "?"} ${c.n}`).join("  ·  ");
+      .map(c => `${c.c || "?"} ${c.n}`)
+      .concat(d.rest ? [`기타 ${d.rest}`] : [])
+      .join("  ·  ");
     el.innerHTML = `<span class="todayNum">${d.visits}</span> ${T().todayVisits}` +
       (d.people ? ` · ${d.people}${T().todayPeople}` : "") +
       (d.exports ? ` · ${T().todayExports} ${d.exports}` : "") +
