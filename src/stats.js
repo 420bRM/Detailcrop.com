@@ -69,6 +69,7 @@ npx wrangler secret put STATS_KEY</pre>
               GROUP BY device, lang ORDER BY visits DESC LIMIT 10`
   };
 
+  const weakKey = env.STATS_KEY.length < 16;
   const names = Object.keys(queries);
   const results = await Promise.all(names.map(n => runSQL(env, queries[n])));
   const R = {};
@@ -81,7 +82,7 @@ npx wrangler secret put STATS_KEY</pre>
       dataset has no rows yet.</p></div>`), 200);
   }
 
-  return html(shell(render(R, failed)), 200);
+  return html(shell(render(R, failed, weakKey)), 200);
 }
 
 async function runSQL(env, sql) {
@@ -106,7 +107,7 @@ const esc = (s) => String(s == null ? "" : s)
 const n0 = (v) => Math.round(Number(v) || 0).toLocaleString();
 const n1 = (v) => (Math.round((Number(v) || 0) * 10) / 10).toLocaleString();
 
-function render(R, failed) {
+function render(R, failed, weakKey) {
   const w = (R.week.rows || [])[0] || {};
   const m = (R.month.rows || [])[0] || {};
   const img = (R.images.rows || [])[0] || {};
@@ -127,6 +128,7 @@ function render(R, failed) {
   }).join("");
 
   return `
+  ${weakKey ? `<div class="warnbar">이 페이지의 키가 짧습니다. 누구든 주소를 찍어보다 열 수 있고, 시도가 쌓이면 Worker 하루 요청 한도를 태워 사이트가 멈출 수 있습니다. <code>npx wrangler secret put STATS_KEY</code> 로 긴 무작위 문자열로 바꾸세요.</div>` : ""}
   ${spiking ? `<div class="spike">오늘 방문 ${n0(today)}회 — 지난 ${prior.length}일 평균(${n1(avg)})의 ${Math.round(today / avg)}배입니다. 유입 경로를 확인하세요.</div>` : ""}
   ${failed.length ? `<div class="warnbar">일부 패널을 불러오지 못했습니다: ${failed.map(esc).join(", ")}</div>` : ""}
 
@@ -227,6 +229,7 @@ td.num{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2)}
 .empty{color:var(--muted);font-size:13px;margin:0;padding:14px;border:1px dashed var(--line);border-radius:5px}
 .spike{background:rgba(232,180,90,.14);border:1px solid var(--amber);color:var(--amber);padding:12px 15px;border-radius:5px;margin-bottom:22px;font-weight:600}
 .warnbar{background:rgba(252,104,71,.12);border:1px solid var(--coral);color:var(--coral);padding:10px 14px;border-radius:5px;margin-bottom:18px;font-size:13px}
+.warnbar code{background:rgba(0,0,0,.35);padding:1px 6px;border-radius:3px;font-size:12px}
 .err{background:var(--panel);border:1px solid var(--coral);border-radius:5px;padding:18px}
 .err h2{color:var(--coral);margin-bottom:8px}
 pre{background:var(--sunk);border:1px solid var(--line);border-radius:4px;padding:12px;overflow-x:auto;font-size:12.5px;color:var(--ink2)}
