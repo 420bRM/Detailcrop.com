@@ -7,6 +7,8 @@
  * 1 KB, so it could not receive one by accident.
  */
 
+import { statsPage } from "./stats.js";
+
 const ALLOWED_EVENTS = new Set(["visit", "add", "export"]);
 const MAX_BODY = 1024;
 
@@ -20,6 +22,8 @@ export default {
       }
       return recordEvent(request, env);
     }
+
+    if (url.pathname === "/stats") return statsPage(request, env);
 
     return env.ASSETS.fetch(request);
   }

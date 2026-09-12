@@ -25,9 +25,25 @@ Custom domain: change the nameservers at the registrar to the two
 Cloudflare gives you, then add the domain under the Worker's
 **Settings → Domains & Routes**.
 
-## Still to add
+## The /stats dashboard
 
-- `public/favicon.ico`
+`https://detailcrop.com/stats?k=<STATS_KEY>` renders the numbers below without
+any SQL. Wrong key or no key returns 404, and the page is `noindex`.
+
+Two secrets, once:
+
+```bash
+npx wrangler secret put STATS_KEY      # any long random string you invent
+npx wrangler secret put CF_API_TOKEN   # see below
+npx wrangler deploy
+```
+
+The API token comes from **My Profile -> API Tokens -> Create Token ->
+Create Custom Token**, with one permission: **Account -> Account Analytics ->
+Read**. Nothing else. `CF_ACCOUNT_ID` is already set in `wrangler.jsonc`.
+
+The dashboard shows a banner when today's visits are more than triple the
+running average, which is the case you actually want to catch.
 
 ## Usage stats
 

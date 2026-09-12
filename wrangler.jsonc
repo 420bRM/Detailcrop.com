@@ -6,6 +6,11 @@
     "directory": "./public",
     "binding": "ASSETS"
   },
+  "vars": {
+    // Not a credential — it appears in your dashboard URL. Move it to a
+    // secret instead if you would rather not publish it.
+    "CF_ACCOUNT_ID": "363e5870b7991d528c70f4ae3dd23c53"
+  },
   "analytics_engine_datasets": [
     { "binding": "EVENTS", "dataset": "detailcrop_events" }
   ]
