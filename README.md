@@ -120,3 +120,4 @@ ORDER BY visits DESC
 Analytics Engine samples at high volume. When that starts happening,
 weight aggregates by `_sample_interval`
 (`SUM(_sample_interval * double2) / SUM(_sample_interval)`).
+
