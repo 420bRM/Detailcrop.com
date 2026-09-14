@@ -84,6 +84,14 @@ poster or building back to square. All three are one 3×3 homography per
 image, and that same matrix drives the stage (as a CSS `matrix3d`), the crop
 previews and the export — so the three cannot drift apart.
 
+They live in `#alignPanel`, a section that **starts closed on every load**.
+Rotating a photo is a different job from placing crop boxes and most visits
+never need it, so it stays out of the way. Closed is not hidden: when the
+current image is warped the header carries the numbers and turns amber,
+because otherwise the stage would look wrong for no visible reason. Being one
+self-contained section is also the point — **this is the block earmarked to go
+behind a paywall**, and gating it means refusing to open this one panel.
+
 Warping leaves empty space at the corners, so the working area becomes the
 largest axis-aligned rectangle of the source aspect ratio that fits wholly
 inside the warped quad — found by binary search on size, with the fit test

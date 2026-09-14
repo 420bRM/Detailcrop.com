@@ -192,22 +192,97 @@ header.bar{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 18px; mar
   content:""; position:absolute; inset:0;
   border:1px solid rgba(255,255,255,.55);
 }
-.rotrow{display:flex; align-items:center; gap:9px; margin-top:12px}
-.rotrow label{font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted);
-  flex:0 0 54px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-.rottrack{position:relative; flex:1 1 auto; min-width:0; display:flex; align-items:center}
-.rottrack input[type=range]{position:relative; z-index:1; width:100%; background:transparent}
-/* centre detent, so level is findable without reading the number */
-.rottrack::after{
-  content:""; position:absolute; left:50%; top:50%; width:1px; height:13px;
-  margin-left:-1px; transform:translateY(-50%); background:var(--line); pointer-events:none;
+/* ---------- alignment section ----------
+   Rotating and un-keystoning a photo is a different job from placing crop
+   boxes, and most visits never need it, so it folds away and starts closed.
+   Closed is not hidden: if the current image is warped, the header carries
+   the numbers and turns amber, or the picture on the stage would look wrong
+   for no visible reason. */
+.align{margin-top:14px; border-top:1px solid var(--line-soft); padding-top:9px}
+.disc{
+  display:flex; align-items:center; gap:8px; width:100%; min-width:0;
+  background:transparent; border:0; padding:3px 0; cursor:pointer; text-align:left;
+  font:inherit; font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--muted); transition:color .16s;
 }
+.disc:hover{color:var(--ink-2)}
+.align[data-live="1"] .disc{color:var(--ink-2)}
+.disc-ic{
+  flex:0 0 auto; width:0; height:0; border-left:5px solid currentColor;
+  border-top:4px solid transparent; border-bottom:4px solid transparent;
+  transform-origin:2px 50%; transition:transform .16s;
+}
+.disc[aria-expanded="true"] .disc-ic{transform:rotate(90deg)}
+.disc-sum{
+  margin-left:auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  font-size:11px; letter-spacing:.02em; text-transform:none;
+  color:var(--amber); font-variant-numeric:tabular-nums;
+}
+.disc[aria-expanded="true"] .disc-sum{display:none}
+@media (prefers-reduced-motion:reduce){ .disc, .disc-ic{transition:none} }
+
+/* ---------- alignment gauges ----------
+   These three read from the centre, not from the left, so they are built
+   like a levelling instrument: a scale with a centre detent and quarter
+   marks, a fill that grows out of the detent in the direction you drag, and
+   a blade instead of a knob. A row stays grey until its axis is off zero, so
+   a glance down the stack says which ones you have touched. */
+.rotrow{display:flex; align-items:center; gap:10px; margin-top:10px; --p:0}
+.rotrow label{
+  font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted);
+  flex:0 0 52px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  transition:color .16s
+}
+.rotrow[data-live="1"] label{color:var(--ink-2)}
+
+.rottrack{
+  position:relative; flex:1 1 auto; min-width:0; height:24px;
+  display:flex; align-items:center; cursor:ew-resize;
+}
+.rottrack::before{                     /* groove and scale */
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:
+    linear-gradient(var(--ink-2), var(--ink-2))     50% 50% / 1px 11px no-repeat,
+    linear-gradient(var(--line), var(--line))       25% 50% / 1px 6px  no-repeat,
+    linear-gradient(var(--line), var(--line))       75% 50% / 1px 6px  no-repeat,
+    linear-gradient(var(--sunk), var(--sunk))        0  50% / 100% 2px no-repeat;
+}
+.rottrack::after{                      /* fill, grown out of the detent */
+  content:""; position:absolute; top:50%; height:2px; margin-top:-1px; border-radius:1px;
+  left:calc(50% + min(0%, calc(var(--p) * 50%)));
+  width:max(calc(var(--p) * 50%), calc(var(--p) * -50%));
+  background:var(--amber); box-shadow:0 0 9px -1px var(--amber); pointer-events:none;
+}
+.rottrack input[type=range]{
+  position:relative; z-index:1; width:100%; height:24px; margin:0;
+  -webkit-appearance:none; appearance:none; background:transparent; cursor:ew-resize;
+}
+.rottrack input[type=range]::-webkit-slider-runnable-track{height:2px; background:transparent}
+.rottrack input[type=range]::-moz-range-track{height:2px; background:transparent}
+.rottrack input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; appearance:none; width:4px; height:20px; margin-top:-9px;
+  border:0; border-radius:1px; background:var(--fog);
+  box-shadow:0 0 0 1px rgba(0,0,0,.7), 0 0 12px -2px var(--amber);
+}
+.rottrack input[type=range]::-moz-range-thumb{
+  width:4px; height:20px; border:0; border-radius:1px; background:var(--fog);
+  box-shadow:0 0 0 1px rgba(0,0,0,.7), 0 0 12px -2px var(--amber);
+}
+.rottrack input[type=range]:focus-visible{outline:none}
+.rottrack input[type=range]:focus-visible::-webkit-slider-thumb{
+  box-shadow:0 0 0 1px var(--sky), 0 0 0 3px var(--teal)}
+.rottrack input[type=range]:focus-visible::-moz-range-thumb{
+  box-shadow:0 0 0 1px var(--sky), 0 0 0 3px var(--teal)}
+
 .rotVal{
-  flex:0 0 auto; min-width:54px; background:var(--sunk); border:1px solid var(--line);
-  border-radius:3px; padding:4px 6px; font-size:12px; color:var(--ink-2);
-  font-variant-numeric:tabular-nums; text-align:center;
+  flex:0 0 auto; min-width:56px; background:var(--sunk); border:1px solid var(--line-soft);
+  border-radius:3px; padding:4px 6px; font-size:12px; color:var(--muted);
+  font-variant-numeric:tabular-nums; text-align:center; cursor:pointer;
+  transition:color .16s, border-color .16s;
 }
+.rotrow[data-live="1"] .rotVal{color:var(--amber); border-color:var(--line)}
 .rotVal:hover{border-color:var(--teal); color:var(--ink)}
+@media (prefers-reduced-motion:reduce){ .rotrow label, .rotVal{transition:none} }
 
 .box{position:absolute; cursor:move}
 .box .edge{position:absolute; inset:0; border:2px solid var(--bc); border-radius:1px}
@@ -495,21 +570,30 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
               <button type="button" data-nudge="smaller" aria-label="Smaller">－</button>
             </div>
           </div>
-          <div class="rotrow">
-            <label for="rotSlider" data-i="straighten"></label>
-            <span class="rottrack"><input type="range" id="rotSlider" min="-15" max="15" step="0.1" value="0"></span>
-            <button type="button" class="rotVal" id="rotReset" title="0°">0.0°</button>
-          </div>
-          <div id="perspRows">
-            <div class="rotrow">
-              <label for="khSlider" data-i="kHoriz"></label>
-              <span class="rottrack"><input type="range" id="khSlider" min="-100" max="100" step="1" value="0"></span>
-              <button type="button" class="rotVal" id="khReset" title="0">0</button>
-            </div>
-            <div class="rotrow">
-              <label for="kvSlider" data-i="kVert"></label>
-              <span class="rottrack"><input type="range" id="kvSlider" min="-100" max="100" step="1" value="0"></span>
-              <button type="button" class="rotVal" id="kvReset" title="0">0</button>
+          <div class="align" id="alignPanel">
+            <button type="button" class="disc" id="alignToggle" aria-expanded="false" aria-controls="alignBody">
+              <span class="disc-ic" aria-hidden="true"></span>
+              <span data-i="alignTitle"></span>
+              <span class="disc-sum" id="alignSum"></span>
+            </button>
+            <div id="alignBody" hidden>
+              <div class="rotrow">
+                <label for="rotSlider" data-i="straighten"></label>
+                <span class="rottrack"><input type="range" id="rotSlider" min="-15" max="15" step="0.1" value="0"></span>
+                <button type="button" class="rotVal" id="rotReset">0.0°</button>
+              </div>
+              <div id="perspRows">
+                <div class="rotrow">
+                  <label for="khSlider" data-i="kHoriz"></label>
+                  <span class="rottrack"><input type="range" id="khSlider" min="-100" max="100" step="1" value="0"></span>
+                  <button type="button" class="rotVal" id="khReset">0</button>
+                </div>
+                <div class="rotrow">
+                  <label for="kvSlider" data-i="kVert"></label>
+                  <span class="rottrack"><input type="range" id="kvSlider" min="-100" max="100" step="1" value="0"></span>
+                  <button type="button" class="rotVal" id="kvReset">0</button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -619,7 +703,7 @@ const I18N = {
     footFree:"Free to use.",
     todayVisits:"visits today", todayPeople:" people", todayExports:"exports",
     h1sr:" — batch detail crops from every image, exported as one zip",
-    straighten:"Rotate", kHoriz:"Horiz.", kVert:"Vert.",
+    straighten:"Rotate", kHoriz:"Horiz.", kVert:"Vert.", resetZero:"Back to zero", alignTitle:"Alignment",
     footContact:"Advertising &amp; partnerships:",
     footStats:"Anonymous usage stats — image sizes, batch size and the settings you pick. Never the images themselves.",
     statsOn:"turn off",
@@ -684,7 +768,7 @@ const I18N = {
     footFree:"무료로 쓰세요.",
     todayVisits:"오늘 방문", todayPeople:"명", todayExports:"내보내기",
     h1sr:" — 여러 이미지에서 확대컷을 한 번에 뽑아 zip으로 내보내기",
-    straighten:"회전", kHoriz:"수평", kVert:"수직",
+    straighten:"회전", kHoriz:"수평", kVert:"수직", resetZero:"0으로 되돌리기", alignTitle:"정렬 보정",
     footContact:"광고·제휴 문의:",
     footStats:"익명 사용 통계 — 이미지 크기, 장수, 고른 설정만 기록합니다. 이미지 자체는 기록하지 않습니다.",
     statsOn:"끄기",
@@ -749,7 +833,7 @@ const I18N = {
     footFree:"無料で使えます。",
     todayVisits:"本日の訪問", todayPeople:"人", todayExports:"書き出し",
     h1sr:" — 複数画像からディテールカットを一括で切り出しzipで書き出し",
-    straighten:"回転", kHoriz:"水平", kVert:"垂直",
+    straighten:"回転", kHoriz:"水平", kVert:"垂直", resetZero:"0に戻す", alignTitle:"傾き補正",
     footContact:"広告・提携のお問い合わせ:",
     footStats:"匿名の利用統計 — 画像サイズ、枚数、選んだ設定のみ。画像そのものは記録しません。",
     statsOn:"オフにする",
@@ -2245,15 +2329,28 @@ function showGuide(on){
   if (on) g.classList.add("on");
   else gridTimer = setTimeout(() => g.classList.remove("on"), 700);
 }
+function paintGauge(sel, btn, v, max, text){
+  const el = $(sel), row = el.closest(".rotrow"), b = $(btn);
+  el.value = String(v);
+  b.textContent = text;
+  b.title = T().resetZero;
+  row.style.setProperty("--p", String(v / max));   // drives the centre-out fill
+  row.dataset.live = v ? "1" : "0";
+}
 function paintRot(){
-  const it = cur();
+  const it = cur(), t = T();
   const r = rotOf(it), kh = khOf(it), kv = kvOf(it);
-  $("#rotSlider").value = String(r);
-  $("#rotReset").textContent = (r > 0 ? "+" : "") + r.toFixed(1) + "\u00B0";
-  $("#khSlider").value = String(kh);
-  $("#khReset").textContent = (kh > 0 ? "+" : "") + kh;
-  $("#kvSlider").value = String(kv);
-  $("#kvReset").textContent = (kv > 0 ? "+" : "") + kv;
+  paintGauge("#rotSlider", "#rotReset", r, 15, (r > 0 ? "+" : "") + r.toFixed(1) + "\u00B0");
+  paintGauge("#khSlider", "#khReset", kh, 100, (kh > 0 ? "+" : "") + kh);
+  paintGauge("#kvSlider", "#kvReset", kv, 100, (kv > 0 ? "+" : "") + kv);
+
+  // what the folded header says about this image
+  const bits = [];
+  if (r)  bits.push((r > 0 ? "+" : "") + r.toFixed(1) + "\u00B0");
+  if (kh) bits.push(t.kHoriz + " " + (kh > 0 ? "+" : "") + kh);
+  if (kv) bits.push(t.kVert + " " + (kv > 0 ? "+" : "") + kv);
+  $("#alignSum").textContent = bits.join(" \u00B7 ");
+  $("#alignPanel").dataset.live = bits.length ? "1" : "0";
 }
 function applyWarp(field, v){
   const it = cur(); if (!it) return;
@@ -2278,6 +2375,17 @@ function applyWarp(field, v){
   ["pointerup", "blur", "change"].forEach(ev => el.addEventListener(ev, () => showGuide(false)));
   $(btn).addEventListener("click", () => { showGuide(true); applyWarp(field, 0); showGuide(false); });
 });
+/* The alignment tools are the block earmarked to go behind a paywall later.
+   Everything they need lives inside #alignPanel, so gating them means
+   refusing to open this one section. */
+$("#alignToggle").addEventListener("click", e => {
+  const btn = e.currentTarget;
+  const open = btn.getAttribute("aria-expanded") !== "true";
+  btn.setAttribute("aria-expanded", String(open));
+  $("#alignBody").hidden = !open;
+  if (open) layoutPreviews();          // the rows were unmeasurable while hidden
+});
+
 // no WebGL means no keystone; rotation still works everywhere
 (function(){
   let ok = false;
