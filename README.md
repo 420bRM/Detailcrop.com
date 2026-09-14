@@ -78,21 +78,36 @@ reassemble on a profile grid. Tiles keep the chosen ratio (forced to 4:5 when
 a grid is switched on) and the block moves and scales as one object, because
 a puzzle stops being a puzzle the moment one tile drifts.
 
-**Straighten.** The slider under the move pad rotates the *photo*, ±15°, to
-put a horizon or a wall edge level before any crop is taken. Rotating leaves
-empty wedges at the corners, so the working area becomes the largest
-rectangle that fits wholly inside the rotated photo — one pixel in from the
-exact fit, because the exact fit leaves the two outermost corner pixels
-half-covered and that reads as a translucent speck in a PNG. That rectangle
-keeps the source aspect ratio, so every ratio calculation, the feed grid
-included, is untouched; only the pixel count shrinks with the angle (6°
-costs about 13% of a 3:2 frame, 15° about 26%). The size readout reports the
-usable area, not the raw file. A grid guide appears while the slider is in
-use and fades 700 ms after. The slider snaps to 0 inside ±0.15°, and the
-value button resets to level when clicked.
+**Straighten and perspective.** Three sliders under the move pad: *Rotate*
+(±15°) levels a horizon, and *Horiz.* / *Vert.* (±100) pull a keystoned wall,
+poster or building back to square. All three are one 3×3 homography per
+image, and that same matrix drives the stage (as a CSS `matrix3d`), the crop
+previews and the export — so the three cannot drift apart.
 
-Crop rotation is deliberately absent. A tilted crop box on a level photo is
-the same picture and a much less obvious control.
+Warping leaves empty space at the corners, so the working area becomes the
+largest axis-aligned rectangle of the source aspect ratio that fits wholly
+inside the warped quad — found by binary search on size, with the fit test
+being four half-plane clips. Because that rectangle keeps the source ratio,
+every ratio calculation and the feed grid are untouched; only the pixel count
+shrinks, by roughly 13% at 6° of rotation and 10% at a half-travel keystone.
+It sits one pixel in from the exact fit: the exact fit leaves the outermost
+corner pixels half-covered, which reads as a translucent speck in a PNG. An
+image with all three sliders at zero takes a separate path and comes out
+byte-identical to a plain crop.
+
+Rotation alone is affine, so canvas draws it. A keystone is projective and
+canvas cannot, so those crops go through WebGL: one quad, the inverse
+homography per pixel. Output is subdivided until each block's source slice
+fits in a texture — `MAX_TEXTURE_SIZE` is 8192 in headless Chrome and 4096 on
+plenty of phones, and a driver that is handed more just drops the upload with
+nothing you can see. Blocks split on integer pixels with two pixels of margin,
+so a seam samples the same texels its neighbour does; a full-frame warp of a
+54 MP original was checked against a CPU reference and came back within
+0.6/255 everywhere, block boundaries included. **No WebGL means no keystone**
+— the two perspective rows hide themselves and rotation carries on.
+
+Crop rotation is deliberately absent. A tilted box on a level photo yields the
+same picture and a much less obvious control.
 
 **Numbers are posting order, not reading order.** A profile grid stacks
 newest first, so the bottom-right tile must be posted before the top-left
@@ -180,6 +195,7 @@ is honoured.
 | | | double12 | files rejected as not images |
 | | | double13 | files rejected past the side limit |
 | | | double14 | largest straighten angle used, degrees |
+| | | double15 | largest keystone slider used, 0-100 |
 
 `skip` exists because a rejected file is otherwise invisible: the visitor
 sees a message and leaves, and nothing is recorded. If the size limits are

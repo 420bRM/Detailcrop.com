@@ -198,7 +198,8 @@ header.bar{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 18px; mar
   border:1px solid rgba(255,255,255,.55);
 }
 .rotrow{display:flex; align-items:center; gap:9px; margin-top:12px}
-.rotrow label{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); flex:0 0 auto}
+.rotrow label{font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted);
+  flex:0 0 54px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .rottrack{position:relative; flex:1 1 auto; min-width:0; display:flex; align-items:center}
 .rottrack input[type=range]{position:relative; z-index:1; width:100%; background:transparent}
 /* centre detent, so level is findable without reading the number */
@@ -238,7 +239,15 @@ header.bar{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 18px; mar
 
 .crops{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
 .crop{min-width:0; background:none; border:0; padding:0; text-align:center}
-.crop .pv{width:100%; background:var(--sunk) center/cover no-repeat; border:2px solid var(--bc); border-radius:2px}
+/* the preview is a scaled copy of the stage, same transform, so a tilt or a
+   keystone shows up here the moment the slider moves */
+.crop .pv{position:relative; width:100%; overflow:hidden; background:var(--sunk); border-radius:2px}
+/* frame drawn over the image rather than as a border, so the box keeps the
+   exact aspect ratio of the crop it stands for */
+.crop .pv::after{content:""; position:absolute; inset:0; border:2px solid var(--bc);
+  border-radius:2px; pointer-events:none}
+.crop .pv img{position:absolute; left:50%; top:50%; transform-origin:50% 50%;
+  max-width:none; max-height:none; display:block; pointer-events:none}
 .crop[data-sel="true"] .pv{outline:2px solid var(--fog); outline-offset:2px}
 .crop .cap{font-size:11px; color:var(--muted); margin-top:4px; letter-spacing:.06em; display:block}
 
@@ -496,6 +505,18 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
             <span class="rottrack"><input type="range" id="rotSlider" min="-15" max="15" step="0.1" value="0"></span>
             <button type="button" class="rotVal" id="rotReset" title="0°">0.0°</button>
           </div>
+          <div id="perspRows">
+            <div class="rotrow">
+              <label for="khSlider" data-i="kHoriz"></label>
+              <span class="rottrack"><input type="range" id="khSlider" min="-100" max="100" step="1" value="0"></span>
+              <button type="button" class="rotVal" id="khReset" title="0">0</button>
+            </div>
+            <div class="rotrow">
+              <label for="kvSlider" data-i="kVert"></label>
+              <span class="rottrack"><input type="range" id="kvSlider" min="-100" max="100" step="1" value="0"></span>
+              <button type="button" class="rotVal" id="kvReset" title="0">0</button>
+            </div>
+          </div>
 
           <div class="readout">
             <span><span data-i="pos"></span> <b id="roPos">—</b></span>
@@ -603,7 +624,7 @@ const I18N = {
     footFree:"Free to use.",
     todayVisits:"visits today", todayPeople:" people", todayExports:"exports",
     h1sr:" — batch detail crops from every image, exported as one zip",
-    straighten:"Level",
+    straighten:"Rotate", kHoriz:"Horiz.", kVert:"Vert.",
     footContact:"Advertising &amp; partnerships:",
     footStats:"Anonymous usage stats — image sizes, batch size and the settings you pick. Never the images themselves.",
     statsOn:"turn off",
@@ -668,7 +689,7 @@ const I18N = {
     footFree:"무료로 쓰세요.",
     todayVisits:"오늘 방문", todayPeople:"명", todayExports:"내보내기",
     h1sr:" — 여러 이미지에서 확대컷을 한 번에 뽑아 zip으로 내보내기",
-    straighten:"수평",
+    straighten:"회전", kHoriz:"수평", kVert:"수직",
     footContact:"광고·제휴 문의:",
     footStats:"익명 사용 통계 — 이미지 크기, 장수, 고른 설정만 기록합니다. 이미지 자체는 기록하지 않습니다.",
     statsOn:"끄기",
@@ -733,7 +754,7 @@ const I18N = {
     footFree:"無料で使えます。",
     todayVisits:"本日の訪問", todayPeople:"人", todayExports:"書き出し",
     h1sr:" — 複数画像からディテールカットを一括で切り出しzipで書き出し",
-    straighten:"水平",
+    straighten:"回転", kHoriz:"水平", kVert:"垂直",
     footContact:"広告・提携のお問い合わせ:",
     footStats:"匿名の利用統計 — 画像サイズ、枚数、選んだ設定のみ。画像そのものは記録しません。",
     statsOn:"オフにする",
@@ -977,25 +998,131 @@ function layoutBoxes(item, n, spread){
   }));
 }
 
-/* ---------- straighten ----------
-   Rotating a photo leaves empty wedges at the corners. Rather than let a
-   crop pick them up, the working area becomes the largest rectangle that
-   fits wholly inside the rotated image. It keeps the source aspect ratio,
-   so every ratio calculation below is unaffected — only the pixel count
-   shrinks as the angle grows. */
-function rotOf(item){ return (item && item.rot) || 0; }
+/* ---------- straighten & perspective ----------
+   One homography per image drives all three surfaces: the stage, the crop
+   previews and the export. Rotation levels a horizon; the two perspective
+   sliders pull a keystoned wall back to square.
 
-function usableScale(item){
-  const th = Math.abs(rotOf(item)) * Math.PI / 180;
-  if (!th) return 1;
-  const c = Math.cos(th), sn = Math.sin(th), W = item.w, H = item.h;
-  const s = Math.min(W / (W * c + H * sn), H / (W * sn + H * c));
-  // Pull in one pixel. The exact fit leaves the two outermost corner pixels
-  // half-covered, which reads as a translucent speck in a PNG export.
-  return Math.max(0.05, s - 2 / Math.min(W, H));
+   Warping turns the photo into a quad with empty space around it. Rather
+   than let a crop pick that up, the working area becomes the largest
+   axis-aligned rectangle of the source aspect ratio that fits wholly inside
+   the quad. Holding the aspect ratio means every ratio calculation below is
+   untouched — only the pixel count shrinks as the sliders move. */
+
+const K_MAX = 0.25;                 // keystone strength at slider 100
+
+function rotOf(item){ return (item && item.rot) || 0; }
+function khOf(item){  return (item && item.kh)  || 0; }
+function kvOf(item){  return (item && item.kv)  || 0; }
+function warped(item){ return !!(rotOf(item) || khOf(item) || kvOf(item)); }
+function keystoned(item){ return !!(khOf(item) || kvOf(item)); }
+
+/* row-major 3x3 over source pixels measured from the image centre, y down */
+function homography(item){
+  const th = rotOf(item) * Math.PI / 180;
+  const c = Math.cos(th), sn = Math.sin(th);
+  const a = (khOf(item) / 100) * K_MAX / (item.w / 2);
+  const b = (kvOf(item) / 100) * K_MAX / (item.h / 2);
+  // keystone first, then rotate, so the rotate slider always levels what
+  // is actually on screen
+  return [ c, -sn, 0,
+           sn,  c, 0,
+           a,   b, 1 ];
 }
-function usableW(item){ return item.w * usableScale(item); }
-function usableH(item){ return item.h * usableScale(item); }
+function applyH(M, x, y){
+  const w = M[6] * x + M[7] * y + M[8];
+  return [(M[0] * x + M[1] * y + M[2]) / w, (M[3] * x + M[4] * y + M[5]) / w];
+}
+function invH(M){
+  const a = M[0], b = M[1], c = M[2], d = M[3], e = M[4],
+        f = M[5], g = M[6], h = M[7], i = M[8];
+  const A = e*i - f*h, B = c*h - b*i, C = b*f - c*e;
+  const D = f*g - d*i, E = a*i - c*g, F = c*d - a*f;
+  const G = d*h - e*g, H = b*g - a*h, I = a*e - b*d;
+  const det = a*A + b*D + c*G;
+  return [A/det, B/det, C/det, D/det, E/det, F/det, G/det, H/det, I/det];
+}
+
+function clipHalf(poly, nx, ny, d){
+  const out = [];
+  for (let i = 0; i < poly.length; i++){
+    const A = poly[i], B = poly[(i + 1) % poly.length];
+    const da = nx * A[0] + ny * A[1] - d, db = nx * B[0] + ny * B[1] - d;
+    if (da <= 0) out.push(A);
+    if ((da < 0 && db > 0) || (da > 0 && db < 0)){
+      const t = da / (da - db);
+      out.push([A[0] + t * (B[0] - A[0]), A[1] + t * (B[1] - A[1])]);
+    }
+  }
+  return out;
+}
+
+/* Largest source-ratio rectangle inside the warped quad. A rectangle of
+   half-extents (ha,hb) fits inside a convex polygon exactly when its centre
+   satisfies every edge half-plane pulled inward by ha*|nx| + hb*|ny|, so the
+   fit test is four half-plane clips and the size is a binary search. */
+function fitUsable(item){
+  const W = item.w, H = item.h, M = homography(item);
+  // untouched image: the whole frame is usable, byte for byte as before
+  if (!warped(item)) return { M: M, uw: W, uh: H, ox: 0, oy: 0 };
+  const Q = [[-W/2,-H/2],[W/2,-H/2],[W/2,H/2],[-W/2,H/2]]
+              .map(p => applyH(M, p[0], p[1]));
+  const cx = (Q[0][0] + Q[1][0] + Q[2][0] + Q[3][0]) / 4;
+  const cy = (Q[0][1] + Q[1][1] + Q[2][1] + Q[3][1]) / 4;
+  const planes = [];
+  for (let i = 0; i < 4; i++){
+    const A = Q[i], B = Q[(i + 1) % 4];
+    let nx = B[1] - A[1], ny = -(B[0] - A[0]);
+    let d = nx * A[0] + ny * A[1];
+    if (nx * cx + ny * cy > d){ nx = -nx; ny = -ny; d = -d; }
+    planes.push([nx, ny, d]);
+  }
+  const big = 4 * Math.max(W, H);
+  const centreAt = sc => {
+    const ha = sc * W / 2, hb = sc * H / 2;
+    let poly = [[-big,-big],[big,-big],[big,big],[-big,big]];
+    for (let i = 0; i < 4; i++){
+      const p = planes[i];
+      poly = clipHalf(poly, p[0], p[1],
+                      p[2] - (ha * Math.abs(p[0]) + hb * Math.abs(p[1])));
+      if (!poly.length) return null;
+    }
+    let sx = 0, sy = 0;
+    for (let i = 0; i < poly.length; i++){ sx += poly[i][0]; sy += poly[i][1]; }
+    return [sx / poly.length, sy / poly.length];
+  };
+  let lo = 0, hi = 1.6, ctr = centreAt(0.0005) || [cx, cy];
+  for (let i = 0; i < 44; i++){
+    const mid = (lo + hi) / 2;
+    const p = centreAt(mid);
+    if (p){ lo = mid; ctr = p; } else hi = mid;
+  }
+  // one pixel in: an exact fit leaves the outermost corner pixels half
+  // covered, which reads as a translucent speck in a PNG export
+  const sc = Math.max(0.05, lo - 2 / Math.min(W, H));
+  return { M: M, uw: W * sc, uh: H * sc, ox: ctr[0], oy: ctr[1] };
+}
+
+function geo(item){
+  const key = rotOf(item) + "|" + khOf(item) + "|" + kvOf(item) + "|" + item.w + "x" + item.h;
+  if (item._gk !== key){ item._g = fitUsable(item); item._gk = key; }
+  return item._g;
+}
+function usableW(item){ return geo(item).uw; }
+function usableH(item){ return geo(item).uh; }
+
+/* the export transform, handed to CSS so screen and file cannot disagree */
+function cssM(M){
+  return "matrix3d(" + M[0] + "," + M[3] + ",0," + M[6] + "," +
+                       M[1] + "," + M[4] + ",0," + M[7] + ",0,0,1,0," +
+                       M[2] + "," + M[5] + ",0," + M[8] + ")";
+}
+function placeArt(im, item, g, k, qx, qy){
+  im.style.width  = item.w + "px";
+  im.style.height = item.h + "px";
+  im.style.transform = "translate(-50%,-50%) translate(" + (-qx * k) + "px," +
+    (-qy * k) + "px) scale(" + k + ") " + cssM(g.M);
+}
 
 function layoutStage(){
   const it = cur();
@@ -1003,15 +1130,158 @@ function layoutStage(){
   const stage = $("#stage"), img = $("#art"), wrap = stage.parentElement;
   const availW = Math.max(120, wrap.clientWidth - 40);
   const availH = Math.max(120, Math.round(window.innerHeight * (S.wide ? 0.88 : 0.74)));
-  const sc = usableScale(it);
-  const uw = it.w * sc, uh = it.h * sc;
-  const k = Math.min(availW / uw, availH / uh);
-  const cw = Math.max(80, Math.round(uw * k)), ch = Math.max(80, Math.round(uh * k));
-  stage.style.width = cw + "px";
-  stage.style.height = ch + "px";
-  img.style.width = (cw / sc) + "px";
-  img.style.height = (ch / sc) + "px";
-  img.style.transform = `translate(-50%, -50%) rotate(${rotOf(it)}deg)`;
+  const g = geo(it);
+  const k = Math.min(availW / g.uw, availH / g.uh);
+  stage.style.width  = Math.max(80, Math.round(g.uw * k)) + "px";
+  stage.style.height = Math.max(80, Math.round(g.uh * k)) + "px";
+  placeArt(img, it, g, k, g.ox, g.oy);
+}
+
+/* Each crop preview is the same picture at a smaller scale, centred on that
+   crop, so it cannot drift out of step with the stage. */
+function layoutPreviews(){
+  const it = cur();
+  if (!it) return;
+  const g = geo(it);
+  const nodes = $("#crops").querySelectorAll(".crop");
+  for (let i = 0; i < nodes.length; i++){
+    const b = it.boxes[i];
+    if (!b) continue;
+    const pv = nodes[i].querySelector(".pv");
+    const im = pv && pv.querySelector("img");
+    if (!im) continue;
+    const pw = pv.clientWidth;
+    if (!pw) continue;
+    const f = pw / (b.w * g.uw);
+    placeArt(im, it, g, f,
+      g.ox + (b.x + b.w / 2 - 0.5) * g.uw,
+      g.oy + (b.y + b.h / 2 - 0.5) * g.uh);
+  }
+}
+
+/* ---------- perspective export ----------
+   Canvas 2D only does affine transforms, so a keystoned crop goes through
+   WebGL: one quad, and the inverse homography evaluated per pixel. Output is
+   drawn in bands, and each band uploads only the slice of the source it
+   reads, so a 100 MP original never becomes a 400 MB texture. */
+let GLC = null, GL = null, GLP = null, GLTEX = null, GLU = null, GLMAX = null;
+
+function glReady(){
+  if (GL !== null) return GL;
+  try {
+    GLC = document.createElement("canvas");
+    GL = GLC.getContext("webgl", { antialias: false, depth: false, stencil: false })
+      || GLC.getContext("experimental-webgl");
+    if (!GL) throw new Error("no webgl");
+    const vsrc =
+      "attribute vec2 p;uniform vec2 o;uniform vec2 s;varying vec2 d;" +
+      "void main(){vec2 t=vec2(p.x*0.5+0.5,0.5-p.y*0.5);d=o+t*s;gl_Position=vec4(p,0.0,1.0);}";
+    const fsrc =
+      "#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n" +
+      "varying vec2 d;uniform mat3 hi;uniform vec2 hf;uniform vec2 b0;uniform vec2 bs;uniform sampler2D tex;" +
+      "void main(){vec3 q=hi*vec3(d,1.0);vec2 pp=q.xy/q.z+hf;" +
+      "gl_FragColor=texture2D(tex,clamp((pp-b0)/bs,0.0,1.0));}";
+    const vs = GL.createShader(GL.VERTEX_SHADER);
+    GL.shaderSource(vs, vsrc); GL.compileShader(vs);
+    const fs = GL.createShader(GL.FRAGMENT_SHADER);
+    GL.shaderSource(fs, fsrc); GL.compileShader(fs);
+    GLP = GL.createProgram();
+    GL.attachShader(GLP, vs); GL.attachShader(GLP, fs); GL.linkProgram(GLP);
+    if (!GL.getProgramParameter(GLP, GL.LINK_STATUS)) throw new Error("link");
+    GL.useProgram(GLP);
+    const buf = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, buf);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), GL.STATIC_DRAW);
+    const loc = GL.getAttribLocation(GLP, "p");
+    GL.enableVertexAttribArray(loc);
+    GL.vertexAttribPointer(loc, 2, GL.FLOAT, false, 0, 0);
+    GLTEX = GL.createTexture();
+    GL.bindTexture(GL.TEXTURE_2D, GLTEX);
+    GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
+    GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
+    GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
+    GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+    GLU = {};
+    ["hi", "hf", "o", "s", "b0", "bs"].forEach(n => { GLU[n] = GL.getUniformLocation(GLP, n); });
+    GLMAX = {
+      tex: GL.getParameter(GL.MAX_TEXTURE_SIZE) || 2048,
+      out: Math.min(GL.getParameter(GL.MAX_RENDERBUFFER_SIZE) || 2048,
+                    (GL.getParameter(GL.MAX_VIEWPORT_DIMS) || [2048, 2048])[0])
+    };
+  } catch (e){ GL = false; }
+  return GL;
+}
+
+function warpGL(ctx, img, item, g, q0x, q0y, sw, sh){
+  const gl = glReady();
+  if (!gl) throw new Error("perspective needs WebGL");
+  const Hi = invH(g.M), W = item.w, H = item.h;
+  const tile = document.createElement("canvas");
+  const tctx = tile.getContext("2d");
+  const U = GLU;
+
+  gl.uniformMatrix3fv(U.hi, false, new Float32Array(
+    [Hi[0], Hi[3], Hi[6], Hi[1], Hi[4], Hi[7], Hi[2], Hi[5], Hi[8]]));
+  gl.uniform2f(U.hf, W / 2, H / 2);
+
+  // the slice of the source that a block of output reads from
+  function srcBox(dx, dy, dw, dh){
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (let c = 0; c < 4; c++){
+      const p = applyH(Hi, q0x + dx + (c & 1 ? dw : 0), q0y + dy + (c & 2 ? dh : 0));
+      if (p[0] < x0) x0 = p[0];
+      if (p[0] > x1) x1 = p[0];
+      if (p[1] < y0) y0 = p[1];
+      if (p[1] > y1) y1 = p[1];
+    }
+    x0 = Math.max(0, Math.floor(x0 + W / 2) - 2);
+    y0 = Math.max(0, Math.floor(y0 + H / 2) - 2);
+    x1 = Math.min(W, Math.ceil(x1 + W / 2) + 2);
+    y1 = Math.min(H, Math.ceil(y1 + H / 2) + 2);
+    return [x0, y0, Math.max(1, x1 - x0), Math.max(1, y1 - y0)];
+  }
+
+  function paint(dx, dy, dw, dh, box){
+    tile.width = box[2]; tile.height = box[3];
+    tctx.drawImage(img, box[0], box[1], box[2], box[3], 0, 0, box[2], box[3]);
+    GLC.width = dw; GLC.height = dh;
+    gl.viewport(0, 0, dw, dh);
+    gl.bindTexture(gl.TEXTURE_2D, GLTEX);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, tile);
+    gl.uniform2f(U.o, q0x + dx, q0y + dy);
+    gl.uniform2f(U.s, dw, dh);
+    gl.uniform2f(U.b0, box[0], box[1]);
+    gl.uniform2f(U.bs, box[2], box[3]);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    ctx.drawImage(GLC, dx, dy);
+  }
+
+  /* Split until a block's source slice fits in a texture and its output fits
+     in a framebuffer. Warped whole, a 100 MP original would want a 400 MB
+     texture and would quietly blow past MAX_TEXTURE_SIZE — 8192 here, 4096 on
+     plenty of phones — and the driver drops it with no error you can see. So
+     the work gets cut up instead. Blocks split on integer pixels and each
+     carries two pixels of margin, so the seams sample the same texels the
+     neighbour does. */
+  function block(dx, dy, dw, dh, depth){
+    const box = srcBox(dx, dy, dw, dh);
+    const tooBig = box[2] > GLMAX.tex || box[3] > GLMAX.tex ||
+                   dw > GLMAX.out || dh > GLMAX.out || dw * dh > 4194304;
+    if (tooBig && depth < 14 && (dw > 1 || dh > 1)){
+      if (dw >= dh){
+        const half = dw >> 1;
+        block(dx, dy, half, dh, depth + 1);
+        block(dx + half, dy, dw - half, dh, depth + 1);
+      } else {
+        const half = dh >> 1;
+        block(dx, dy, dw, half, depth + 1);
+        block(dx, dy + half, dw, dh - half, depth + 1);
+      }
+      return;
+    }
+    paint(dx, dy, dw, dh, box);
+  }
+  block(0, 0, sw, sh, 0);
 }
 
 /* ---------- Instagram feed grid ----------
@@ -1314,7 +1584,7 @@ function renderStage(){
     img.dataset.id = String(it.id);
     img.src = it.url;
     img.alt = it.file.name;
-    img.onload = () => { layoutStage(); positionBoxes(); };
+    img.onload = () => { layoutStage(); positionBoxes(); layoutPreviews(); };
   }
   const stage = $("#stage");
   Array.from(stage.querySelectorAll(".box")).forEach(n => n.remove());
@@ -1384,13 +1654,11 @@ function renderRail(){
     btn.style.setProperty("--bc", `var(${BOX_COLORS[i % BOX_COLORS.length]})`);
     const pv = document.createElement("div");
     pv.className = "pv";
-    const arw = b.w * it.w, arh = b.h * it.h;
-    pv.style.aspectRatio = `${arw} / ${arh}`;
-    pv.style.backgroundImage = `url(${it.url})`;
-    pv.style.backgroundSize = `${100 / b.w}% ${100 / b.h}%`;
-    const px = b.w >= 1 ? 0 : (b.x / (1 - b.w)) * 100;
-    const py = b.h >= 1 ? 0 : (b.y / (1 - b.h)) * 100;
-    pv.style.backgroundPosition = `${px}% ${py}%`;
+    const gg = geo(it);
+    pv.style.aspectRatio = `${b.w * gg.uw} / ${b.h * gg.uh}`;
+    const pim = document.createElement("img");
+    pim.src = it.url; pim.alt = "";
+    pv.appendChild(pim);
     const cap = document.createElement("span");
     cap.className = "cap";
     cap.textContent = String(postNumber(it, i));
@@ -1400,6 +1668,7 @@ function renderRail(){
   });
 
   paintRot();
+  layoutPreviews();
   updateReadout();
 }
 
@@ -1760,8 +2029,8 @@ function fileNameFor(item, idx, imgIdx, ow, oh){
 }
 
 function drawCrop(img, b, item){
-  const rot = rotOf(item);
-  const uw = usableW(item), uh = usableH(item);
+  const g = geo(item);
+  const uw = g.uw, uh = g.uh;
   const sw = Math.max(1, Math.round(b.w * uw));
   const sh = Math.max(1, Math.round(b.h * uh));
 
@@ -1776,19 +2045,22 @@ function drawCrop(img, b, item){
   let ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
-  if (!rot){
+  // this crop's top-left corner in warped space
+  const q0x = g.ox + (b.x - 0.5) * uw;
+  const q0y = g.oy + (b.y - 0.5) * uh;
+
+  if (!warped(item)){
     ctx.drawImage(img, Math.round(b.x * uw), Math.round(b.y * uh), sw, sh, 0, 0, cw, ch);
-  } else {
-    // Same transform the stage shows: rotate the image about its centre,
-    // then bring this box's centre to the middle of the output.
-    const u = (b.x + b.w / 2 - 0.5) * uw;
-    const v = (b.y + b.h / 2 - 0.5) * uh;
-    ctx.translate(sw / 2, sh / 2);
-    ctx.translate(-u, -v);
-    ctx.rotate(rot * Math.PI / 180);
+  } else if (!keystoned(item)){
+    // rotation alone is affine, so canvas can do it
+    const M = g.M;
+    ctx.translate(-q0x, -q0y);
+    ctx.transform(M[0], M[3], M[1], M[4], 0, 0);
     ctx.translate(-item.w / 2, -item.h / 2);
     ctx.drawImage(img, 0, 0);
     ctx.setTransform(1, 0, 0, 1, 0, 0);
+  } else {
+    warpGL(ctx, img, item, g, q0x, q0y, sw, sh);
   }
 
   while (cw / 2 > ow && ch / 2 > oh){
@@ -1867,6 +2139,7 @@ async function runExport(only){
       ratio: S.ratioId, fmt: S.fmt, out: S.outMode,
       grid: targets.reduce((a, t) => Math.max(a, t.grid ? t.boxes.length : 0), 0),
       rot: Math.round(targets.reduce((a, t) => Math.max(a, Math.abs(rotOf(t))), 0) * 10) / 10,
+      persp: targets.reduce((a, t) => Math.max(a, Math.abs(khOf(t)), Math.abs(kvOf(t))), 0),
       ow: S.outMode === "fixed" ? S.ow : 0,
       oh: S.outMode === "fixed" ? S.oh : 0,
       q: S.quality
@@ -1978,28 +2251,44 @@ function showGuide(on){
   else gridTimer = setTimeout(() => g.classList.remove("on"), 700);
 }
 function paintRot(){
-  const r = rotOf(cur());
+  const it = cur();
+  const r = rotOf(it), kh = khOf(it), kv = kvOf(it);
   $("#rotSlider").value = String(r);
   $("#rotReset").textContent = (r > 0 ? "+" : "") + r.toFixed(1) + "\u00B0";
+  $("#khSlider").value = String(kh);
+  $("#khReset").textContent = (kh > 0 ? "+" : "") + kh;
+  $("#kvSlider").value = String(kv);
+  $("#kvReset").textContent = (kv > 0 ? "+" : "") + kv;
 }
-function applyRot(v){
+function applyWarp(field, v){
   const it = cur(); if (!it) return;
-  let r = Math.max(-15, Math.min(15, v || 0));
-  if (Math.abs(r) < 0.15) r = 0;          // snap to level
-  it.rot = r;
+  if (field === "rot"){
+    let r = Math.max(-15, Math.min(15, v || 0));
+    if (Math.abs(r) < 0.15) r = 0;                 // snap to level
+    it.rot = r;
+  } else {
+    let n = Math.max(-100, Math.min(100, Math.round(v || 0)));
+    if (Math.abs(n) < 2) n = 0;                    // snap to square
+    it[field] = n;
+  }
   paintRot();
-  layoutStage(); positionBoxes(); renderRail();
+  layoutStage(); positionBoxes(); layoutPreviews(); updateReadout();
 }
-$("#rotSlider").addEventListener("input", e => {
-  showGuide(true);
-  applyRot(parseFloat(e.target.value));
+[["#rotSlider", "#rotReset", "rot"],
+ ["#khSlider",  "#khReset",  "kh"],
+ ["#kvSlider",  "#kvReset",  "kv"]].forEach(([sel, btn, field]) => {
+  const el = $(sel);
+  el.addEventListener("input", e => { showGuide(true); applyWarp(field, parseFloat(e.target.value)); });
+  el.addEventListener("pointerdown", () => showGuide(true));
+  ["pointerup", "blur", "change"].forEach(ev => el.addEventListener(ev, () => showGuide(false)));
+  $(btn).addEventListener("click", () => { showGuide(true); applyWarp(field, 0); showGuide(false); });
 });
-$("#rotSlider").addEventListener("pointerdown", () => showGuide(true));
-["pointerup", "blur", "change"].forEach(ev =>
-  $("#rotSlider").addEventListener(ev, () => showGuide(false)));
-$("#rotReset").addEventListener("click", () => {
-  showGuide(true); applyRot(0); showGuide(false);
-});
+// no WebGL means no keystone; rotation still works everywhere
+(function(){
+  let ok = false;
+  try { ok = !!document.createElement("canvas").getContext("webgl"); } catch (e){}
+  if (!ok) $("#perspRows").hidden = true;
+})();
 
 $("#rw").addEventListener("input", e => {
   const v = parseInt(e.target.value, 10);
@@ -2048,7 +2337,7 @@ $("#clearAll").addEventListener("click", () => {
   loadSample().catch(err => console.error(err));
 });
 
-window.addEventListener("resize", () => { layoutStage(); positionBoxes(); });
+window.addEventListener("resize", () => { layoutStage(); positionBoxes(); layoutPreviews(); });
 
 /* ---- remember settings between visits ---- */
 const PREF_KEYS = ["lang","ratioId","rw","rh","outMode","ow","oh","fmt","quality","pattern","wide"];
@@ -2266,7 +2555,7 @@ $("#wideBtn").addEventListener("click", () => {
   S.wide = !S.wide;
   updateShell();
   savePrefs();
-  setTimeout(() => { layoutStage(); positionBoxes(); }, 60);
+  setTimeout(() => { layoutStage(); positionBoxes(); layoutPreviews(); }, 60);
 });
 window.addEventListener("scroll", repositionTour, {passive:true});
 window.addEventListener("resize", repositionTour);
