@@ -95,7 +95,8 @@ async function recordEvent(request, env) {
       num(d.sample), // double10 1 = only the demo plate was exported
       num(d.grid),   // double11 tiles, when a feed grid was used (0 = free crops)
       num(d.bad),    // double12 files rejected for not being images
-      num(d.huge)    // double13 files past the canvas side limit
+      num(d.huge),   // double13 files past the canvas side limit
+      num(d.rot)     // double14 largest straighten angle used, degrees
     ]
   });
 

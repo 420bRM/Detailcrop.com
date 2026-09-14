@@ -9,6 +9,8 @@ Live at <https://detailcrop.com>. Also answers on `*.workers.dev`, which is
 served with `noindex` so the two hostnames do not compete in search.
 
 ```
+template.html           the tool — the only file to edit
+build.py                writes the three language pages below
 public/
   index.html            en  →  /
   ko/index.html         ko  →  /ko/
@@ -25,8 +27,9 @@ wrangler.jsonc
 ```
 
 The three language pages are the same file with a different default
-language, `<title>`, description, canonical and JSON-LD. They are generated,
-not hand-edited — if you change one, change all three.
+language, `<title>`, description, canonical and JSON-LD. **They are
+generated. Edit `template.html`, then run `python3 build.py`** — a change
+hand-typed into `public/ko/index.html` is gone the next time anyone builds.
 
 ## Deploy
 
@@ -74,6 +77,22 @@ could not open it" rather than guessing a threshold.
 reassemble on a profile grid. Tiles keep the chosen ratio (forced to 4:5 when
 a grid is switched on) and the block moves and scales as one object, because
 a puzzle stops being a puzzle the moment one tile drifts.
+
+**Straighten.** The slider under the move pad rotates the *photo*, ±15°, to
+put a horizon or a wall edge level before any crop is taken. Rotating leaves
+empty wedges at the corners, so the working area becomes the largest
+rectangle that fits wholly inside the rotated photo — one pixel in from the
+exact fit, because the exact fit leaves the two outermost corner pixels
+half-covered and that reads as a translucent speck in a PNG. That rectangle
+keeps the source aspect ratio, so every ratio calculation, the feed grid
+included, is untouched; only the pixel count shrinks with the angle (6°
+costs about 13% of a 3:2 frame, 15° about 26%). The size readout reports the
+usable area, not the raw file. A grid guide appears while the slider is in
+use and fades 700 ms after. The slider snaps to 0 inside ±0.15°, and the
+value button resets to level when clicked.
+
+Crop rotation is deliberately absent. A tilted crop box on a level photo is
+the same picture and a much less obvious control.
 
 **Numbers are posting order, not reading order.** A profile grid stacks
 newest first, so the bottom-right tile must be posted before the top-left
@@ -160,6 +179,7 @@ is honoured.
 | | | double11 | feed-grid tiles (0 = free crops) |
 | | | double12 | files rejected as not images |
 | | | double13 | files rejected past the side limit |
+| | | double14 | largest straighten angle used, degrees |
 
 `skip` exists because a rejected file is otherwise invisible: the visitor
 sees a message and leaves, and nothing is recorded. If the size limits are

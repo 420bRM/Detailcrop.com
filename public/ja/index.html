@@ -19,7 +19,7 @@
 <link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/">
 <link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/">
 <link rel="alternate" hreflang="x-default" href="https://detailcrop.com/">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"DetailCrop","url":"https://detailcrop.com/ja/","inLanguage":"ja","description":"複数の画像から同じ比率のディテールカットを1枚につき何カットも切り出し、zipひとつでダウンロードします。処理はすべてブラウザ内で完結し、アップロードはありません。","applicationCategory":"MultimediaApplication","applicationSubCategory":"Image editor","operatingSystem":"Any (modern web browser)","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["1画像あたり最大6カット","バッチ全体で比率を固定","インスタのフィードを3・6・9分割","すべてのカットをzipひとつで書き出し","ブラウザ内で処理 — アップロードなし"],"permissions":"No account, no upload; images are processed locally in the browser"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"DetailCrop","url":"https://detailcrop.com/ja/","inLanguage":"ja","description":"複数の画像から同じ比率のディテールカットを1枚につき何カットも切り出し、zipひとつでダウンロードします。処理はすべてブラウザ内で完結し、アップロードはありません。","applicationCategory":"MultimediaApplication","applicationSubCategory":"Image editor","operatingSystem":"Any (modern web browser)","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["1画像あたり最大6カット","バッチ全体で比率を固定","切り抜く前に写真の傾きを補正","インスタのフィードを3・6・9分割","すべてのカットをzipひとつで書き出し","ブラウザ内で処理 — アップロードなし"],"permissions":"No account, no upload; images are processed locally in the browser"}</script>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -99,7 +99,6 @@ header.bar{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 18px; mar
 .shell{display:grid; grid-template-columns:340px minmax(0,1fr); gap:18px; align-items:start}
 .shell.introonly, .shell.wide{grid-template-columns:minmax(0,1fr)}
 .shell.wide .drop{display:none}
-.shell.wide .stage img{max-height:88vh}
 @media (max-width:1280px){ .shell{grid-template-columns:minmax(0,1fr)} }
 
 .drop{
@@ -181,8 +180,38 @@ header.bar{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 18px; mar
   padding:20px; display:flex; justify-content:center; min-height:220px; align-items:center;
   box-shadow:inset 0 0 80px rgba(0,0,0,.6);
 }
-.stage{position:relative; user-select:none; touch-action:none; max-width:100%; line-height:0}
-.stage img{display:block; max-width:100%; max-height:74vh; width:auto; height:auto; pointer-events:none}
+.stage{position:relative; user-select:none; touch-action:none; max-width:100%; overflow:hidden; line-height:0}
+.stage img{
+  position:absolute; left:50%; top:50%; transform-origin:50% 50%;
+  max-width:none; max-height:none; display:block; pointer-events:none;
+}
+/* level guide, shown only while the straighten control is in use */
+.sgrid{
+  position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .14s;
+  background-image:linear-gradient(rgba(255,255,255,.38) 1px, transparent 1px),
+                   linear-gradient(90deg, rgba(255,255,255,.38) 1px, transparent 1px);
+  background-size:12.5% 12.5%;
+}
+.sgrid.on{opacity:1}
+.sgrid::after{
+  content:""; position:absolute; inset:0;
+  border:1px solid rgba(255,255,255,.55);
+}
+.rotrow{display:flex; align-items:center; gap:9px; margin-top:12px}
+.rotrow label{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); flex:0 0 auto}
+.rottrack{position:relative; flex:1 1 auto; min-width:0; display:flex; align-items:center}
+.rottrack input[type=range]{position:relative; z-index:1; width:100%; background:transparent}
+/* centre detent, so level is findable without reading the number */
+.rottrack::after{
+  content:""; position:absolute; left:50%; top:50%; width:1px; height:13px;
+  margin-left:-1px; transform:translateY(-50%); background:var(--line); pointer-events:none;
+}
+.rotVal{
+  flex:0 0 auto; min-width:54px; background:var(--sunk); border:1px solid var(--line);
+  border-radius:3px; padding:4px 6px; font-size:12px; color:var(--ink-2);
+  font-variant-numeric:tabular-nums; text-align:center;
+}
+.rotVal:hover{border-color:var(--teal); color:var(--ink)}
 
 .box{position:absolute; cursor:move}
 .box .edge{position:absolute; inset:0; border:2px solid var(--bc); border-radius:1px}
@@ -352,7 +381,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
   <div class="split">
     <div class="center">
       <div class="stagewrap">
-        <div class="stage" id="stage"><img id="art" alt=""></div>
+        <div class="stage" id="stage"><img id="art" alt=""><div class="sgrid" id="sgrid"></div></div>
       </div>
 
       <div class="underStage">
@@ -462,6 +491,12 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
               <button type="button" data-nudge="smaller" aria-label="Smaller">－</button>
             </div>
           </div>
+          <div class="rotrow">
+            <label for="rotSlider" data-i="straighten"></label>
+            <span class="rottrack"><input type="range" id="rotSlider" min="-15" max="15" step="0.1" value="0"></span>
+            <button type="button" class="rotVal" id="rotReset" title="0°">0.0°</button>
+          </div>
+
           <div class="readout">
             <span><span data-i="pos"></span> <b id="roPos">—</b></span>
             <span><span data-i="size"></span> <b id="roSize">—</b></span>
@@ -568,6 +603,7 @@ const I18N = {
     footFree:"Free to use.",
     todayVisits:"visits today", todayPeople:" people", todayExports:"exports",
     h1sr:" — batch detail crops from every image, exported as one zip",
+    straighten:"Level",
     footContact:"Advertising &amp; partnerships:",
     footStats:"Anonymous usage stats — image sizes, batch size and the settings you pick. Never the images themselves.",
     statsOn:"turn off",
@@ -632,6 +668,7 @@ const I18N = {
     footFree:"무료로 쓰세요.",
     todayVisits:"오늘 방문", todayPeople:"명", todayExports:"내보내기",
     h1sr:" — 여러 이미지에서 확대컷을 한 번에 뽑아 zip으로 내보내기",
+    straighten:"수평",
     footContact:"광고·제휴 문의:",
     footStats:"익명 사용 통계 — 이미지 크기, 장수, 고른 설정만 기록합니다. 이미지 자체는 기록하지 않습니다.",
     statsOn:"끄기",
@@ -696,6 +733,7 @@ const I18N = {
     footFree:"無料で使えます。",
     todayVisits:"本日の訪問", todayPeople:"人", todayExports:"書き出し",
     h1sr:" — 複数画像からディテールカットを一括で切り出しzipで書き出し",
+    straighten:"水平",
     footContact:"広告・提携のお問い合わせ:",
     footStats:"匿名の利用統計 — 画像サイズ、枚数、選んだ設定のみ。画像そのものは記録しません。",
     statsOn:"オフにする",
@@ -937,6 +975,43 @@ function layoutBoxes(item, n, spread){
     y: clamp(c.cy - size.h / 2, 0, 1 - size.h),
     w: size.w, h: size.h
   }));
+}
+
+/* ---------- straighten ----------
+   Rotating a photo leaves empty wedges at the corners. Rather than let a
+   crop pick them up, the working area becomes the largest rectangle that
+   fits wholly inside the rotated image. It keeps the source aspect ratio,
+   so every ratio calculation below is unaffected — only the pixel count
+   shrinks as the angle grows. */
+function rotOf(item){ return (item && item.rot) || 0; }
+
+function usableScale(item){
+  const th = Math.abs(rotOf(item)) * Math.PI / 180;
+  if (!th) return 1;
+  const c = Math.cos(th), sn = Math.sin(th), W = item.w, H = item.h;
+  const s = Math.min(W / (W * c + H * sn), H / (W * sn + H * c));
+  // Pull in one pixel. The exact fit leaves the two outermost corner pixels
+  // half-covered, which reads as a translucent speck in a PNG export.
+  return Math.max(0.05, s - 2 / Math.min(W, H));
+}
+function usableW(item){ return item.w * usableScale(item); }
+function usableH(item){ return item.h * usableScale(item); }
+
+function layoutStage(){
+  const it = cur();
+  if (!it) return;
+  const stage = $("#stage"), img = $("#art"), wrap = stage.parentElement;
+  const availW = Math.max(120, wrap.clientWidth - 40);
+  const availH = Math.max(120, Math.round(window.innerHeight * (S.wide ? 0.88 : 0.74)));
+  const sc = usableScale(it);
+  const uw = it.w * sc, uh = it.h * sc;
+  const k = Math.min(availW / uw, availH / uh);
+  const cw = Math.max(80, Math.round(uw * k)), ch = Math.max(80, Math.round(uh * k));
+  stage.style.width = cw + "px";
+  stage.style.height = ch + "px";
+  img.style.width = (cw / sc) + "px";
+  img.style.height = (ch / sc) + "px";
+  img.style.transform = `translate(-50%, -50%) rotate(${rotOf(it)}deg)`;
 }
 
 /* ---------- Instagram feed grid ----------
@@ -1239,6 +1314,7 @@ function renderStage(){
     img.dataset.id = String(it.id);
     img.src = it.url;
     img.alt = it.file.name;
+    img.onload = () => { layoutStage(); positionBoxes(); };
   }
   const stage = $("#stage");
   Array.from(stage.querySelectorAll(".box")).forEach(n => n.remove());
@@ -1252,6 +1328,7 @@ function renderStage(){
     el.innerHTML = `<div class="edge"></div><div class="win"></div><div class="tag">${postNumber(it,i)}</div><div class="grip" data-grip="1"></div>`;
     stage.appendChild(el);
   });
+  layoutStage();
   positionBoxes();
 }
 
@@ -1322,6 +1399,7 @@ function renderRail(){
     crops.appendChild(btn);
   });
 
+  paintRot();
   updateReadout();
 }
 
@@ -1334,8 +1412,9 @@ function updateReadout(){
     $("#minwarn").hidden = true;
     return;
   }
-  const px = Math.round(b.x * it.w), py = Math.round(b.y * it.h);
-  const pw = Math.round(b.w * it.w), ph = Math.round(b.h * it.h);
+  const uw = usableW(it), uh = usableH(it);
+  const px = Math.round(b.x * uw), py = Math.round(b.y * uh);
+  const pw = Math.round(b.w * uw), ph = Math.round(b.h * uh);
   $("#roPos").textContent = `${px}, ${py}`;
   $("#roSize").textContent = `${pw} × ${ph}`;
   const under = S.outMode === "fixed" && ratioLocked() && (pw < S.ow || ph < S.oh);
@@ -1681,10 +1760,10 @@ function fileNameFor(item, idx, imgIdx, ow, oh){
 }
 
 function drawCrop(img, b, item){
-  const sx = Math.round(b.x * item.w);
-  const sy = Math.round(b.y * item.h);
-  const sw = Math.max(1, Math.round(b.w * item.w));
-  const sh = Math.max(1, Math.round(b.h * item.h));
+  const rot = rotOf(item);
+  const uw = usableW(item), uh = usableH(item);
+  const sw = Math.max(1, Math.round(b.w * uw));
+  const sh = Math.max(1, Math.round(b.h * uh));
 
   let ow, oh;
   if (S.outMode === "fixed" && ratioLocked()){ ow = S.ow; oh = S.oh; }
@@ -1697,7 +1776,20 @@ function drawCrop(img, b, item){
   let ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
-  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, cw, ch);
+  if (!rot){
+    ctx.drawImage(img, Math.round(b.x * uw), Math.round(b.y * uh), sw, sh, 0, 0, cw, ch);
+  } else {
+    // Same transform the stage shows: rotate the image about its centre,
+    // then bring this box's centre to the middle of the output.
+    const u = (b.x + b.w / 2 - 0.5) * uw;
+    const v = (b.y + b.h / 2 - 0.5) * uh;
+    ctx.translate(sw / 2, sh / 2);
+    ctx.translate(-u, -v);
+    ctx.rotate(rot * Math.PI / 180);
+    ctx.translate(-item.w / 2, -item.h / 2);
+    ctx.drawImage(img, 0, 0);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+  }
 
   while (cw / 2 > ow && ch / 2 > oh){
     const nw = Math.max(ow, Math.round(cw / 2));
@@ -1774,6 +1866,7 @@ async function runExport(only){
       sample: targets.every(t => t.isSample) ? 1 : 0,
       ratio: S.ratioId, fmt: S.fmt, out: S.outMode,
       grid: targets.reduce((a, t) => Math.max(a, t.grid ? t.boxes.length : 0), 0),
+      rot: Math.round(targets.reduce((a, t) => Math.max(a, Math.abs(rotOf(t))), 0) * 10) / 10,
       ow: S.outMode === "fixed" ? S.ow : 0,
       oh: S.outMode === "fixed" ? S.oh : 0,
       q: S.quality
@@ -1877,6 +1970,37 @@ Array.from($("#feedseg").children).forEach(b =>
   b.addEventListener("click", () => applyFeedGrid(+b.dataset.feed)));
 $("#nextBtn").addEventListener("click", confirmNext);
 
+let gridTimer = null;
+function showGuide(on){
+  const g = $("#sgrid");
+  clearTimeout(gridTimer);
+  if (on) g.classList.add("on");
+  else gridTimer = setTimeout(() => g.classList.remove("on"), 700);
+}
+function paintRot(){
+  const r = rotOf(cur());
+  $("#rotSlider").value = String(r);
+  $("#rotReset").textContent = (r > 0 ? "+" : "") + r.toFixed(1) + "\u00B0";
+}
+function applyRot(v){
+  const it = cur(); if (!it) return;
+  let r = Math.max(-15, Math.min(15, v || 0));
+  if (Math.abs(r) < 0.15) r = 0;          // snap to level
+  it.rot = r;
+  paintRot();
+  layoutStage(); positionBoxes(); renderRail();
+}
+$("#rotSlider").addEventListener("input", e => {
+  showGuide(true);
+  applyRot(parseFloat(e.target.value));
+});
+$("#rotSlider").addEventListener("pointerdown", () => showGuide(true));
+["pointerup", "blur", "change"].forEach(ev =>
+  $("#rotSlider").addEventListener(ev, () => showGuide(false)));
+$("#rotReset").addEventListener("click", () => {
+  showGuide(true); applyRot(0); showGuide(false);
+});
+
 $("#rw").addEventListener("input", e => {
   const v = parseInt(e.target.value, 10);
   if (v > 0){ S.rw = v; refitAll(); render(); }
@@ -1924,7 +2048,7 @@ $("#clearAll").addEventListener("click", () => {
   loadSample().catch(err => console.error(err));
 });
 
-window.addEventListener("resize", () => positionBoxes());
+window.addEventListener("resize", () => { layoutStage(); positionBoxes(); });
 
 /* ---- remember settings between visits ---- */
 const PREF_KEYS = ["lang","ratioId","rw","rh","outMode","ow","oh","fmt","quality","pattern","wide"];
@@ -2142,7 +2266,7 @@ $("#wideBtn").addEventListener("click", () => {
   S.wide = !S.wide;
   updateShell();
   savePrefs();
-  setTimeout(positionBoxes, 60);
+  setTimeout(() => { layoutStage(); positionBoxes(); }, 60);
 });
 window.addEventListener("scroll", repositionTour, {passive:true});
 window.addEventListener("resize", repositionTour);
