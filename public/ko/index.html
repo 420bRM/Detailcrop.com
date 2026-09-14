@@ -528,7 +528,7 @@ const I18N = {
   en:{
     tagline:"Drag boxes over each image to mark the detail crops you want. Several per image, a whole batch in one sitting, out as a single zip. Everything happens in your browser — no upload, no account.",
     dropTitle:"Drop your images here",
-    dropBody:"JPEG, PNG, WebP, AVIF or GIF. Up to 200 files, 40 MB each. Your files never leave this computer.",
+    dropBody:"JPEG, PNG, WebP, AVIF or GIF. Up to 200 files, 200 MB each. Your files never leave this computer.",
     pick:"Choose images",
     trySample:"Try the sample",
     sampleName:"night-city",
@@ -558,7 +558,9 @@ const I18N = {
     exporting:(a,b)=>`Exporting ${a} / ${b}…`,
     exported:(n)=>`${n} file${n===1?"":"s"} saved to your downloads.`,
     nothing:"Nothing to export — set at least one crop.",
-    tooBig:(n)=>`${n} skipped — over 40 MB.`,
+    tooBig:(n)=>`${n} skipped — over 200 MB.`,
+    tooWide:(n,px)=>`${n} skipped — longer than ${px}px on a side, which is more than a browser canvas can hold.`,
+    cantOpen:(n)=>`${n} skipped — this browser could not open them. Usually too large for the device.`,
     notImage:(n)=>`${n} skipped — not an image.`,
     confirmClear:"Remove all images and start over?",
     dims:(w,h)=>`${w} × ${h} px`,
@@ -590,7 +592,7 @@ const I18N = {
   ko:{
     tagline:"이미지 위에 상자를 끌어 원하는 확대컷 구역을 잡습니다. 한 장에 여러 컷, 여러 장을 한 번에, 결과는 zip 하나로. 모든 처리가 브라우저 안에서 끝나며 업로드도 가입도 없습니다.",
     dropTitle:"여기에 이미지를 놓으세요",
-    dropBody:"JPEG, PNG, WebP, AVIF, GIF. 최대 200장, 장당 40MB. 파일은 이 컴퓨터를 벗어나지 않습니다.",
+    dropBody:"JPEG, PNG, WebP, AVIF, GIF. 최대 200장, 장당 200MB. 파일은 이 컴퓨터를 벗어나지 않습니다.",
     pick:"이미지 선택",
     trySample:"예시 이미지로 해보기",
     sampleName:"야경-도시",
@@ -620,7 +622,9 @@ const I18N = {
     exporting:(a,b)=>`내보내는 중 ${a} / ${b}…`,
     exported:(n)=>`${n}개 파일이 다운로드 폴더에 저장됐습니다.`,
     nothing:"내보낼 컷이 없습니다. 최소 한 컷은 지정하세요.",
-    tooBig:(n)=>`${n}장은 40MB를 넘어 건너뛰었습니다.`,
+    tooBig:(n)=>`${n}장은 200MB를 넘어 건너뛰었습니다.`,
+    tooWide:(n,px)=>`${n}장은 한 변이 ${px}px를 넘습니다. 브라우저 캔버스가 감당하는 한계라 자를 수 없습니다.`,
+    cantOpen:(n)=>`${n}장은 이 브라우저가 열지 못했습니다. 기기에 비해 너무 큰 경우입니다.`,
     notImage:(n)=>`${n}개는 이미지가 아니라 건너뛰었습니다.`,
     confirmClear:"이미지를 전부 지우고 처음부터 시작할까요?",
     dims:(w,h)=>`${w} × ${h} px`,
@@ -652,7 +656,7 @@ const I18N = {
   ja:{
     tagline:"画像の上でボックスをドラッグし、切り出したい部分を指定します。1枚に複数カット、まとめて一括、結果はzipひとつ。処理はすべてブラウザ内で完結し、アップロードも登録も不要です。",
     dropTitle:"ここに画像をドロップ",
-    dropBody:"JPEG、PNG、WebP、AVIF、GIF。最大200ファイル、1ファイル40MBまで。ファイルがこの端末から出ることはありません。",
+    dropBody:"JPEG、PNG、WebP、AVIF、GIF。最大200ファイル、1ファイル200MBまで。ファイルがこの端末から出ることはありません。",
     pick:"画像を選ぶ",
     trySample:"サンプルで試す",
     sampleName:"夜の街",
@@ -682,7 +686,9 @@ const I18N = {
     exporting:(a,b)=>`書き出し中 ${a} / ${b}…`,
     exported:(n)=>`${n}件のファイルをダウンロードに保存しました。`,
     nothing:"書き出すカットがありません。最低1カット指定してください。",
-    tooBig:(n)=>`${n}件は40MBを超えるためスキップしました。`,
+    tooBig:(n)=>`${n}件は200MBを超えるためスキップしました。`,
+    tooWide:(n,px)=>`${n}件は一辺が${px}pxを超えています。ブラウザのキャンバス上限のため切り抜けません。`,
+    cantOpen:(n)=>`${n}件はこのブラウザで開けませんでした。端末に対して大きすぎる場合です。`,
     notImage:(n)=>`${n}件は画像ではないためスキップしました。`,
     confirmClear:"画像をすべて消して最初からやり直しますか？",
     dims:(w,h)=>`${w} × ${h} px`,
@@ -822,7 +828,8 @@ const RATIO_PRESETS = [
 ];
 const BOX_COLORS = ["--b1","--b2","--b3","--b4","--b5","--b6"];
 const MAX_FILES = 200;
-const MAX_BYTES = 40 * 1024 * 1024;
+const MAX_BYTES = 200 * 1024 * 1024;
+const MAX_SIDE  = 16384;   // canvas ceiling, measured
 const MAX_CROPS = 6;
 
 const PAGE_LANG = "ko";   // this file's default language
@@ -1070,14 +1077,18 @@ async function addFiles(fileList, isSample){
     S.cur = 0; S.sel = 0;
   }
 
-  let skippedBig = 0, skippedType = 0;
+  let skippedBig = 0, skippedType = 0, skippedHuge = 0, skippedDecode = 0, biggestMB = 0;
   const room = MAX_FILES - S.items.length;
   const accepted = [];
 
   for (const f of files){
     if (accepted.length >= room) break;
     if (!f.type.startsWith("image/")){ skippedType++; continue; }
-    if (f.size > MAX_BYTES){ skippedBig++; continue; }
+    if (f.size > MAX_BYTES){
+      skippedBig++;
+      biggestMB = Math.max(biggestMB, f.size / 1048576);
+      continue;
+    }
     accepted.push(f);
   }
 
@@ -1085,7 +1096,10 @@ async function addFiles(fileList, isSample){
     const url = URL.createObjectURL(f);
     let dim;
     try { dim = await measure(url); }
-    catch { URL.revokeObjectURL(url); skippedType++; continue; }
+    catch { URL.revokeObjectURL(url); skippedDecode++; continue; }
+    if (dim.w > MAX_SIDE || dim.h > MAX_SIDE){
+      URL.revokeObjectURL(url); skippedHuge++; continue;
+    }
     const item = {
       id: ++uid,
       file: f,
@@ -1102,8 +1116,18 @@ async function addFiles(fileList, isSample){
 
   const notes = [];
   if (skippedBig) notes.push(T().tooBig(skippedBig));
+  if (skippedHuge) notes.push(T().tooWide(skippedHuge, MAX_SIDE));
+  if (skippedDecode) notes.push(T().cantOpen(skippedDecode));
   if (skippedType) notes.push(T().notImage(skippedType));
   if (notes.length) flash(notes.join(" "), true);
+  // Rejected files are otherwise invisible: the visitor sees a message and
+  // leaves. This is how we learn whether the 40MB cap is costing real users.
+  const rejected = skippedBig + skippedHuge + skippedDecode + skippedType;
+  if (rejected){
+    track("skip", { n: rejected, big: skippedBig, huge: skippedHuge,
+                    nodecode: skippedDecode, bad: skippedType,
+                    mb: Math.round(biggestMB * 10) / 10 });
+  }
 
   render();
 

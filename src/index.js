@@ -9,7 +9,7 @@
 
 import { statsPage, todayJSON } from "./stats.js";
 
-const ALLOWED_EVENTS = new Set(["visit", "add", "export"]);
+const ALLOWED_EVENTS = new Set(["visit", "add", "export", "skip"]);
 const MAX_BODY = 1024;
 const BOT_UA = /bot|crawler|spider|crawl|slurp|headless|phantom|puppeteer|playwright|python-requests|curl\/|wget|scrapy|monitor|preview|fetch|http-client|axios|okhttp/;
 
@@ -93,7 +93,9 @@ async function recordEvent(request, env) {
       num(d.oh),     // double8  output height (fixed mode only)
       num(d.q),      // double9  quality
       num(d.sample), // double10 1 = only the demo plate was exported
-      num(d.grid)    // double11 tiles, when a feed grid was used (0 = free crops)
+      num(d.grid),   // double11 tiles, when a feed grid was used (0 = free crops)
+      num(d.bad),    // double12 files rejected for not being images
+      num(d.huge)    // double13 files past the canvas side limit
     ]
   });
 

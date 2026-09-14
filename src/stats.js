@@ -64,6 +64,9 @@ npx wrangler secret put STATS_KEY</pre>
                FROM ${DATASET}
                WHERE blob1='export' AND double10=0 AND ${W}
                GROUP BY ratio, fmt ORDER BY exports DESC LIMIT 10`,
+    skips: `SELECT sum(_sample_interval) AS events, sum(double2) AS files,
+                   max(double5) AS biggest_mb
+            FROM ${DATASET} WHERE blob1='skip' AND ${W}`,
     images: `SELECT sum(_sample_interval) AS batches, avg(double2) AS imgs,
                     avg(double3) AS w, avg(double4) AS h, avg(double5) AS mb
              FROM ${DATASET} WHERE blob1='add' AND ${W}`,
@@ -118,6 +121,7 @@ function render(R, failed, weakKey) {
   const y   = (R.yday.rows  || [])[0] || {};
   const m   = (R.month.rows || [])[0] || {};
   const img = (R.images.rows|| [])[0] || {};
+  const sk  = (R.skips.rows || [])[0] || {};
   const daily = R.daily.rows || [];
 
   const tv = Number(t.visits) || 0, yv = Number(y.visits) || 0;
@@ -186,6 +190,8 @@ function render(R, failed, weakKey) {
       ${mini("평균 해상도", `${n0(img.w)}×${n0(img.h)}`)}
       ${mini("평균 용량", n1(img.mb) + "MB")}
       ${mini("업로드", n0(img.batches) + "회")}
+      ${mini("용량 초과로 거부", n0(sk.files) + "장")}
+      ${mini("가장 큰 거부 파일", sk.biggest_mb ? n1(sk.biggest_mb) + "MB" : "—")}
     </div>
     ${table(["비율", "포맷", "내보내기", "평균 컷", "격자"],
       (R.settings.rows || []).map(r =>
