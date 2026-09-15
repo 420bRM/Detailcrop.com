@@ -82,6 +82,7 @@ header.bar{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 18px; mar
   padding:5px 11px; font-size:12px; color:var(--ink-2); white-space:nowrap;
 }
 .hbtn:hover{border-color:var(--teal); color:var(--ink)}
+a.hbtn{text-decoration:none; display:inline-block}
 .hbtn[aria-pressed="true"]{background:var(--amber); color:#12100b; border-color:var(--amber); font-weight:600}
 @keyframes hintPulse{
   0%,100%{box-shadow:0 0 0 0 rgba(232,180,90,.55)}
@@ -434,6 +435,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
   <p class="tagline" data-i="tagline"></p>
   <span class="spacer"></span>
   <div class="headBtns">
+    <a class="hbtn" id="videoBtn" href="/video/" data-i="videoBtn"></a>
     <button type="button" class="hbtn" id="tourBtn" data-i="tourBtn"></button>
     <button type="button" class="hbtn" id="wideBtn" aria-pressed="false"></button>
   </div>
@@ -725,6 +727,7 @@ const I18N = {
     tourNext:"Next",
     tourDone:"Got it",
     tourBtn:"How it works",
+    videoBtn:"Video →",
     wideOn:"Work on a bigger canvas",
     wideOff:"Show the intro panel",
     sampleBadge:"SAMPLE",
@@ -790,6 +793,7 @@ const I18N = {
     tourNext:"다음",
     tourDone:"시작하기",
     tourBtn:"사용법 보기",
+    videoBtn:"영상 →",
     wideOn:"더 큰 화면에서 작업하기",
     wideOff:"설명 칸 다시 보기",
     sampleBadge:"예시",
@@ -855,6 +859,7 @@ const I18N = {
     tourNext:"次へ",
     tourDone:"はじめる",
     tourBtn:"使い方を見る",
+    videoBtn:"動画 →",
     wideOn:"大きな画面で作業する",
     wideOff:"説明パネルを表示",
     sampleBadge:"見本",
@@ -1019,6 +1024,7 @@ function applyLang(){
   if (typeof tourIdx === "number" && tourIdx >= 0) paintTourStep();
   if (typeof paintStatsToggle === "function") paintStatsToggle();
   $$(".langs button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === S.lang)));
+  $("#videoBtn").href = S.lang === "en" ? "/video/" : "/video/" + S.lang + "/";
   // ratio labels that are words
   $$("#ratioseg button").forEach(b => {
     if (b.dataset.r === "free") b.textContent = t.free;
