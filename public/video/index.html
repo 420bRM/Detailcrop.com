@@ -64,6 +64,7 @@ header.bar{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 18px; mar
 .headBtns{display:flex; gap:8px; flex:0 0 auto; align-items:center}
 .hbtn{background:var(--sunk); border:1px solid var(--line); border-radius:3px; padding:5px 11px; font-size:12px; color:var(--ink-2); white-space:nowrap; text-decoration:none; display:inline-block}
 .hbtn:hover{border-color:var(--teal); color:var(--ink)}
+.hbtn[aria-pressed="true"]{background:var(--amber); color:#12100b; border-color:var(--amber); font-weight:600}
 .langs{display:flex; border:1px solid var(--line); border-radius:3px; overflow:hidden; flex:0 0 auto; background:var(--sunk)}
 .langs button{background:transparent; border:0; padding:5px 10px; font-size:12px; letter-spacing:.06em; border-right:1px solid var(--line-soft); color:var(--ink-2)}
 .langs button:last-child{border-right:0}
@@ -112,6 +113,17 @@ header.bar{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 18px; mar
 .underStage{display:grid; grid-template-columns:repeat(auto-fit,minmax(258px,1fr)); gap:18px; align-items:start}
 @media (max-width:980px){ .split{grid-template-columns:minmax(0,1fr)} }
 
+/* intro panel beside the editor once a clip is in, as on the stills page;
+   "work on a bigger canvas" folds it away and lets the stage grow */
+.shell{display:grid; grid-template-columns:minmax(0,1fr); gap:18px; align-items:start}
+.shell.side{grid-template-columns:300px minmax(0,1fr)}
+.shell.side .drop{position:sticky; top:16px; min-height:clamp(430px, calc(100vh - 128px), 920px); padding:32px 18px; display:flex; flex-direction:column; justify-content:center}
+.shell.wide .stage video{max-height:80vh}
+@media (max-width:1280px){
+  .shell.side{grid-template-columns:minmax(0,1fr)}
+  .shell.side .drop{position:relative; top:auto; min-height:0}
+}
+
 .stagewrap{background:var(--stage); border:1px solid var(--line-soft); border-radius:4px; padding:20px; display:flex; justify-content:center; min-height:220px; align-items:center; box-shadow:inset 0 0 80px rgba(0,0,0,.6)}
 .stage{position:relative; user-select:none; touch-action:none; max-width:100%; line-height:0}
 .stage video{display:block; max-width:100%; max-height:62vh; width:auto; height:auto; background:#000}
@@ -127,6 +139,8 @@ header.bar{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 18px; mar
 .box[data-sel="false"] .grip{display:none}
 .box[data-sel="false"]:hover{opacity:.9}
 .box .grip{position:absolute; right:-8px; bottom:-8px; width:16px; height:16px; background:var(--bc); border:2px solid rgba(10,15,19,.7); border-radius:50%; cursor:nwse-resize}
+/* the playhead is outside this crop's range */
+.box[data-off="true"]{opacity:.22}
 
 /* transport + trim */
 .transport{display:flex; align-items:center; gap:12px; margin-top:12px; flex-wrap:wrap}
@@ -134,11 +148,15 @@ header.bar{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 18px; mar
 .playBtn:hover{border-color:var(--teal); color:var(--ink)}
 .tcode{font-variant-numeric:tabular-nums; font-size:12px; color:var(--muted); flex:0 0 auto}
 .tcode b{color:var(--teal); font-weight:500}
-.track{position:relative; flex:1 1 220px; height:34px; min-width:180px}
+.track{position:relative; flex:1 1 220px; height:44px; min-width:180px}
 .trackBg{position:absolute; left:0; right:0; top:14px; height:6px; border-radius:3px; background:var(--sunk); border:1px solid var(--line-soft)}
-.trackSel{position:absolute; top:14px; height:6px; background:rgba(232,180,90,.34); border-top:1px solid var(--amber); border-bottom:1px solid var(--amber)}
+.trackSel{position:absolute; top:14px; height:6px; background:rgba(232,180,90,.34); background:color-mix(in srgb, var(--bc, var(--amber)) 34%, transparent); border-top:1px solid var(--bc, var(--amber)); border-bottom:1px solid var(--bc, var(--amber))}
+/* one thin lane per crop under the bar: every crop keeps its own range */
+.trackLanes{position:absolute; inset:0; pointer-events:none}
+.trackLanes i{position:absolute; height:3px; border-radius:2px; background:var(--bc); opacity:.4}
+.trackLanes i[data-sel="true"]{opacity:1}
 .trackHead{position:absolute; top:8px; width:2px; height:18px; background:var(--green); box-shadow:0 0 8px var(--green); pointer-events:none}
-.handle{position:absolute; top:6px; width:11px; height:22px; margin-left:-5.5px; border-radius:2px; background:var(--amber); border:1px solid #12100b; cursor:ew-resize}
+.handle{position:absolute; top:6px; width:11px; height:22px; margin-left:-5.5px; border-radius:2px; background:var(--bc, var(--amber)); border:1px solid #12100b; cursor:ew-resize}
 .handle::after{content:""; position:absolute; left:4px; top:5px; width:1px; height:12px; background:rgba(0,0,0,.45)}
 
 /* cards */
@@ -174,6 +192,25 @@ header.bar{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 18px; mar
 .btn:disabled{opacity:.4; cursor:not-allowed}
 .btn.sm{width:auto; padding:5px 10px; font-size:12px}
 .row{display:flex; gap:8px}
+
+/* ---------- ratio per crop ----------
+   Same fold as the stills page's alignment section: most exports use one
+   ratio for everything, so it starts closed. Closed is not hidden — the
+   header lists, in amber, any crop that has its own ratio. */
+.fold{margin-top:14px; border-top:1px solid var(--line-soft); padding-top:9px}
+.disc{display:flex; align-items:center; gap:8px; width:100%; min-width:0; background:transparent; border:0; padding:3px 0; cursor:pointer; text-align:left; font:inherit; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); transition:color .16s}
+.disc:hover{color:var(--ink-2)}
+.fold[data-live="1"] .disc{color:var(--ink-2)}
+.disc-ic{flex:0 0 auto; width:0; height:0; border-left:5px solid currentColor; border-top:4px solid transparent; border-bottom:4px solid transparent; transform-origin:2px 50%; transition:transform .16s}
+.disc[aria-expanded="true"] .disc-ic{transform:rotate(90deg)}
+.disc-sum{margin-left:auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:11px; letter-spacing:.02em; text-transform:none; color:var(--amber); font-variant-numeric:tabular-nums}
+.disc[aria-expanded="true"] .disc-sum{display:none}
+@media (prefers-reduced-motion:reduce){ .disc, .disc-ic{transition:none} }
+.pcrow{display:flex; align-items:center; gap:8px; margin-top:8px}
+.pctag{flex:0 0 auto; min-width:22px; text-align:center; background:var(--bc); color:#0a0f13; font-size:11px; font-weight:600; line-height:1; border-radius:2px; padding:5px 4px}
+.pcrow .seg{flex:1 1 auto; min-width:0}
+.pcrow .seg button{flex:1 1 0; min-width:0; padding:5px 0; font-size:11.5px}
+#exportSummary{white-space:pre-line}
 
 .readout{font-size:11.5px; color:var(--muted); font-variant-numeric:tabular-nums; margin-top:8px; display:flex; justify-content:space-between; gap:10px; border-top:1px solid var(--line-soft); padding-top:8px}
 .readout b{color:var(--teal); font-weight:500}
@@ -222,6 +259,7 @@ footer a:hover{border-bottom-color:var(--teal)}
   <span class="spacer"></span>
   <div class="headBtns">
     <a class="hbtn" id="stillsBtn" href="/" data-i="backToStills"></a>
+    <button type="button" class="hbtn" id="wideBtn" aria-pressed="false" hidden></button>
   </div>
   <div class="langs" role="group" aria-label="Language">
     <button type="button" data-lang="en">EN</button>
@@ -232,6 +270,7 @@ footer a:hover{border-bottom-color:var(--teal)}
 
 <div class="banner" id="capWarn" hidden></div>
 
+<div class="shell" id="shell">
 <!-- ============ empty state ============ -->
 <section class="drop" id="drop">
   <video class="heroVid" id="heroVid" muted loop playsinline preload="auto" aria-hidden="true"></video>
@@ -263,12 +302,14 @@ footer a:hover{border-bottom-color:var(--teal)}
           <span class="tcode"><b id="tNow">0:00.0</b> / <span id="tDur">0:00.0</span></span>
           <div class="track" id="track">
             <div class="trackBg"></div>
+            <div class="trackLanes" id="trackLanes"></div>
             <div class="trackSel" id="trackSel"></div>
             <div class="trackHead" id="trackHead"></div>
             <div class="handle" id="hIn" title="in"></div>
             <div class="handle" id="hOut" title="out"></div>
           </div>
           <button type="button" class="btn sm" id="trimReset" data-i="trimReset"></button>
+          <button type="button" class="btn sm" id="trimAll" data-i="trimAll"></button>
         </div>
         <div class="readout">
           <span><span data-i="trimIn"></span> <b id="roIn">—</b></span>
@@ -290,6 +331,18 @@ footer a:hover{border-bottom-color:var(--teal)}
               <input type="number" id="rw" min="1" step="1" inputmode="numeric" aria-label="Ratio width">
               <span>:</span>
               <input type="number" id="rh" min="1" step="1" inputmode="numeric" aria-label="Ratio height">
+            </div>
+          </div>
+
+          <div class="fold" id="perCropPanel">
+            <button type="button" class="disc" id="perCropToggle" aria-expanded="false" aria-controls="perCropBody">
+              <span class="disc-ic" aria-hidden="true"></span>
+              <span data-i="perCropTitle"></span>
+              <span class="disc-sum" id="perCropSum"></span>
+            </button>
+            <div id="perCropBody" hidden>
+              <p class="hint" style="margin-top:6px" data-i="perCropNote"></p>
+              <div id="perCropRows"></div>
             </div>
           </div>
 
@@ -399,6 +452,7 @@ footer a:hover{border-bottom-color:var(--teal)}
     </section>
   </div>
 </div>
+</div><!-- /shell -->
 
 <input type="file" id="fileInput" accept="video/*" hidden>
 
@@ -439,7 +493,7 @@ const I18N = {
     dropBody:"One source, several fixed-ratio crops. A wide shot becomes a 9:16 for Shorts, a 1:1 for the feed and a 4:5 for the carousel — cut in a single pass.",
     pick:"Choose a video",
     dropNote:"mp4 · mov · webm — the file never leaves this browser.",
-    trimHd:"Trim", trimReset:"Whole clip",
+    trimHd:"Trim — selected crop", trimReset:"Whole clip", trimAll:"Same range for all",
     trimIn:"In", trimOut:"Out", trimLen:"Length",
     settings:"Settings", ratio:"Crop ratio", custom:"Custom", free:"Free",
     outSize:"Output size", outNative:"Crop size", outFixed:"Fixed",
@@ -455,7 +509,7 @@ const I18N = {
     upscaleWarn:"This crop is smaller than the output frame — it will be scaled up and look soft.",
     fillFrame:"Fill frame", spread:"Spread out",
     shortcuts:"Keys",
-    hint:"<kbd>Space</kbd> play · <kbd>1</kbd>–<kbd>4</kbd> pick a crop · <kbd>←↑↓→</kbd> nudge · <kbd>Shift</kbd> + arrows to jump · <kbd>+</kbd> <kbd>−</kbd> resize · <kbd>I</kbd> <kbd>O</kbd> set trim in / out",
+    hint:"<kbd>Space</kbd> play · <kbd>1</kbd>–<kbd>4</kbd> pick a crop · <kbd>←↑↓→</kbd> nudge · <kbd>Shift</kbd> + arrows to jump · <kbd>+</kbd> <kbd>−</kbd> resize · <kbd>I</kbd> <kbd>O</kbd> set the selected crop's in / out",
     footLead:"One source, several crops, one pass.",
     footBody:"Cutting a wide clip into a vertical for Shorts, a square for the feed and a 4:5 for the carousel normally means three trips through an editor. Here you frame all of them over the same footage and the page encodes them together while the clip plays once.",
     footPrivacy:"No upload. The video is decoded and re-encoded in your browser.",
@@ -471,7 +525,11 @@ const I18N = {
     trySample:"Try the sample", sampleName:"four-seasons", sampleBadge:"Sample",
     sampleTip:"Sample clip — drop your own video in and it steps aside.",
     codecNote:(c)=>`This browser has no H.264 encoder, so the files are ${c} inside the mp4 — fine in Chrome and Edge, not in Safari.`,
-    summary:(n,w,h,s)=>`${n} crop${n>1?"s":""} · ${w} × ${h} · ${s.toFixed(1)}s each`
+    perCropTitle:"Ratio per crop", perCropFollow:"Batch",
+    perCropNote:"Batch follows the crop ratio above. Pick a ratio here to give one crop its own — with a fixed output size, that crop gets a frame to match.",
+    wideOn:"Work on a bigger canvas", wideOff:"Show the intro panel",
+    secs:(s)=>`${s.toFixed(1)}s`,
+    summary:(n)=>`${n} crop${n>1?"s":""}, each over its own range:`
   },
   ko:{
     h1sr:" — 영상 하나에서 고정 비율 컷 여러 개를 mp4로 뽑기",
@@ -481,7 +539,7 @@ const I18N = {
     dropBody:"소스 하나에서 고정 비율 컷 여러 개. 가로 원본에서 쇼츠용 9:16, 피드용 1:1, 캐러셀용 4:5를 한 번에 잘라냅니다.",
     pick:"영상 고르기",
     dropNote:"mp4 · mov · webm — 파일은 이 브라우저를 벗어나지 않습니다.",
-    trimHd:"구간", trimReset:"전체",
+    trimHd:"구간 — 선택한 컷", trimReset:"전체", trimAll:"모든 컷에 같은 구간",
     trimIn:"시작", trimOut:"끝", trimLen:"길이",
     settings:"설정", ratio:"크롭 비율", custom:"직접", free:"자유",
     outSize:"출력 크기", outNative:"크롭 크기", outFixed:"고정",
@@ -497,7 +555,7 @@ const I18N = {
     upscaleWarn:"이 컷이 출력 규격보다 작습니다. 확대되어 화질이 무릅니다.",
     fillFrame:"화면 가득", spread:"고르게 배치",
     shortcuts:"단축키",
-    hint:"<kbd>Space</kbd> 재생 · <kbd>1</kbd>–<kbd>4</kbd> 컷 선택 · <kbd>←↑↓→</kbd> 이동 · <kbd>Shift</kbd> + 방향키 크게 · <kbd>+</kbd> <kbd>−</kbd> 크기 · <kbd>I</kbd> <kbd>O</kbd> 구간 시작/끝",
+    hint:"<kbd>Space</kbd> 재생 · <kbd>1</kbd>–<kbd>4</kbd> 컷 선택 · <kbd>←↑↓→</kbd> 이동 · <kbd>Shift</kbd> + 방향키 크게 · <kbd>+</kbd> <kbd>−</kbd> 크기 · <kbd>I</kbd> <kbd>O</kbd> 선택한 컷의 구간 시작/끝",
     footLead:"소스 하나, 컷 여러 개, 재생 한 번.",
     footBody:"가로 영상을 쇼츠용 세로로, 피드용 정사각으로, 캐러셀용 4:5로 자르려면 보통 편집기를 세 번 왕복해야 합니다. 여기서는 같은 영상 위에 세 컷을 모두 잡아두면, 영상이 한 번 재생되는 동안 세 개가 함께 인코딩됩니다.",
     footPrivacy:"업로드 없음. 디코딩도 인코딩도 브라우저 안에서 끝납니다.",
@@ -513,7 +571,11 @@ const I18N = {
     trySample:"예시 영상으로 해보기", sampleName:"four-seasons", sampleBadge:"예시",
     sampleTip:"예시 영상 — 직접 올린 영상이 들어오면 자동으로 빠집니다.",
     codecNote:(c)=>`이 브라우저에 H.264 인코더가 없어 mp4 안에 ${c}로 들어갔습니다. Chrome·Edge에서는 재생되지만 Safari에서는 안 됩니다.`,
-    summary:(n,w,h,s)=>`${n}개 컷 · ${w} × ${h} · 각 ${s.toFixed(1)}초`
+    perCropTitle:"컷별 비율", perCropFollow:"일괄",
+    perCropNote:"'일괄'은 위의 크롭 비율을 따릅니다. 여기서 비율을 고르면 그 컷만 따로 적용되고, 출력 크기가 고정이면 그 컷은 자기 비율에 맞는 규격으로 나갑니다.",
+    wideOn:"더 큰 화면에서 작업하기", wideOff:"설명 칸 다시 보기",
+    secs:(s)=>`${s.toFixed(1)}초`,
+    summary:(n)=>`${n}개 컷, 컷마다 자기 구간으로:`
   },
   ja:{
     h1sr:" — 1本の動画から固定比率のカットを複数、mp4で書き出し",
@@ -523,7 +585,7 @@ const I18N = {
     dropBody:"1つの素材から固定比率のカットを複数。横位置の映像からショート用9:16、フィード用1:1、カルーセル用4:5を一度に切り出します。",
     pick:"動画を選ぶ",
     dropNote:"mp4 · mov · webm — ファイルはこのブラウザから出ません。",
-    trimHd:"区間", trimReset:"全体",
+    trimHd:"区間 — 選択中のカット", trimReset:"全体", trimAll:"全カットを同じ区間に",
     trimIn:"開始", trimOut:"終了", trimLen:"長さ",
     settings:"設定", ratio:"切り出し比率", custom:"指定", free:"自由",
     outSize:"出力サイズ", outNative:"切り出しサイズ", outFixed:"固定",
@@ -539,7 +601,7 @@ const I18N = {
     upscaleWarn:"このカットは出力枠より小さいため、拡大されて甘くなります。",
     fillFrame:"画面いっぱい", spread:"均等に配置",
     shortcuts:"ショートカット",
-    hint:"<kbd>Space</kbd> 再生 · <kbd>1</kbd>–<kbd>4</kbd> カット選択 · <kbd>←↑↓→</kbd> 移動 · <kbd>Shift</kbd> + 矢印で大きく · <kbd>+</kbd> <kbd>−</kbd> サイズ · <kbd>I</kbd> <kbd>O</kbd> 区間の開始/終了",
+    hint:"<kbd>Space</kbd> 再生 · <kbd>1</kbd>–<kbd>4</kbd> カット選択 · <kbd>←↑↓→</kbd> 移動 · <kbd>Shift</kbd> + 矢印で大きく · <kbd>+</kbd> <kbd>−</kbd> サイズ · <kbd>I</kbd> <kbd>O</kbd> 選択中カットの区間の開始/終了",
     footLead:"素材は1つ、カットは複数、再生は一度。",
     footBody:"横位置の映像をショート用の縦、フィード用の正方形、カルーセル用の4:5に切るには、普通は編集ソフトを三往復します。ここでは同じ映像の上で三つとも枠を決めておけば、一度の再生でまとめて書き出されます。",
     footPrivacy:"アップロードなし。デコードもエンコードもブラウザ内で完結します。",
@@ -555,7 +617,11 @@ const I18N = {
     trySample:"サンプルで試す", sampleName:"four-seasons", sampleBadge:"見本",
     sampleTip:"サンプル映像 — ご自身の動画を入れると自動で外れます。",
     codecNote:(c)=>`このブラウザにH.264エンコーダーがないため、mp4の中身は${c}です。Chrome・Edgeでは再生できますが、Safariでは再生できません。`,
-    summary:(n,w,h,s)=>`${n}カット · ${w} × ${h} · 各${s.toFixed(1)}秒`
+    perCropTitle:"カットごとの比率", perCropFollow:"一括",
+    perCropNote:"「一括」は上の切り出し比率に従います。ここで比率を選ぶとそのカットだけに適用され、出力サイズが固定ならそのカットは自分の比率に合う規格で書き出されます。",
+    wideOn:"大きな画面で作業する", wideOff:"説明パネルを表示",
+    secs:(s)=>`${s.toFixed(1)}秒`,
+    summary:(n)=>`${n}カット、それぞれの区間で:`
   }
 };
 
@@ -589,7 +655,7 @@ const S = {
   outMode:"fixed", ow:1080, oh:1920,
   q:1, audio:"keep", mode:"exact", fps:30,
   pattern:"{name}-v{n}",
-  tin:0, tout:0,
+  wide:false,
   busy:false, cancel:false
 };
 
@@ -622,6 +688,7 @@ function applyLang(){
     if (b.dataset.r === "custom") b.textContent = t.custom;
   });
   if (!capable()) $("#capWarn").innerHTML = t.capWarn;
+  updateShell();
   render();
 }
 
@@ -632,24 +699,36 @@ function capable(){
 }
 
 /* ===================== ratio helpers ===================== */
-const ratioLocked = () => S.ratioId !== "free";
-const ratioVal    = () => S.rw / S.rh;                 // pixel aspect w/h
-const hForW = wN => (wN * S.vw) / ratioVal() / S.vh;   // normalised height for normalised width
-const wForH = hN => (hN * S.vh) * ratioVal() / S.vw;
+/* A crop follows the batch ratio in Settings unless it has its own (b.rid),
+   set from the "ratio per crop" section. */
+const PER_CROP_RATIOS = RATIO_PRESETS.filter(p => p.w);
+function ratioOf(b){
+  const p = b && b.rid ? PER_CROP_RATIOS.find(r => r.id === b.rid) : null;
+  if (p) return {id:p.id, w:p.w, h:p.h, locked:true};
+  return {id:S.ratioId, w:S.rw, h:S.rh, locked:S.ratioId !== "free"};
+}
+const ratioLabel = r => r.id === "free" ? T().free : `${r.w}:${r.h}`;
+const hForW = (wN, r) => (wN * S.vw) / (r.w / r.h) / S.vh;   // normalised height for normalised width
+const wForH = (hN, r) => (hN * S.vh) * (r.w / r.h) / S.vw;
 
 function fitBox(b){
-  if (!ratioLocked()) { b.w = clamp(b.w,.02,1); b.h = clamp(b.h,.02,1); }
+  const r = ratioOf(b);
+  if (!r.locked) { b.w = clamp(b.w,.02,1); b.h = clamp(b.h,.02,1); }
   else {
     b.w = clamp(b.w, .02, 1);
-    b.h = hForW(b.w);
-    if (b.h > 1) { b.h = 1; b.w = wForH(1); }
+    b.h = hForW(b.w, r);
+    if (b.h > 1) { b.h = 1; b.w = wForH(1, r); }
   }
   b.x = clamp(b.x, 0, 1 - b.w);
   b.y = clamp(b.y, 0, 1 - b.h);
   return b;
 }
-function defaultBox(i, n){
-  const b = fitBox({x:0, y:0, w:.6, h:.6, t:false});
+/* Every crop carries its own range. A new one starts on the whole clip,
+   or on the range of the crop it is added next to. */
+function defaultBox(i, n, from){
+  const b = {x:0, y:0, w:.6, h:.6, t:false, rid:null, tin:0, tout:S.dur};
+  if (from){ b.tin = from.tin; b.tout = from.tout; }
+  fitBox(b);
   b.x = n <= 1 ? (1-b.w)/2 : clamp((i + .5) / n - b.w/2, 0, 1-b.w);
   b.y = (1 - b.h) / 2;
   return fitBox(b);
@@ -668,15 +747,13 @@ function loadFile(f, isSample){
   vid.src = S.url;
   vid.onloadedmetadata = () => {
     S.vw = vid.videoWidth; S.vh = vid.videoHeight; S.dur = vid.duration || 0;
-    S.tin = 0; S.tout = S.dur;
     /* the sample opens with three crops already spread over the frame, so the
        point of the page — several at once — is on screen before anyone reads it */
     const n = isSample ? 3 : 1;
     S.boxes = Array.from({length:n}, (_, i) => defaultBox(i, n));
     S.sel = 0;
     if (S.outMode === "fixed") syncFixedToRatio();
-    $("#drop").hidden = true;
-    $("#work").hidden = false;
+    updateShell();
     const h = $("#heroVid"); if (h) h.pause();
     vid.currentTime = Math.min(.1, S.dur / 2);
     render();
@@ -697,7 +774,7 @@ function render(){
   $("#sampleTip").hidden = !S.isSample;
   $("#wmeta").textContent  = `${S.vw} × ${S.vh} · ${fmtT(S.dur)} · ${(S.file.size/1048576).toFixed(1)} MB`;
   $("#counter").textContent = `${S.boxes.length} / ${MAX_CROPS}`;
-  $("#ratiotag").textContent = S.ratioId === "free" ? t.free : `${S.rw}:${S.rh}`;
+  $("#ratiotag").textContent = ratioLabel(ratioOf(S.boxes[S.sel]));
 
   $$("#ratioseg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.r === S.ratioId)));
   $("#customRatioRow").hidden = S.ratioId !== "custom";
@@ -711,7 +788,7 @@ function render(){
 
   drawBoxes();
   drawTrack();
-  if (!drag && !tdrag) drawPreviews();   // redrawing four canvases on every pointermove is not worth it
+  if (!drag && !tdrag){ drawPreviews(); paintPerCrop(); }   // redrawing four canvases on every pointermove is not worth it
 
   const b = S.boxes[S.sel];
   if (b){
@@ -720,7 +797,10 @@ function render(){
   }
   const dim = outDims(S.boxes[S.sel] || {w:1,h:1});
   $("#minwarn").hidden = !(S.outMode === "fixed" && b && (b.w*S.vw < dim.w*.98 || b.h*S.vh < dim.h*.98));
-  $("#exportSummary").textContent = t.summary(S.boxes.length, dim.w, dim.h, Math.max(0, S.tout - S.tin));
+  $("#exportSummary").textContent = [t.summary(S.boxes.length)].concat(S.boxes.map((c, i) => {
+    const d = outDims(c);
+    return `${i + 1} · ${d.w} × ${d.h} · ${ratioLabel(ratioOf(c))} · ${t.secs(Math.max(0, c.tout - c.tin))}`;
+  })).join("\n");
   $("#brNote").textContent = `≈ ${(bitrateFor(dim.w, dim.h)/1e6).toFixed(1)} Mbps`;
   $("#exportAll").disabled = S.busy || !capable();
 }
@@ -773,21 +853,97 @@ function drawPreviews(){
 function drawTrack(){
   const w = $("#track").clientWidth || 1;
   const p = t => clamp(t / (S.dur || 1), 0, 1) * w;
-  $("#hIn").style.left  = p(S.tin) + "px";
-  $("#hOut").style.left = p(S.tout) + "px";
-  $("#trackSel").style.left  = p(S.tin) + "px";
-  $("#trackSel").style.width = Math.max(0, p(S.tout) - p(S.tin)) + "px";
-  $("#trackHead").style.left = p(vid.currentTime) + "px";
-  $("#tNow").textContent = fmtT(vid.currentTime);
+  const now = vid.currentTime;
+  $("#trackHead").style.left = p(now) + "px";
+  $("#tNow").textContent = fmtT(now);
   $("#tDur").textContent = fmtT(S.dur);
-  $("#roIn").textContent  = fmtT(S.tin);
-  $("#roOut").textContent = fmtT(S.tout);
-  $("#roLen").textContent = fmtT(Math.max(0, S.tout - S.tin));
-  $("#trimTag").textContent = fmtT(Math.max(0, S.tout - S.tin));
+  const b = S.boxes[S.sel];
+  if (!b) return;
+  const col = i => `var(${BOX_COLORS[i % BOX_COLORS.length]})`;
+  // the handles edit the selected crop's range and wear its colour
+  $("#track").style.setProperty("--bc", col(S.sel));
+  $("#hIn").style.left  = p(b.tin) + "px";
+  $("#hOut").style.left = p(b.tout) + "px";
+  $("#trackSel").style.left  = p(b.tin) + "px";
+  $("#trackSel").style.width = Math.max(0, p(b.tout) - p(b.tin)) + "px";
+  // every crop's range on its own thin lane under the bar
+  const lanes = $("#trackLanes");
+  while (lanes.children.length < S.boxes.length) lanes.appendChild(document.createElement("i"));
+  while (lanes.children.length > S.boxes.length) lanes.lastChild.remove();
+  S.boxes.forEach((c, i) => {
+    const el = lanes.children[i];
+    el.style.setProperty("--bc", col(i));
+    el.style.left  = p(c.tin) + "px";
+    el.style.width = Math.max(2, p(c.tout) - p(c.tin)) + "px";
+    el.style.top   = (26 + i * 4) + "px";
+    el.dataset.sel = String(i === S.sel);
+  });
+  // playing the whole clip shows which crops are live: the rest fade on the stage
+  $$(".box").forEach(el => {
+    const c = S.boxes[+el.dataset.i];
+    el.dataset.off = String(!!c && (now < c.tin - 1e-3 || now > c.tout + 1e-3));
+  });
+  const len = Math.max(0, b.tout - b.tin);
+  $("#roIn").textContent  = fmtT(b.tin);
+  $("#roOut").textContent = fmtT(b.tout);
+  $("#roLen").textContent = fmtT(len);
+  const tag = $("#trimTag");
+  tag.textContent = `${S.sel + 1} · ${fmtT(len)}`;
+  tag.style.color = col(S.sel);
+}
+
+/* ===================== intro panel / wide canvas =====================
+   The same switch as the stills page. With a clip loaded the intro panel
+   stays beside the editor; "work on a bigger canvas" folds it away and
+   lets the stage grow. The choice is remembered in this browser. */
+function updateShell(){
+  const loaded = !!S.file;
+  $("#work").hidden = !loaded;
+  $("#drop").hidden = loaded && S.wide;
+  $("#shell").classList.toggle("side", loaded && !S.wide);
+  $("#shell").classList.toggle("wide", loaded && S.wide);
+  $("#sampleBtn").hidden = loaded && S.isSample;
+  const wb = $("#wideBtn");
+  wb.hidden = !loaded;
+  wb.textContent = S.wide ? T().wideOff : T().wideOn;
+  wb.setAttribute("aria-pressed", String(!!S.wide));
+}
+
+/* ===================== ratio per crop =====================
+   Folded away and closed on every load. This is the block earmarked to go
+   behind a paywall later, like the stills page's alignment tools: all of
+   it lives in #perCropPanel, so gating it means not opening that section. */
+function paintPerCrop(){
+  const t = T();
+  const sum = S.boxes.map((b, i) => b.rid ? `${i + 1} ${b.rid}` : "").filter(Boolean);
+  $("#perCropSum").textContent = sum.join(" · ");
+  $("#perCropPanel").dataset.live = sum.length ? "1" : "0";
+  if ($("#perCropBody").hidden) return;
+  const rows = $("#perCropRows");
+  rows.innerHTML = "";
+  S.boxes.forEach((b, i) => {
+    const row = document.createElement("div"); row.className = "pcrow";
+    row.style.setProperty("--bc", `var(${BOX_COLORS[i % BOX_COLORS.length]})`);
+    const tag = document.createElement("span"); tag.className = "pctag"; tag.textContent = String(i + 1);
+    const seg = document.createElement("div"); seg.className = "seg";
+    [null].concat(PER_CROP_RATIOS.map(p => p.id)).forEach(id => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = id || t.perCropFollow;
+      if (!id) btn.title = ratioLabel(ratioOf(null));
+      btn.setAttribute("aria-pressed", String((b.rid || null) === id));
+      btn.addEventListener("click", () => { b.rid = id; fitBox(b); S.sel = i; render(); });
+      seg.appendChild(btn);
+    });
+    row.appendChild(tag); row.appendChild(seg);
+    rows.appendChild(row);
+  });
 }
 
 /* ===================== output maths ===================== */
 function outDims(b){
+  // a crop with its own ratio gets its own fixed frame; the batch keeps the one in Settings
+  if (S.outMode === "fixed" && b && b.rid) return fixedFor(ratioOf(b));
   if (S.outMode === "fixed") return {w: even(clamp(S.ow,16,4096)), h: even(clamp(S.oh,16,4096))};
   return {w: even(clamp(b.w*S.vw,16,4096)), h: even(clamp(b.h*S.vh,16,4096))};
 }
@@ -819,10 +975,11 @@ $("#stage").addEventListener("pointermove", e => {
   b.t = true;                       // hand-placed: leave it alone when the crop count changes
   if (drag.mode === "move"){ b.x = drag.ox + dx; b.y = drag.oy + dy; }
   else {
+    const r = ratioOf(b);
     b.w = Math.max(.02, drag.ow + dx);
-    b.h = ratioLocked() ? hForW(b.w) : Math.max(.02, drag.oh + dy);
-    if (b.x + b.w > 1) { b.w = 1 - b.x; if (ratioLocked()) b.h = hForW(b.w); }
-    if (b.y + b.h > 1) { b.h = 1 - b.y; if (ratioLocked()) b.w = wForH(b.h); }
+    b.h = r.locked ? hForW(b.w, r) : Math.max(.02, drag.oh + dy);
+    if (b.x + b.w > 1) { b.w = 1 - b.x; if (r.locked) b.h = hForW(b.w, r); }
+    if (b.y + b.h > 1) { b.h = 1 - b.y; if (r.locked) b.w = wForH(b.h, r); }
   }
   fitBox(b);
   render();
@@ -850,8 +1007,9 @@ $("#track").addEventListener("pointermove", e => {
 });
 ["pointerup","pointercancel"].forEach(ev => $("#track").addEventListener(ev, () => { if (tdrag){ tdrag = null; render(); } }));
 function applyTrim(t){
-  if (tdrag === "in")       S.tin  = clamp(t, 0, S.tout - .2);
-  else if (tdrag === "out") S.tout = clamp(t, S.tin + .2, S.dur);
+  const b = S.boxes[S.sel];
+  if (tdrag === "in")       b.tin  = clamp(t, 0, b.tout - .2);
+  else if (tdrag === "out") b.tout = clamp(t, b.tin + .2, S.dur);
   else { vid.currentTime = t; }
   drawTrack();
   if (tdrag === "in" || tdrag === "out") { vid.currentTime = t; }
@@ -871,10 +1029,10 @@ addEventListener("keydown", e => {
     case "ArrowRight": b.x += step; break;
     case "ArrowUp":    b.y -= step; break;
     case "ArrowDown":  b.y += step; break;
-    case "+": case "=": b.w += step; b.h = ratioLocked() ? hForW(b.w) : b.h + step; break;
-    case "-": case "_": b.w -= step; b.h = ratioLocked() ? hForW(b.w) : b.h - step; break;
-    case "i": case "I": S.tin  = clamp(vid.currentTime, 0, S.tout - .2); break;
-    case "o": case "O": S.tout = clamp(vid.currentTime, S.tin + .2, S.dur); break;
+    case "+": case "=": { const r = ratioOf(b); b.w += step; b.h = r.locked ? hForW(b.w, r) : b.h + step; break; }
+    case "-": case "_": { const r = ratioOf(b); b.w -= step; b.h = r.locked ? hForW(b.w, r) : b.h - step; break; }
+    case "i": case "I": b.tin  = clamp(vid.currentTime, 0, b.tout - .2); break;
+    case "o": case "O": b.tout = clamp(vid.currentTime, b.tin + .2, S.dur); break;
     default:
       if (/^[1-4]$/.test(e.key) && +e.key <= S.boxes.length) S.sel = +e.key - 1;
       else hit = false;
@@ -882,8 +1040,9 @@ addEventListener("keydown", e => {
   if (hit){ if (b){ if (/^Arrow|[-_+=]$/.test(e.key)) b.t = true; fitBox(b); } render(); e.preventDefault(); }
 });
 
-/* ===================== audio ===================== */
-async function encodeAudio(){
+/* ===================== audio =====================
+   Decoded once per export; each crop then encodes its own stretch of it. */
+async function decodeAudio(){
   if (S.audio !== "keep" || !window.AudioEncoder) return null;
   try{
     const ab = await S.file.arrayBuffer();
@@ -895,10 +1054,6 @@ async function encodeAudio(){
 
     const sr = buf.sampleRate;
     const ch = Math.min(2, buf.numberOfChannels);
-    const start = Math.max(0, Math.floor(S.tin * sr));
-    const end   = Math.min(buf.length, Math.ceil(S.tout * sr));
-    const len   = end - start;
-    if (len <= 0) return null;
 
     let cfg = null, mux = null;
     for (const cand of [{c:"mp4a.40.2", m:"aac"}, {c:"opus", m:"opus"}]){
@@ -906,6 +1061,17 @@ async function encodeAudio(){
       try{ if ((await AudioEncoder.isConfigSupported(probe)).supported){ cfg = probe; mux = cand.m; break; } }catch(e){}
     }
     if (!cfg) return null;
+    return {buf, sr, ch, cfg, mux};
+  } catch(e){ return null; }
+}
+async function encodeAudio(src, tin, tout){
+  if (!src) return null;
+  try{
+    const {buf, sr, ch, cfg, mux} = src;
+    const start = Math.max(0, Math.floor(tin * sr));
+    const end   = Math.min(buf.length, Math.ceil(tout * sr));
+    const len   = end - start;
+    if (len <= 0) return null;
 
     const planes = [];
     for (let c = 0; c < ch; c++) planes.push(buf.getChannelData(c).subarray(start, end));
@@ -982,18 +1148,19 @@ async function runExport(){
   render();
 
   const t = T();
-  const span = Math.max(.2, S.tout - S.tin);
   let jobs = [], codecLabel = "";
 
   try{
-    /* --- audio, once, shared by every crop --- */
+    /* --- audio: decoded once, each crop cuts its own range from it --- */
     setProgress(2, t.stAudio);
-    const aud = await encodeAudio();
-    if (S.audio === "keep" && !aud){ $("#errMsg").textContent = t.errAudio; $("#errMsg").hidden = false; }
+    const src = await decodeAudio();
+    let audioLost = false;
 
     /* --- one encoder + muxer per crop --- */
     for (let i = 0; i < S.boxes.length; i++){
       const b = S.boxes[i];
+      const aud = await encodeAudio(src, b.tin, b.tout);
+      if (S.audio === "keep" && !aud) audioLost = true;
       const d = outDims(b);
       const bitrate = bitrateFor(d.w, d.h);
       const pick = await pickCodec(d.w, d.h, bitrate);
@@ -1021,21 +1188,26 @@ async function runExport(){
 
       jobs.push({
         i, muxer, target, enc, canvas, ctx, aud,
+        tin:b.tin, tout:b.tout, k:0, ratio:ratioOf(b),
         w:d.w, h:d.h,
         sx: Math.round(b.x*S.vw), sy: Math.round(b.y*S.vh),
         sw: Math.max(2, Math.round(b.w*S.vw)), sh: Math.max(2, Math.round(b.h*S.vh))
       });
     }
 
-    /* --- one pass over the footage, every crop drawn from the same frame --- */
+    if (audioLost){ $("#errMsg").textContent = t.errAudio; $("#errMsg").hidden = false; }
+
+    /* --- one pass over the footage, from the earliest start to the latest end;
+           each crop takes only the frames inside its own range --- */
     setProgress(5, t.stVideo);
     vid.pause();
     vid.muted = true;
-    await seekTo(S.tin);
+    const T0 = Math.min(...jobs.map(j => j.tin)), T1 = Math.max(...jobs.map(j => j.tout));
+    await seekTo(T0);
     const onProg = f => setProgress(5 + 80 * clamp(f, 0, 1), t.stVideo);
 
-    if (S.mode === "exact") await captureBySeek(jobs, span, onProg);
-    else                    await captureByPlayback(jobs, span, onProg);
+    if (S.mode === "exact") await captureBySeek(jobs, onProg);
+    else                    await captureByPlayback(jobs, T0, T1, onProg);
 
     if (S.cancel){ jobs.forEach(j => { try{ j.enc.close(); }catch(e){} }); throw null; }
 
@@ -1044,13 +1216,14 @@ async function runExport(){
     for (const j of jobs){
       await j.enc.flush();
       j.enc.close();
+      if (!j.k) continue;              // a crop that caught no frame has nothing to write
       if (j.aud) for (const c of j.aud.chunks) j.muxer.addAudioChunk(c, j.aud.meta);
       j.muxer.finalize();
       const blob = new Blob([j.target.buffer], {type:"video/mp4"});
       const name = S.pattern
         .replace(/\{name\}/g, S.name)
         .replace(/\{n\}/g, String(j.i + 1))
-        .replace(/\{ratio\}/g, S.ratioId === "free" ? "free" : `${S.rw}x${S.rh}`) + ".mp4";
+        .replace(/\{ratio\}/g, j.ratio.id === "free" ? "free" : `${j.ratio.w}x${j.ratio.h}`) + ".mp4";
       results.push({blob, name, url: URL.createObjectURL(blob), w:j.w, h:j.h});
     }
 
@@ -1081,36 +1254,47 @@ function seekTo(t){
   });
 }
 
-function drawAndEncode(jobs, ts, dur, keyFrame){
-  for (const j of jobs){
-    j.ctx.drawImage(vid, j.sx, j.sy, j.sw, j.sh, 0, 0, j.w, j.h);
-    const vf = new VideoFrame(j.canvas, {timestamp: ts, duration: dur});
-    try { j.enc.encode(vf, {keyFrame}); } finally { vf.close(); }
-  }
+function encodeFrame(j, ts, dur){
+  j.ctx.drawImage(vid, j.sx, j.sy, j.sw, j.sh, 0, 0, j.w, j.h);
+  const vf = new VideoFrame(j.canvas, {timestamp: ts, duration: dur});
+  try { j.enc.encode(vf, {keyFrame: j.k % 60 === 0}); } finally { vf.close(); }
+  j.k++;
 }
+const live = (jobs, t) => jobs.filter(j => t >= j.tin - 1e-6 && t < j.tout - 1e-6);
+const nextStart = (jobs, t) => Math.min(...jobs.filter(j => j.tin > t + 1e-6).map(j => j.tin));   // Infinity when none
 async function drain(jobs, depth){
   while (!S.cancel && jobs.some(j => j.enc.encodeQueueSize > depth)) await new Promise(r => setTimeout(r, 8));
 }
 
 /* Frame by frame: step the clip, keep every frame. Slower than playback,
    but the browser never gets to silently skip one. */
-async function captureBySeek(jobs, span, onProg){
+async function captureBySeek(jobs, onProg){
   const fps = S.fps, dur = Math.round(1e6 / fps);
-  const n = Math.max(1, Math.round(span * fps));
-  for (let k = 0; k < n; k++){
+  // Each crop samples its own grid from its own start, so its frames line up
+  // with its audio. Crops whose samples land on the same instant share a seek.
+  const pts = [];
+  for (const j of jobs){
+    const m = Math.max(1, Math.round((j.tout - j.tin) * fps));
+    for (let k = 0; k < m; k++) pts.push({t: Math.min(j.tout - 1e-3, j.tin + k / fps), j});
+  }
+  pts.sort((a, b) => a.t - b.t);
+  let g = 0;
+  for (let p = 0; p < pts.length;){
     if (S.cancel) return;
-    await seekTo(Math.min(S.tout - 1e-3, S.tin + k / fps));
-    drawAndEncode(jobs, Math.round(k * 1e6 / fps), dur, k % 60 === 0);
-    await drain(jobs, 12);
-    if (k % 3 === 0) onProg(k / n);
+    const t = pts[p].t, group = [];
+    while (p < pts.length && pts[p].t - t < 1e-4) group.push(pts[p++].j);
+    await seekTo(t);
+    for (const j of group) encodeFrame(j, Math.round(j.k * 1e6 / fps), dur);
+    await drain(group, 12);
+    if (++g % 3 === 0) onProg(p / pts.length);
   }
   onProg(1);
 }
 
 /* Real time: play the clip once and grab whatever the browser presents.
    Quick, and good enough when the machine keeps up. */
-async function captureByPlayback(jobs, span, onProg){
-  let frames = 0, lastT = -1, pausedForBP = false, finished = false;
+async function captureByPlayback(jobs, T0, T1, onProg){
+  let lastT = -1, pausedForBP = false, finished = false;
   const dur = Math.round(1e6 / S.fps);
 
   const done = new Promise(resolve => {
@@ -1118,12 +1302,16 @@ async function captureByPlayback(jobs, span, onProg){
     const step = (now, meta) => {
       if (S.cancel || finished) return finish();
       const mt = meta.mediaTime;
-      if (mt >= S.tout - 1e-4) return finish();
-      if (mt >= S.tin - 1e-4 && mt > lastT + 1e-6){
+      if (mt >= T1 - 1e-4) return finish();
+      if (mt > lastT + 1e-6){
         lastT = mt;
-        drawAndEncode(jobs, Math.max(0, Math.round((mt - S.tin) * 1e6)), dur, frames % 60 === 0);
-        frames++;
-        onProg((mt - S.tin) / span);
+        const act = live(jobs, mt);
+        for (const j of act) encodeFrame(j, Math.max(0, Math.round((mt - j.tin) * 1e6)), dur);
+        if (!act.length){
+          const nx = nextStart(jobs, mt);
+          if (isFinite(nx) && nx - mt > .3) vid.currentTime = nx;   // jump a gap no crop covers
+        }
+        onProg((mt - T0) / Math.max(.2, T1 - T0));
       }
       vid.requestVideoFrameCallback(step);
     };
@@ -1189,7 +1377,7 @@ function saveOne(r){
     const b = document.createElement("button");
     b.type = "button"; b.dataset.c = n; b.textContent = n;
     b.addEventListener("click", () => {
-      while (S.boxes.length < n) S.boxes.push(defaultBox(S.boxes.length, n));
+      while (S.boxes.length < n) S.boxes.push(defaultBox(S.boxes.length, n, S.boxes[S.sel]));
       while (S.boxes.length > n) S.boxes.pop();
       // re-spread the ones the user hasn't placed by hand, so they don't stack up
       S.boxes.forEach((b, i) => { if (!b.t){ const d = defaultBox(i, n); b.x = d.x; b.y = d.y; fitBox(b); } });
@@ -1203,14 +1391,17 @@ function saveOne(r){
 /* The fixed frame follows what the source can actually deliver at this ratio,
    capped at the usual platform frame. A 9:16 out of a 1080p clip is 608 wide —
    asking for 1080 × 1920 there would upscale every crop and warn about it. */
+function fixedFor(r){
+  const srcW = S.vw || 1920, srcH = S.vh || 1080;
+  let h = Math.min(srcH, r.w >= r.h ? 1080 : 1920);
+  let w = h * r.w / r.h;
+  if (w > srcW){ w = srcW; h = w * r.h / r.w; }
+  return {w: even(clamp(w, 16, 4096)), h: even(clamp(h, 16, 4096))};
+}
 function syncFixedToRatio(){
   if (S.ratioId === "free") return;
-  const srcW = S.vw || 1920, srcH = S.vh || 1080;
-  let h = Math.min(srcH, S.rw >= S.rh ? 1080 : 1920);
-  let w = h * S.rw / S.rh;
-  if (w > srcW){ w = srcW; h = w * S.rh / S.rw; }
-  S.ow = even(clamp(w, 16, 4096));
-  S.oh = even(clamp(h, 16, 4096));
+  const d = fixedFor({w:S.rw, h:S.rh});
+  S.ow = d.w; S.oh = d.h;
   $("#ow").value = S.ow; $("#oh").value = S.oh;
 }
 
@@ -1242,7 +1433,25 @@ vid.addEventListener("timeupdate", () => { if (!S.busy) { drawTrack(); drawPrevi
 vid.addEventListener("seeked", () => { if (!S.busy) { drawTrack(); drawPreviews(); } });
 vid.addEventListener("loadeddata", () => { drawBoxes(); drawPreviews(); });
 
-$("#trimReset").addEventListener("click", () => { S.tin = 0; S.tout = S.dur; render(); });
+$("#trimReset").addEventListener("click", () => { const b = S.boxes[S.sel]; if (b){ b.tin = 0; b.tout = S.dur; } render(); });
+$("#trimAll").addEventListener("click", () => {
+  const b = S.boxes[S.sel]; if (!b) return;
+  S.boxes.forEach(c => { c.tin = b.tin; c.tout = b.tout; });
+  render();
+});
+$("#perCropToggle").addEventListener("click", e => {
+  const btn = e.currentTarget;
+  const open = btn.getAttribute("aria-expanded") !== "true";
+  btn.setAttribute("aria-expanded", String(open));
+  $("#perCropBody").hidden = !open;
+  paintPerCrop();
+});
+$("#wideBtn").addEventListener("click", () => {
+  S.wide = !S.wide;
+  try { localStorage.setItem("dcv.wide", S.wide ? "1" : "0"); } catch(e){}
+  updateShell();
+  setTimeout(render, 60);            // the stage changed size; boxes and track follow it
+});
 $$("#outseg button").forEach(b => b.addEventListener("click", () => { S.outMode = b.dataset.out; if (S.outMode==="fixed") syncFixedToRatio(); render(); }));
 $$("#qseg button").forEach(b => b.addEventListener("click", () => { S.q = +b.dataset.q; render(); }));
 $$("#audseg button").forEach(b => b.addEventListener("click", () => { S.audio = b.dataset.aud; render(); }));
@@ -1260,21 +1469,22 @@ $("#clearAll").addEventListener("click", () => {
   if (S.url) URL.revokeObjectURL(S.url);
   S.file = null; S.url = ""; S.isSample = false; vid.removeAttribute("src"); vid.load();
   $("#sampleBtn").disabled = false;
-  $("#work").hidden = true; $("#drop").hidden = false;
+  updateShell();
 });
 $("#saveAll").addEventListener("click", () => {
   results.forEach((r,i) => setTimeout(() => saveOne(r), i * 350));
 });
 $("#fillBtn").addEventListener("click", () => {
   const b = S.boxes[S.sel]; if (!b) return;
-  b.x = 0; b.y = 0; b.w = 1; b.h = ratioLocked() ? hForW(1) : 1;
-  if (b.h > 1){ b.h = 1; b.w = wForH(1); }
+  const r = ratioOf(b);
+  b.x = 0; b.y = 0; b.w = 1; b.h = r.locked ? hForW(1, r) : 1;
+  if (b.h > 1){ b.h = 1; b.w = wForH(1, r); }
   b.x = (1-b.w)/2; b.y = (1-b.h)/2;
   fitBox(b); render();
 });
 $("#spreadBtn").addEventListener("click", () => {
   const n = S.boxes.length;
-  S.boxes = S.boxes.map((b,i) => { const d = defaultBox(i,n); d.w = b.w; d.h = b.h; d.t = false; return fitBox(d); });
+  S.boxes = S.boxes.map((b,i) => { const d = defaultBox(i,n,b); d.rid = b.rid; d.w = b.w; d.h = b.h; d.t = false; return fitBox(d); });
   render();
 });
 $$(".langs button").forEach(b => b.addEventListener("click", () => { S.lang = b.dataset.lang; applyLang(); }));
@@ -1282,6 +1492,7 @@ addEventListener("resize", () => { drawBoxes(); drawTrack(); });
 
 /* ===================== boot ===================== */
 S.lang = PAGE_LANG;
+try { S.wide = localStorage.getItem("dcv.wide") === "1"; } catch(e){}
 $("#rw").value = S.rw; $("#rh").value = S.rh;
 $("#ow").value = S.ow; $("#oh").value = S.oh;
 $("#pattern").value = S.pattern;
