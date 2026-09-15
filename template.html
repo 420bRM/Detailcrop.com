@@ -62,8 +62,7 @@ img{max-width:100%}
 .wrap{max-width:1500px; margin:0 auto; padding-inline:16px; padding-block:20px 48px}
 
 /* ---------- header ---------- */
-header.bar{display:flex; flex-wrap:wrap; align-items:flex-start; gap:6px 18px; margin-bottom:16px}
-.brandcol{flex:0 0 auto; display:flex; flex-direction:column; gap:7px; align-items:flex-start}
+header.bar{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 18px; margin-bottom:16px}
 .brand{
   font-family:var(--display); font-size:26px; letter-spacing:.01em; color:var(--fog);
   text-shadow:0 0 26px rgba(232,180,90,.22); line-height:1.1;
@@ -71,16 +70,7 @@ header.bar{display:flex; flex-wrap:wrap; align-items:flex-start; gap:6px 18px; m
 .brand a{color:inherit; text-decoration:none}
 .brand a:hover{color:#fff}
 .brand em{font-style:italic; color:var(--amber)}
-/* the two tools, switched right under the logo */
-.modes{display:inline-flex; border:1px solid var(--line); border-radius:3px; overflow:hidden; background:var(--sunk)}
-.modes a{
-  padding:5px 12px; font-size:12px; color:var(--ink-2); text-decoration:none;
-  border-right:1px solid var(--line-soft); white-space:nowrap;
-}
-.modes a:last-child{border-right:0}
-.modes a:hover{color:var(--ink); background:rgba(53,183,224,.08)}
-.modes a[aria-current="page"]{background:var(--amber); color:#12100b; font-weight:600}
-.tagline{color:var(--muted); font-size:13px; max-width:64ch; margin:6px 0 0}
+.tagline{color:var(--muted); font-size:13px; max-width:64ch; margin:0}
 .spacer{flex:1 1 auto}
 /* header actions */
 .headBtns{display:flex; gap:8px; flex:0 0 auto}
@@ -314,6 +304,8 @@ a.hbtn{text-decoration:none; display:inline-block}
 .card{background:var(--panel); border:1px solid var(--line-soft); border-radius:4px; box-shadow:var(--shadow)}
 .card .hd{padding:10px 12px; border-bottom:1px solid var(--line-soft); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); display:flex; align-items:center; justify-content:space-between; gap:8px}
 .card .bd{padding:12px}
+.sub .pick{letter-spacing:.02em; text-transform:none; color:var(--bc, var(--amber)); font-weight:600}
+.seg.ofcrop button[aria-pressed="true"]{background:var(--bc, var(--amber))}
 .sub{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin:14px 0 6px}
 .sub:first-child{margin-top:0}
 
@@ -431,6 +423,43 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
 .todayGeo{color:var(--teal); font-variant-numeric:tabular-nums; letter-spacing:.02em}
 .todayGeo::before{content:"·"; color:var(--muted); margin:0 7px 0 3px}
 
+
+/* ---------- the other tool, as a banner under the footer ----------
+   A link between two tools has to earn the trip, so it carries the pitch and
+   the accent colour of where it goes — teal for the video page, amber for
+   stills — and the light slides across it on hover. */
+.crossban{
+  position:relative; display:grid; grid-template-columns:6px minmax(0,1fr) auto;
+  align-items:center; gap:0 18px; margin-top:26px; padding:0; overflow:hidden; isolation:isolate;
+  border:1px solid var(--line-soft); border-radius:4px; text-decoration:none; color:inherit;
+  background:linear-gradient(100deg, var(--sunk) 0%, #10202a 52%, color-mix(in srgb, var(--cb) 16%, #10202a) 100%);
+  transition:border-color .18s, transform .18s;
+}
+.crossban:hover{border-color:var(--cb); transform:translateY(-1px)}
+.crossban::before{                       /* the slash of light that sweeps through */
+  content:""; position:absolute; z-index:-1; top:-40%; bottom:-40%; left:-30%; width:38%;
+  background:linear-gradient(90deg, transparent, color-mix(in srgb, var(--cb) 26%, transparent), transparent);
+  transform:translateX(-60%) skewX(-18deg); transition:transform .55s cubic-bezier(.22,.61,.36,1);
+}
+.crossban:hover::before{transform:translateX(320%) skewX(-18deg)}
+.cb-edge{align-self:stretch; background:var(--cb); box-shadow:0 0 22px -4px var(--cb)}
+.cb-text{padding:16px 0; min-width:0}
+.cb-kicker{display:block; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--cb)}
+.cb-title{display:block; font-family:var(--display); font-size:19px; color:var(--fog); margin-top:3px; letter-spacing:-.005em}
+.cb-title b{font-weight:400; font-style:italic; color:var(--cb)}
+.cb-title u{text-decoration:none; font-family:Archivo,system-ui,sans-serif; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-left:7px; vertical-align:middle}
+.cb-body{display:block; font-size:12.5px; color:var(--ink-2); margin-top:5px; max-width:60ch; line-height:1.6}
+.cb-go{padding:16px 20px 16px 0; font-size:12.5px; color:var(--cb); white-space:nowrap; font-weight:600}
+.cb-go i{font-style:normal; display:inline-block; transition:transform .18s}
+.crossban:hover .cb-go i{transform:translateX(4px)}
+@media (max-width:640px){
+  .crossban{grid-template-columns:4px minmax(0,1fr)}
+  .cb-go{grid-column:2; padding:0 0 16px}
+}
+@media (prefers-reduced-motion:reduce){
+  .crossban, .crossban::before, .cb-go i{transition:none}
+  .crossban:hover{transform:none}
+}
 .sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
 </style>
 </head>
@@ -438,13 +467,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
 <div class="wrap">
 
 <header class="bar">
-  <div class="brandcol">
-    <h1 class="brand"><a href="/" id="brandLink">Detail<em>Crop</em></a><span class="sr" data-i="h1sr"></span></h1>
-    <nav class="modes" id="modes" aria-label="DetailCrop">
-      <a id="modeStills" href="/" aria-current="page" data-i="modeStills"></a>
-      <a id="modeVideo" href="/video/" data-i="modeVideo"></a>
-    </nav>
-  </div>
+  <h1 class="brand"><a href="/" id="brandLink">Detail<em>Crop</em></a><span class="sr" data-i="h1sr"></span></h1>
   <p class="tagline" data-i="tagline"></p>
   <span class="spacer"></span>
   <div class="headBtns">
@@ -486,8 +509,13 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
         <section class="card">
           <div class="hd" data-i="settings"></div>
           <div class="bd">
-            <p class="sub" data-i="ratio"></p>
+            <p class="sub"><span data-i="ratio"></span><span class="pick" id="ratioPick">—</span></p>
+            <div class="seg" id="scopeseg" style="margin-bottom:6px">
+              <button type="button" data-scope="all" data-i="scopeAll"></button>
+              <button type="button" data-scope="one" data-i="scopeOne"></button>
+            </div>
             <div class="seg wrapseg" id="ratioseg"></div>
+            <p class="hint" id="ratioNote" style="margin:6px 0 0"></p>
             <div class="field" id="customRatioRow">
               <label data-i="custom"></label>
               <div class="xy">
@@ -659,6 +687,16 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
   </div>
 </footer>
 
+<a class="crossban" id="crossBan" href="/video/" style="--cb:var(--teal)">
+  <span class="cb-edge" aria-hidden="true"></span>
+  <span class="cb-text">
+    <span class="cb-kicker" data-i="cbKicker"></span>
+    <span class="cb-title">Detail<b>Crop</b> Video <u data-i="cbBeta"></u></span>
+    <span class="cb-body" data-i="cbBody"></span>
+  </span>
+  <span class="cb-go"><span data-i="cbGo"></span> <i aria-hidden="true">→</i></span>
+</a>
+
 <div class="tour" id="tour" hidden>
   <div class="tourRing" id="tourRing"></div>
   <div class="tourTip" id="tourTip" role="dialog" aria-live="polite">
@@ -739,7 +777,15 @@ const I18N = {
     tourNext:"Next",
     tourDone:"Got it",
     tourBtn:"How it works",
-    modeStills:"Images", modeVideo:"Video",
+    scopeAll:"Whole batch", scopeOne:"Selected crop",
+    pickCrop:(n)=>`crop ${n}`, pickAll:"every crop",
+    ratioNoteAll:"Every crop on every image takes this ratio, and new ones start on it.",
+    ratioNoteOne:"Only the selected crop changes, so one image can carry a 4:5 and a 16:9 at the same time.",
+    ratioNoteGrid:"A feed grid lays its own tiles, so the ratio stays on the whole batch while one is on.",
+    cbKicker:"The other half of DetailCrop",
+    cbBeta:"beta",
+    cbBody:"Same idea, moving pictures: drag several crops over one clip and they all come out as mp4 in a single pass — a 9:16 for Shorts, a 1:1 for the feed, a 4:5 for the carousel.",
+    cbGo:"Open the video tool",
     wideOn:"Work on a bigger canvas",
     wideOff:"Show the intro panel",
     sampleBadge:"SAMPLE",
@@ -805,7 +851,15 @@ const I18N = {
     tourNext:"다음",
     tourDone:"시작하기",
     tourBtn:"사용법 보기",
-    modeStills:"이미지", modeVideo:"영상",
+    scopeAll:"전체", scopeOne:"선택한 컷",
+    pickCrop:(n)=>`${n}번 컷`, pickAll:"모든 컷",
+    ratioNoteAll:"모든 이미지의 모든 컷이 이 비율을 따르고, 새로 만드는 컷도 이 비율로 시작합니다.",
+    ratioNoteOne:"선택한 컷만 바뀝니다. 한 이미지에서 4:5와 16:9를 동시에 잡을 수 있습니다.",
+    ratioNoteGrid:"피드 분할은 자기 조각을 따로 놓기 때문에, 켜져 있는 동안 비율은 전체에만 적용됩니다.",
+    cbKicker:"DetailCrop의 나머지 절반",
+    cbBeta:"베타",
+    cbBody:"같은 방식으로 움직이는 화면을 — 영상 하나 위에 컷을 여러 개 잡아두면 한 번의 재생으로 전부 mp4가 됩니다. 쇼츠용 9:16, 피드용 1:1, 캐러셀용 4:5를 한 번에.",
+    cbGo:"영상 크롭 열기",
     wideOn:"더 큰 화면에서 작업하기",
     wideOff:"설명 칸 다시 보기",
     sampleBadge:"예시",
@@ -871,7 +925,15 @@ const I18N = {
     tourNext:"次へ",
     tourDone:"はじめる",
     tourBtn:"使い方を見る",
-    modeStills:"画像", modeVideo:"動画",
+    scopeAll:"全体", scopeOne:"選択中のカット",
+    pickCrop:(n)=>`カット${n}`, pickAll:"全カット",
+    ratioNoteAll:"すべての画像のすべてのカットがこの比率になり、新しいカットもこの比率で始まります。",
+    ratioNoteOne:"選択中のカットだけが変わります。1枚の画像で4:5と16:9を同時に指定できます。",
+    ratioNoteGrid:"フィード分割は専用のタイルを敷くため、オンの間は比率が全体にのみ適用されます。",
+    cbKicker:"DetailCropのもう半分",
+    cbBeta:"ベータ",
+    cbBody:"同じ考え方で動く映像も — 1本の動画の上にカットをいくつも取れば、一度の再生ですべてmp4になります。ショート用9:16、フィード用1:1、カルーセル用4:5を一度に。",
+    cbGo:"動画ツールを開く",
     wideOn:"大きな画面で作業する",
     wideOff:"説明パネルを表示",
     sampleBadge:"見本",
@@ -1000,6 +1062,8 @@ const S = {
   cur: 0,
   sel: 0,
   ratioId: "2:3",
+  ratioScope: "all",          // "all" = the whole batch, "one" = the selected crop
+
   rw: 2, rh: 3,
   outMode: "native",
   ow: 1600, oh: 2400,
@@ -1037,9 +1101,8 @@ function applyLang(){
   if (typeof paintStatsToggle === "function") paintStatsToggle();
   $$(".langs button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === S.lang)));
   const sfx = S.lang === "en" ? "/" : "/" + S.lang + "/";
-  $("#modeStills").href = sfx;
-  $("#brandLink").href  = sfx;
-  $("#modeVideo").href  = "/video" + sfx;
+  $("#brandLink").href = sfx;
+  $("#crossBan").href  = "/video" + sfx;
   // ratio labels that are words
   $$("#ratioseg button").forEach(b => {
     if (b.dataset.r === "free") b.textContent = t.free;
@@ -1051,31 +1114,43 @@ function applyLang(){
 /* =====================================================================
    Ratio helpers
    ===================================================================== */
-function ratioLocked(){ return S.ratioId !== "free"; }
-function ratioVal(){ return S.rw / S.rh; }           // pixel aspect w/h
+/* The batch ratio is the one in Settings. A crop can carry its own instead —
+   that is what the scope toggle above the ratio buttons writes — and every
+   measurement below takes the box it is working on so the two never mix up. */
+function ratioOf(b){
+  if (b && b.rid){
+    const p = RATIO_PRESETS.find(x => x.id === b.rid);
+    if (b.rid === "free") return {id:"free", w:0, h:0, locked:false};
+    if (p && p.w) return {id:p.id, w:p.w, h:p.h, locked:true};
+    return {id:"custom", w:b.rw || S.rw, h:b.rh || S.rh, locked:true};
+  }
+  return {id:S.ratioId, w:S.rw, h:S.rh, locked:S.ratioId !== "free"};
+}
+function ratioLocked(b){ return ratioOf(b).locked; }
+function ratioVal(b){ const r = ratioOf(b); return r.w / r.h; }     // pixel aspect w/h
 
 // normalised height for a given normalised width, honouring the pixel ratio
-function hForW(wN, item){
-  return (wN * item.w) / ratioVal() / item.h;
+function hForW(wN, item, b){
+  return (wN * item.w) / ratioVal(b) / item.h;
 }
-function wForH(hN, item){
-  return (hN * item.h) * ratioVal() / item.w;
+function wForH(hN, item, b){
+  return (hN * item.h) * ratioVal(b) / item.w;
 }
 
 /* =====================================================================
    Box placement
    ===================================================================== */
-function defaultBoxSize(item, tight){
+function defaultBoxSize(item, tight, b){
   const target = tight ? 0.30 : 0.38;
-  if (!ratioLocked()){
+  if (!ratioLocked(b)){
     // free ratio: start square in *pixels*, sized off the shorter side
     const side = target * Math.min(item.w, item.h);
     return {w: clamp(side / item.w, 0.02, 1), h: clamp(side / item.h, 0.02, 1)};
   }
   let h = target;
-  let w = wForH(h, item);
-  if (w > 0.46){ w = 0.46; h = hForW(w, item); }
-  if (h > 0.46){ h = 0.46; w = wForH(h, item); }
+  let w = wForH(h, item, b);
+  if (w > 0.46){ w = 0.46; h = hForW(w, item, b); }
+  if (h > 0.46){ h = 0.46; w = wForH(h, item, b); }
   return {w, h};
 }
 
@@ -1496,12 +1571,12 @@ function placeNewBox(item){
 // re-fit every box to the current ratio, keeping the centre
 function refitBoxes(item){
   if (item.grid) return;                    // grid tiles are rebuilt, not refitted
-  if (!ratioLocked()) return;
   for (const b of item.boxes){
     const cx = b.x + b.w/2, cy = b.y + b.h/2;
-    let h = hForW(b.w, item);
+    if (!ratioLocked(b)) continue;
+    let h = hForW(b.w, item, b);
     let w = b.w;
-    if (h > 1){ h = 1; w = wForH(h, item); }
+    if (h > 1){ h = 1; w = wForH(h, item, b); }
     b.w = w; b.h = h;
     b.x = clamp(cx - w/2, 0, Math.max(0, 1 - w));
     b.y = clamp(cy - h/2, 0, Math.max(0, 1 - h));
@@ -1725,7 +1800,8 @@ function renderRail(){
   const it = cur();
   const t = T();
   $("#counter").textContent = `${S.cur + 1} / ${S.items.length}`;
-  $("#ratiotag").textContent = ratioLocked() ? `${S.rw}:${S.rh}` : t.free;
+  const rsel = ratioOf(it.boxes[S.sel]);
+  $("#ratiotag").textContent = rsel.locked ? `${rsel.w}:${rsel.h}` : t.free;
   $("#wtitle").textContent = it.file.name;
   $("#wmeta").textContent = t.dims(it.w, it.h);
 
@@ -1792,7 +1868,8 @@ function updateReadout(){
   const pw = Math.round(b.w * uw), ph = Math.round(b.h * uh);
   $("#roPos").textContent = `${px}, ${py}`;
   $("#roSize").textContent = `${pw} × ${ph}`;
-  const under = S.outMode === "fixed" && ratioLocked() && (pw < S.ow || ph < S.oh);
+  const frame = outFrame(b);
+  const under = !!frame && (pw < frame.w || ph < frame.h);
   $("#minwarn").hidden = !under;
 }
 
@@ -1811,11 +1888,28 @@ function renderSettings(){
       seg.appendChild(b);
     });
   }
+  const it = cur();
+  const box = it && it.boxes[S.sel];
+  const gridOn = !!(it && it.grid);
+  const one = S.ratioScope === "one" && !gridOn;
+  const shown = one ? ratioOf(box) : {id:S.ratioId, w:S.rw, h:S.rh};
+  const bc = one ? `var(${BOX_COLORS[S.sel % BOX_COLORS.length]})` : "var(--amber)";
+  seg.classList.toggle("ofcrop", one);
+  seg.style.setProperty("--bc", bc);
+  $("#ratioPick").style.setProperty("--bc", bc);
+  $("#ratioPick").textContent = one ? t.pickCrop(postNumber(it, S.sel)) : t.pickAll;
+  $("#ratioNote").textContent = gridOn ? t.ratioNoteGrid : one ? t.ratioNoteOne : t.ratioNoteAll;
+  Array.from($("#scopeseg").children).forEach(b => {
+    b.setAttribute("aria-pressed", String((b.dataset.scope === "one") === one));
+    if (b.dataset.scope === "one") b.disabled = gridOn || !box;
+  });
   Array.from(seg.children).forEach(b =>
-    b.setAttribute("aria-pressed", String(b.dataset.r === S.ratioId)));
+    b.setAttribute("aria-pressed", String(b.dataset.r === shown.id)));
 
-  $("#customRatioRow").hidden = S.ratioId !== "custom";
-  $("#rw").value = S.rw; $("#rh").value = S.rh;
+  $("#customRatioRow").hidden = shown.id !== "custom";
+  if (document.activeElement !== $("#rw") && document.activeElement !== $("#rh")){
+    $("#rw").value = shown.w || S.rw; $("#rh").value = shown.h || S.rh;
+  }
 
   Array.from($("#outseg").children).forEach(b =>
     b.setAttribute("aria-pressed", String(b.dataset.out === S.outMode)));
@@ -1882,12 +1976,25 @@ function setCount(n){
 }
 
 function setRatio(id){
+  const it = cur();
+  /* "Selected crop" writes the ratio to that one box and leaves the batch
+     alone. A feed grid lays its own tiles, so it always takes the batch. */
+  if (S.ratioScope === "one" && it && !it.grid && it.boxes[S.sel]){
+    const b = it.boxes[S.sel];
+    b.rid = id;
+    if (id === "custom"){ b.rw = S.rw; b.rh = S.rh; }
+    refitBoxes(it);
+    render();
+    return;
+  }
   S.ratioId = id;
   const p = RATIO_PRESETS.find(x => x.id === id);
   if (p && p.w){ S.rw = p.w; S.rh = p.h; }
   if (id === "free" && S.outMode === "fixed") S.outMode = "native";
   if (id === "free") S.items.forEach(i => { if (i.grid){ i.grid = null; i.gridRect = null; } });
   S.items.forEach(i => { if (i.grid) clampGrid(i); });
+  // the batch ratio is the whole batch: crops that had their own give it up
+  S.items.forEach(i => i.boxes.forEach(b => { b.rid = null; }));
   refitAll();
   render();
   savePrefs();
@@ -1925,8 +2032,8 @@ function nudge(dir, big){
 function resizeBox(b, newW, it){
   const cx = b.x + b.w/2, cy = b.y + b.h/2;
   let w = clamp(newW, 0.02, 1);
-  let h = ratioLocked() ? hForW(w, it) : b.h * (w / b.w);
-  if (h > 1){ h = 1; w = ratioLocked() ? wForH(h, it) : w; }
+  let h = ratioLocked(b) ? hForW(w, it, b) : b.h * (w / b.w);
+  if (h > 1){ h = 1; w = ratioLocked(b) ? wForH(h, it, b) : w; }
   h = clamp(h, 0.02, 1);
   b.w = w; b.h = h;
   b.x = clamp(cx - w/2, 0, 1 - w);
@@ -2012,13 +2119,13 @@ function afterBoxChange(){
       b.x = clamp(drag.ox + dx, 0, 1 - b.w);
       b.y = clamp(drag.oy + dy, 0, 1 - b.h);
     } else {
-      if (ratioLocked()){
+      if (ratioLocked(b)){
         const w = clamp(drag.ow + dx, 0.02, 1 - drag.ox);
-        let h = hForW(w, it);
+        let h = hForW(w, it, b);
         if (drag.oy + h > 1){ h = 1 - drag.oy; }
-        b.w = ratioLocked() ? wForH(h, it) : w;
+        b.w = wForH(h, it, b);
         b.h = h;
-        if (b.w > 1 - drag.ox){ b.w = 1 - drag.ox; b.h = hForW(b.w, it); }
+        if (b.w > 1 - drag.ox){ b.w = 1 - drag.ox; b.h = hForW(b.w, it, b); }
       } else {
         b.w = clamp(drag.ow + dx, 0.02, 1 - drag.ox);
         b.h = clamp(drag.oh + dy, 0.02, 1 - drag.oy);
@@ -2138,6 +2245,19 @@ function fileNameFor(item, idx, imgIdx, ow, oh){
   return sanitize(out) + "." + extFor(S.fmt);
 }
 
+/* The fixed output frame is written for the batch ratio. A crop that carries
+   its own gets a frame of the same area, so every file still lands in the same
+   resolution class instead of one of them coming out twice the size. */
+function outFrame(b){
+  if (!(S.outMode === "fixed" && ratioLocked())) return null;
+  const r = ratioOf(b);
+  if (!b || !b.rid) return {w: S.ow, h: S.oh};
+  if (!r.locked) return null;                       // a free crop keeps its own pixels
+  const area = S.ow * S.oh, k = r.w / r.h;
+  return {w: Math.max(1, Math.round(Math.sqrt(area * k))),
+          h: Math.max(1, Math.round(Math.sqrt(area / k)))};
+}
+
 function drawCrop(img, b, item){
   const g = geo(item);
   const uw = g.uw, uh = g.uh;
@@ -2145,7 +2265,8 @@ function drawCrop(img, b, item){
   const sh = Math.max(1, Math.round(b.h * uh));
 
   let ow, oh;
-  if (S.outMode === "fixed" && ratioLocked()){ ow = S.ow; oh = S.oh; }
+  const frame = outFrame(b);
+  if (frame){ ow = frame.w; oh = frame.h; }
   else { ow = sw; oh = sh; }
 
   // step down in halves for a clean downscale
@@ -2434,14 +2555,32 @@ $("#alignToggle").addEventListener("click", e => {
   if (!ok) $("#perspRows").hidden = true;
 })();
 
-$("#rw").addEventListener("input", e => {
-  const v = parseInt(e.target.value, 10);
-  if (v > 0){ S.rw = v; refitAll(); render(); }
-});
-$("#rh").addEventListener("input", e => {
-  const v = parseInt(e.target.value, 10);
-  if (v > 0){ S.rh = v; refitAll(); render(); }
-});
+function setCustomSide(field, v){
+  if (!(v > 0)) return;
+  const it = cur();
+  const b = it && it.boxes[S.sel];
+  if (S.ratioScope === "one" && it && !it.grid && b){
+    if (!b.rid || b.rid !== "custom"){ b.rw = S.rw; b.rh = S.rh; b.rid = "custom"; }
+    b[field] = v;
+    refitBoxes(it);
+  } else {
+    S[field] = v;
+    S.items.forEach(i => i.boxes.forEach(x => { x.rid = null; }));
+    refitAll();
+  }
+  render();
+}
+$("#rw").addEventListener("input", e => setCustomSide("rw", parseInt(e.target.value, 10)));
+$("#rh").addEventListener("input", e => setCustomSide("rh", parseInt(e.target.value, 10)));
+
+Array.from($("#scopeseg").children).forEach(b => b.addEventListener("click", () => {
+  if (b.disabled) return;
+  S.ratioScope = b.dataset.scope;
+  /* coming back to the whole batch puts every crop on the one ratio again, so
+     the toggle always says what the crops are actually doing */
+  if (S.ratioScope === "all") setRatio(S.ratioId);
+  else render();
+}));
 
 Array.from($("#outseg").children).forEach(b => b.addEventListener("click", () => {
   if (b.disabled) return;

@@ -122,6 +122,20 @@ so a seam samples the same texels its neighbour does; a full-frame warp of a
 Crop rotation is deliberately absent. A tilted box on a level photo yields the
 same picture and a much less obvious control.
 
+**One ratio, or one crop's ratio.** The toggle above the ratio buttons is the
+same one the video page carries. **Whole batch** is the default and the
+original behaviour: the ratio is a property of the job, so every crop of
+every image follows it. **Selected crop** gives one box a ratio of its own —
+on export it gets a frame of the same *area* as the fixed output size, so a
+16:9 exception inside a 1000 × 1000 batch comes out 1333 × 750 rather than
+twice the file size of everything around it. A feed grid lays its own tiles,
+so while one is on the toggle stays on the whole batch.
+
+**The two tools link to each other from the footer**, as a banner in the
+other tool's accent colour rather than a button in the header — the header is
+for the job in front of you. Both pages carry it; the markup and the CSS are
+the same on each side, so a change to one belongs in both.
+
 **Numbers are posting order, not reading order.** A profile grid stacks
 newest first, so the bottom-right tile must be posted before the top-left
 one. On-canvas tags and filenames both count in posting order, and grid
@@ -143,24 +157,34 @@ confirmed. **Export every clip** runs each one in turn and **Save all as
 zip** brings the whole batch down as one file. Colliding file names pick up
 a counter rather than overwriting each other inside the zip.
 
-**Every crop owns its own ratio and its own range.** The ratio buttons in
-Settings apply to the selected crop, not to the batch, so one clip can carry
-a 9:16 for Shorts, a 1:1 for the feed and a 4:5 for the carousel at once —
-with a fixed output size each of them gets the frame its own ratio calls
-for. The timeline underneath gives every crop a lane of its own: drag the
-middle to slide its range, the ends to trim, the ruler to scrub, and click
-any lane to select that crop.
+**Every crop owns its own ratio and its own range.** A toggle above the
+ratio buttons says how far a change reaches: **whole clip** — the default —
+writes it to every crop of every clip and to the ones added later, while
+**selected crop** writes it to the one, so a single clip can carry a 9:16 for
+Shorts, a 1:1 for the feed and a 4:5 for the carousel at once. With a fixed
+output size each of them gets the frame its own ratio calls for. The
+timeline underneath gives every crop a lane of its own: drag the middle to
+slide its range, the ends to trim, the ruler to scrub, and click any lane to
+select that crop.
 
 **Six crops per clip**, the same ceiling and the same six box colours as the
-stills page.
+stills page. The clip the page opens on arrives with all six already
+scattered over the frame at varying sizes, because a row of identical boxes
+does not say "several at once, anywhere" the way a scatter does.
+
+**Playback rides the frame clock.** `timeupdate` fires about four times a
+second, which reads as a playhead lurching along, so while a clip plays the
+page follows `requestAnimationFrame` instead and moves the playhead with a
+transform — no layout per frame — and redraws the crop previews at about
+8 fps.
 
 Every clip is probed on the way in — metadata for the readouts and one frame
 for the thumbnail. A clip recorded in a browser arrives with no duration in
 its header, so the probe seeks past the end to make the browser go and find
 it before reading it back.
 
-The page opens on the built-in sample with three crops already placed, the
-way the stills page opens on its plate: the editor is up and working before
+The page opens on the built-in sample, the way the stills page opens on its
+plate: the editor is up and working before
 anyone has chosen a file. A browser that cannot decode the sample (Chromium
 builds without the licensed H.264 decoder, which includes the one Playwright
 ships) drops back to the empty state without complaining.
