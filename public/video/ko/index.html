@@ -858,8 +858,13 @@ const S = {
   /* A clip that comes off a camera or a phone is 16:9, so that is what the
      page opens on: the first thing anyone does is place crops, not convert.
      Output starts at the crop's own pixels for the same reason — a fixed
-     frame is a choice, and scaling a small crop up to one is not a default. */
-  ratioId:"16:9", rw:16, rh:9, ratioScope:"all",
+     frame is a choice, and scaling a small crop up to one is not a default.
+     The scope starts on the selected crop, because the crops this page opens
+     with share a ratio but not a width: reaching for the ratio buttons here
+     usually means "this one crop", and whole clip is one click away. The
+     stills page keeps the whole batch as its default — there the one ratio
+     across everything is the point of the tool. */
+  ratioId:"16:9", rw:16, rh:9, ratioScope:"one",
   outMode:"native",
   q:1, audio:"keep", mode:"exact", fps:30,
   pattern:"{name}-v{n}",
