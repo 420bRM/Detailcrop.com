@@ -145,9 +145,9 @@ def build_video():
         # the links the page renders without JavaScript; applyLang() keeps them
         # in step once the visitor switches language
         stills = "/" if code == "en" else "/%s/" % code
-        s = s.replace('<a id="modeStills" href="/"', '<a id="modeStills" href="%s"' % stills, 1)
         s = s.replace('<a href="/video/" id="brandLink"', '<a href="%s" id="brandLink"' % cfg["path"], 1)
-        s = s.replace('<a id="modeVideo" href="/video/"', '<a id="modeVideo" href="%s"' % cfg["path"], 1)
+        s = s.replace('<a class="crossban" id="crossBan" href="/"',
+                      '<a class="crossban" id="crossBan" href="%s"' % stills, 1)
         s = s.replace('const PAGE_LANG = "__LANG__";', 'const PAGE_LANG = "%s";' % code, 1)
         assert "__LANG__" not in s and "__HEAD_URLS__" not in s, code
         dest = os.path.join(OUT, cfg["file"])
