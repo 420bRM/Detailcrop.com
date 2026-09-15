@@ -169,8 +169,22 @@ select that crop.
 
 **Six crops per clip**, the same ceiling and the same six box colours as the
 stills page. The clip the page opens on arrives with all six already
-scattered over the frame at varying sizes, because a row of identical boxes
-does not say "several at once, anywhere" the way a scatter does.
+scattered over the frame at varying sizes — cells keep them off each other,
+a shuffle and some jitter keep the grid from showing — because a row of
+identical boxes does not say "several at once, anywhere" the way a scatter
+does.
+
+**The page opens on 16:9 at the crop's own pixels.** Footage arrives 16:9,
+and the first thing anyone does is place crops rather than convert, so that
+is the ratio the buttons start on. Output starts on *crop size* for the same
+reason: a fixed frame is a choice, and scaling a 200 px crop up to a 1280 px
+frame — with the warning that comes with it — is not a thing to do to
+someone before they have touched anything.
+
+**There is a walkthrough**, the stills page's tour pointed at this page's
+parts: the box on the stage, the crop count, the previews, the ratio scope,
+the timeline lanes, the filmstrip, export. The button pulses until it has
+been opened once (`dcv.tour` in `localStorage`).
 
 **Playback rides the frame clock.** `timeupdate` fires about four times a
 second, which reads as a playhead lurching along, so while a clip plays the
