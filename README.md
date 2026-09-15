@@ -9,12 +9,16 @@ Live at <https://detailcrop.com>. Also answers on `*.workers.dev`, which is
 served with `noindex` so the two hostnames do not compete in search.
 
 ```
-template.html           the tool — the only file to edit
-build.py                writes the three language pages below
+template.html           the stills tool — one of the two files to edit
+template-video.html     the video tool (/video/, still noindex)
+build.py                writes the six language pages below
 public/
   index.html            en  →  /
   ko/index.html         ko  →  /ko/
   ja/index.html         ja  →  /ja/
+  video/index.html      en  →  /video/
+  video/ko/index.html   ko  →  /video/ko/
+  video/ja/index.html   ja  →  /video/ja/
   og.jpg  og.png        share image (og tags point at the .jpg)
   favicon.ico           16/32/48/64/128/256, each drawn at its own size
   apple-touch-icon.png  180
@@ -26,10 +30,11 @@ src/
 wrangler.jsonc
 ```
 
-The three language pages are the same file with a different default
-language, `<title>`, description, canonical and JSON-LD. **They are
-generated. Edit `template.html`, then run `python3 build.py`** — a change
-hand-typed into `public/ko/index.html` is gone the next time anyone builds.
+Each tool's three language pages are the same file with a different default
+language, `<title>`, description and canonical (the stills pages also carry
+JSON-LD). **They are generated. Edit `template.html` or
+`template-video.html`, then run `python3 build.py`** — a change hand-typed
+into `public/ko/index.html` is gone the next time anyone builds.
 
 ## Deploy
 
@@ -121,6 +126,49 @@ same picture and a much less obvious control.
 newest first, so the bottom-right tile must be posted before the top-left
 one. On-canvas tags and filenames both count in posting order, and grid
 exports are named `-post01`…`-post09` unless the user set their own pattern.
+
+## The video tool (/video/)
+
+Same idea as the stills page, one clip at a time: drag boxes over the
+footage, several at once, and every box comes out as its own mp4. Decoding
+is the `<video>` element, encoding is WebCodecs, muxing is mp4-muxer
+inlined into the page, and the zip writer is the same hand-rolled one — so
+nothing leaves the browser here either. It is `noindex` and out of the
+sitemap while it is in testing; publishing it means deleting one meta line
+and adding three URLs to the sitemap.
+
+**A batch, like the stills page.** Drop several clips and the filmstrip
+above the stage steps through them; a green dot marks each clip you have
+confirmed. **Export every clip** runs each one in turn and **Save all as
+zip** brings the whole batch down as one file. Colliding file names pick up
+a counter rather than overwriting each other inside the zip.
+
+**Every crop owns its own ratio and its own range.** The ratio buttons in
+Settings apply to the selected crop, not to the batch, so one clip can carry
+a 9:16 for Shorts, a 1:1 for the feed and a 4:5 for the carousel at once —
+with a fixed output size each of them gets the frame its own ratio calls
+for. The timeline underneath gives every crop a lane of its own: drag the
+middle to slide its range, the ends to trim, the ruler to scrub, and click
+any lane to select that crop.
+
+**Six crops per clip**, the same ceiling and the same six box colours as the
+stills page.
+
+Every clip is probed on the way in — metadata for the readouts and one frame
+for the thumbnail. A clip recorded in a browser arrives with no duration in
+its header, so the probe seeks past the end to make the browser go and find
+it before reading it back.
+
+The page opens on the built-in sample with three crops already placed, the
+way the stills page opens on its plate: the editor is up and working before
+anyone has chosen a file. A browser that cannot decode the sample (Chromium
+builds without the licensed H.264 decoder, which includes the one Playwright
+ships) drops back to the empty state without complaining.
+
+**Codec.** H.264 first, because it is the one every phone, editor and upload
+form takes. VP9 and AV1 are the fallback for browsers built without the
+licensed encoder; the files still go in an .mp4 and the page says so,
+because Safari will not play them.
 
 ## The /stats dashboard
 

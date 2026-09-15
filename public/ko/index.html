@@ -67,13 +67,25 @@ img{max-width:100%}
 .wrap{max-width:1500px; margin:0 auto; padding-inline:16px; padding-block:20px 48px}
 
 /* ---------- header ---------- */
-header.bar{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 18px; margin-bottom:16px}
+header.bar{display:flex; flex-wrap:wrap; align-items:flex-start; gap:6px 18px; margin-bottom:16px}
+.brandcol{flex:0 0 auto; display:flex; flex-direction:column; gap:7px; align-items:flex-start}
 .brand{
   font-family:var(--display); font-size:26px; letter-spacing:.01em; color:var(--fog);
-  text-shadow:0 0 26px rgba(232,180,90,.22);
+  text-shadow:0 0 26px rgba(232,180,90,.22); line-height:1.1;
 }
+.brand a{color:inherit; text-decoration:none}
+.brand a:hover{color:#fff}
 .brand em{font-style:italic; color:var(--amber)}
-.tagline{color:var(--muted); font-size:13px; max-width:64ch; margin:0}
+/* the two tools, switched right under the logo */
+.modes{display:inline-flex; border:1px solid var(--line); border-radius:3px; overflow:hidden; background:var(--sunk)}
+.modes a{
+  padding:5px 12px; font-size:12px; color:var(--ink-2); text-decoration:none;
+  border-right:1px solid var(--line-soft); white-space:nowrap;
+}
+.modes a:last-child{border-right:0}
+.modes a:hover{color:var(--ink); background:rgba(53,183,224,.08)}
+.modes a[aria-current="page"]{background:var(--amber); color:#12100b; font-weight:600}
+.tagline{color:var(--muted); font-size:13px; max-width:64ch; margin:6px 0 0}
 .spacer{flex:1 1 auto}
 /* header actions */
 .headBtns{display:flex; gap:8px; flex:0 0 auto}
@@ -431,11 +443,16 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
 <div class="wrap">
 
 <header class="bar">
-  <h1 class="brand">Detail<em>Crop</em><span class="sr" data-i="h1sr"></span></h1>
+  <div class="brandcol">
+    <h1 class="brand"><a href="/" id="brandLink">Detail<em>Crop</em></a><span class="sr" data-i="h1sr"></span></h1>
+    <nav class="modes" id="modes" aria-label="DetailCrop">
+      <a id="modeStills" href="/" aria-current="page" data-i="modeStills"></a>
+      <a id="modeVideo" href="/video/" data-i="modeVideo"></a>
+    </nav>
+  </div>
   <p class="tagline" data-i="tagline"></p>
   <span class="spacer"></span>
   <div class="headBtns">
-    <a class="hbtn" id="videoBtn" href="/video/" data-i="videoBtn"></a>
     <button type="button" class="hbtn" id="tourBtn" data-i="tourBtn"></button>
     <button type="button" class="hbtn" id="wideBtn" aria-pressed="false"></button>
   </div>
@@ -727,7 +744,7 @@ const I18N = {
     tourNext:"Next",
     tourDone:"Got it",
     tourBtn:"How it works",
-    videoBtn:"Video →",
+    modeStills:"Images", modeVideo:"Video",
     wideOn:"Work on a bigger canvas",
     wideOff:"Show the intro panel",
     sampleBadge:"SAMPLE",
@@ -793,7 +810,7 @@ const I18N = {
     tourNext:"다음",
     tourDone:"시작하기",
     tourBtn:"사용법 보기",
-    videoBtn:"영상 →",
+    modeStills:"이미지", modeVideo:"영상",
     wideOn:"더 큰 화면에서 작업하기",
     wideOff:"설명 칸 다시 보기",
     sampleBadge:"예시",
@@ -859,7 +876,7 @@ const I18N = {
     tourNext:"次へ",
     tourDone:"はじめる",
     tourBtn:"使い方を見る",
-    videoBtn:"動画 →",
+    modeStills:"画像", modeVideo:"動画",
     wideOn:"大きな画面で作業する",
     wideOff:"説明パネルを表示",
     sampleBadge:"見本",
@@ -1024,7 +1041,10 @@ function applyLang(){
   if (typeof tourIdx === "number" && tourIdx >= 0) paintTourStep();
   if (typeof paintStatsToggle === "function") paintStatsToggle();
   $$(".langs button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === S.lang)));
-  $("#videoBtn").href = S.lang === "en" ? "/video/" : "/video/" + S.lang + "/";
+  const sfx = S.lang === "en" ? "/" : "/" + S.lang + "/";
+  $("#modeStills").href = sfx;
+  $("#brandLink").href  = sfx;
+  $("#modeVideo").href  = "/video" + sfx;
   // ratio labels that are words
   $$("#ratioseg button").forEach(b => {
     if (b.dataset.r === "free") b.textContent = t.free;
