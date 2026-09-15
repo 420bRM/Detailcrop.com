@@ -1556,6 +1556,7 @@ async function addFiles(fileList, isSample){
   render();
 
   if (!isSample && accepted.length){
+    markAdded();
     const fresh = S.items.filter(i => !i.isSample).slice(-accepted.length);
     track("add", {
       n: accepted.length,
@@ -1777,7 +1778,10 @@ function renderSettings(){
       const b = document.createElement("button");
       b.type = "button"; b.dataset.r = p.id;
       b.textContent = p.id === "free" ? t.free : p.id === "custom" ? t.custom : p.id;
-      b.addEventListener("click", () => setRatio(p.id));
+      b.addEventListener("click", () => {
+        if (p.id === "custom") markUse("custom");
+        setRatio(p.id);
+      });
       seg.appendChild(b);
     });
   }
@@ -2036,6 +2040,7 @@ $$("[data-nudge]").forEach(btn => {
   const go = big => nudge(btn.dataset.nudge, big);
   const start = e => {
     if (S.busy) return;
+    markUse("nudge");
     go(e.shiftKey);
     delay = 260;
     const tick = () => {
@@ -2065,9 +2070,9 @@ document.addEventListener("keydown", e => {
     return;
   }
   const map = {ArrowLeft:"left", ArrowRight:"right", ArrowUp:"up", ArrowDown:"down"};
-  if (map[e.key]){ nudge(map[e.key], e.shiftKey); e.preventDefault(); return; }
-  if (e.key === "+" || e.key === "="){ nudge("bigger", e.shiftKey); e.preventDefault(); return; }
-  if (e.key === "-" || e.key === "_"){ nudge("smaller", e.shiftKey); e.preventDefault(); return; }
+  if (map[e.key]){ markUse("nudge"); nudge(map[e.key], e.shiftKey); e.preventDefault(); return; }
+  if (e.key === "+" || e.key === "="){ markUse("nudge"); nudge("bigger", e.shiftKey); e.preventDefault(); return; }
+  if (e.key === "-" || e.key === "_"){ markUse("nudge"); nudge("smaller", e.shiftKey); e.preventDefault(); return; }
   if (e.key === "Enter"){ confirmNext(); e.preventDefault(); return; }
   if (e.key === "["){ S.cur = clamp(S.cur - 1, 0, S.items.length - 1); S.sel = 0; render(); e.preventDefault(); return; }
   if (e.key === "]"){ S.cur = clamp(S.cur + 1, 0, S.items.length - 1); S.sel = 0; render(); e.preventDefault(); return; }
@@ -2221,7 +2226,8 @@ async function runExport(only){
       persp: targets.reduce((a, t) => Math.max(a, Math.abs(khOf(t)), Math.abs(kvOf(t))), 0),
       ow: S.outMode === "fixed" ? S.ow : 0,
       oh: S.outMode === "fixed" ? S.oh : 0,
-      q: S.quality
+      q: S.quality,
+      secs: elapsedSecs()
     });
   } catch (err){
     console.error(err);
@@ -2280,6 +2286,7 @@ async function loadSample(){
   }
 }
 $("#sampleBtn").addEventListener("click", async () => {
+  markUse("sample");
   const btn = $("#sampleBtn");
   btn.disabled = true;
   try { await loadSample(); } catch (err){ console.error(err); }
@@ -2307,19 +2314,24 @@ document.addEventListener("drop", e => {
 });
 
 $("#autoBtn").addEventListener("click", () => {
+  markUse("auto");
   const it = cur();
   it.grid = null; it.gridRect = null;
   it.boxes = layoutBoxes(it, Math.max(1, it.boxes.length), false);
   render();
 });
 $("#spreadBtn").addEventListener("click", () => {
+  markUse("spread");
   const it = cur();
   it.grid = null; it.gridRect = null;
   it.boxes = layoutBoxes(it, Math.max(1, it.boxes.length), true);
   render();
 });
 Array.from($("#feedseg").children).forEach(b =>
-  b.addEventListener("click", () => applyFeedGrid(+b.dataset.feed)));
+  b.addEventListener("click", () => {
+    if (+b.dataset.feed) markUse("grid");
+    applyFeedGrid(+b.dataset.feed);
+  }));
 $("#nextBtn").addEventListener("click", confirmNext);
 
 let gridTimer = null;
@@ -2370,7 +2382,10 @@ function applyWarp(field, v){
  ["#khSlider",  "#khReset",  "kh"],
  ["#kvSlider",  "#kvReset",  "kv"]].forEach(([sel, btn, field]) => {
   const el = $(sel);
-  el.addEventListener("input", e => { showGuide(true); applyWarp(field, parseFloat(e.target.value)); });
+  el.addEventListener("input", e => {
+    markUse(field === "rot" ? "rot" : "persp");
+    showGuide(true); applyWarp(field, parseFloat(e.target.value));
+  });
   el.addEventListener("pointerdown", () => showGuide(true));
   ["pointerup", "blur", "change"].forEach(ev => el.addEventListener(ev, () => showGuide(false)));
   $(btn).addEventListener("click", () => { showGuide(true); applyWarp(field, 0); showGuide(false); });
@@ -2434,6 +2449,7 @@ $("#clearAll").addEventListener("click", () => {
   if (!confirm(T().confirmClear)) return;
   S.items.forEach(i => URL.revokeObjectURL(i.url));
   S.items = []; S.cur = 0; S.sel = 0;
+  addedAt = 0;
   $("#art").removeAttribute("data-id");
   $("#art").removeAttribute("src");
   render();
@@ -2516,6 +2532,23 @@ function track(event, extra){
                    headers:{"content-type":"application/json"}});
     }
   } catch {}
+}
+/* When the first file of a run landed. Reset when the batch is cleared, so a
+   second run in the same tab is timed from its own start, not the first one. */
+let addedAt = 0;
+function markAdded(){ if (!addedAt) addedAt = Date.now(); }
+function elapsedSecs(){
+  if (!addedAt) return 0;
+  // capped so a tab left open overnight cannot drag the average
+  return Math.min(1800, Math.round((Date.now() - addedAt) / 1000));
+}
+/* One beacon per feature per page load — the arrow nudges alone would otherwise
+   fire dozens of times in a single session. */
+const usedFeatures = new Set();
+function markUse(feat){
+  if (usedFeatures.has(feat)) return;
+  usedFeatures.add(feat);
+  track("use", { feat: feat });
 }
 function paintStatsToggle(){
   const b = $("#statsToggle");
@@ -2632,6 +2665,7 @@ function goTourStep(i){
   const el = document.querySelector(TOUR[tourIdx].sel);
   if (!el){ goTourStep(tourIdx + 1); return; }
   tourEl = el;
+  track("tour", { step: tourIdx + 1 });
   el.scrollIntoView({block:"center", behavior:"smooth"});
   paintTourStep();
   setTimeout(repositionTour, 60);
@@ -2655,6 +2689,7 @@ $("#tourBtn").addEventListener("click", () => {
   endTour(); startTour();
 });
 $("#wideBtn").addEventListener("click", () => {
+  markUse("wide");
   S.wide = !S.wide;
   updateShell();
   savePrefs();

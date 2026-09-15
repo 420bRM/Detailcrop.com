@@ -9,7 +9,7 @@
 
 import { statsPage, todayJSON } from "./stats.js";
 
-const ALLOWED_EVENTS = new Set(["visit", "add", "export", "skip"]);
+const ALLOWED_EVENTS = new Set(["visit", "add", "export", "skip", "use", "tour"]);
 const MAX_BODY = 1024;
 const BOT_UA = /bot|crawler|spider|crawl|slurp|headless|phantom|puppeteer|playwright|python-requests|curl\/|wget|scrapy|monitor|preview|fetch|http-client|axios|okhttp/;
 
@@ -80,7 +80,8 @@ async function recordEvent(request, env) {
       str(d.fmt, 16),                            // blob6  output format
       str(d.out, 8),                             // blob7  native | fixed
       str(d.id, 24),                             // blob8  anonymous id
-      vw > 0 && vw < 820 ? "mobile" : "desktop"  // blob9  device class
+      vw > 0 && vw < 820 ? "mobile" : "desktop", // blob9  device class
+      str(d.feat, 24)                            // blob10 feature key ('use' events)
     ],
     doubles: [
       num(d.v),      // double1  visit number for this browser
@@ -97,7 +98,9 @@ async function recordEvent(request, env) {
       num(d.bad),    // double12 files rejected for not being images
       num(d.huge),   // double13 files past the canvas side limit
       num(d.rot),    // double14 largest straighten angle used, degrees
-      num(d.persp)   // double15 largest keystone slider used, 0-100
+      num(d.persp),  // double15 largest keystone slider used, 0-100
+      num(d.secs),   // double16 seconds from first add to export ('export' events)
+      num(d.step)    // double17 walkthrough step reached ('tour' events)
     ]
   });
 
