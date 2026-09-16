@@ -1037,36 +1037,35 @@ function defaultBox(i, n, it, from){
   return fitBox(b, it);
 }
 
-/* The clip the page opens on gets a full set of crops, scattered over the
-   frame at sizes that vary — one look at it says "several at once, anywhere",
-   which a row of identical boxes does not. Hand-placed from the start, so
-   changing the crop count leaves them where they are. */
-function scatterBoxes(it, n){
-  const R = (a, b) => a + Math.random() * (b - a);
-  /* Cells keep the boxes off each other; the shuffle and the jitter keep the
-     grid from showing. Sizes vary because six boxes of one size read as a
-     contact sheet rather than as six crops someone placed. */
-  const cols = 3, rows = Math.ceil(n / cols);
-  const cells = Array.from({length: cols * rows}, (_, i) => i);
-  for (let i = cells.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i + 1));
-    [cells[i], cells[j]] = [cells[j], cells[i]];
-  }
-  const out = [];
-  for (let i = 0; i < n; i++){
-    const b = {x:0, y:0, w:.2, h:.2, t:true, rid:S.ratioId, rw:S.rw, rh:S.rh, tin:0, tout:it.dur, ow:0, oh:0};
-    const r = ratioOf(b);
-    const wMax = r.locked ? Math.min(.42, wForH(.42, r, it)) : .34;
-    b.w = clamp(R(.11, .25), .06, wMax);
+/* The clip the page opens on gets a full set of crops in a layout that was
+   placed by hand rather than generated: six boxes on one ratio at six
+   different widths, spread over the frame the way someone actually working
+   would leave them. Random placement made a different first impression on
+   every load and none of them was the one we wanted.
+
+   Coordinates are fractions of the frame — x, y and width, with the height
+   following whatever ratio is in force. They were read off the layout drawn
+   on a 1280 × 720 plate, so they land on that plate exactly and stay
+   sensible on anything else. */
+const OPENING_CROPS = [
+  {x:.295, y:.400, w:.396},
+  {x:.768, y:.601, w:.179},
+  {x:.070, y:.660, w:.152},
+  {x:.132, y:.570, w:.268},
+  {x:.584, y:.646, w:.224},
+  {x:.575, y:.169, w:.168}
+];
+function openingBoxes(it, n){
+  return OPENING_CROPS.slice(0, n).map(c => {
+    /* hand-placed from the start: changing the crop count leaves them alone */
+    const b = {x:c.x, y:c.y, w:c.w, h:c.w, t:true, rid:S.ratioId, rw:S.rw, rh:S.rh,
+               tin:0, tout:it.dur, ow:0, oh:0};
     fitBox(b, it);
-    const c = cells[i];
-    const cx = ((c % cols) + .5) / cols, cy = (Math.floor(c / cols) + .5) / rows;
-    b.x = clamp(cx + R(-.085, .085) - b.w / 2, 0, 1 - b.w);
-    b.y = clamp(cy + R(-.11, .11) - b.h / 2, 0, 1 - b.h);
+    b.x = clamp(c.x, 0, 1 - b.w);
+    b.y = clamp(c.y, 0, 1 - b.h);
     syncFixed(b, it);
-    out.push(fitBox(b, it));
-  }
-  return out;
+    return fitBox(b, it);
+  });
 }
 
 /* ===================== loading =====================
@@ -1154,7 +1153,7 @@ async function addFiles(list, isSample){
       vw: meta.vw, vh: meta.vh, dur: meta.dur, thumb: meta.thumb,
       boxes: [], sel: 0
     };
-    it.boxes = isSample ? scatterBoxes(it, MAX_CROPS) : [defaultBox(0, 1, it)];
+    it.boxes = isSample ? openingBoxes(it, MAX_CROPS) : [defaultBox(0, 1, it)];
     S.items.push(it);
   }
 

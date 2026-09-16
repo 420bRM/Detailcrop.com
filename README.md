@@ -168,11 +168,13 @@ slide its range, the ends to trim, the ruler to scrub, and click any lane to
 select that crop.
 
 **Six crops per clip**, the same ceiling and the same six box colours as the
-stills page. The clip the page opens on arrives with all six already
-scattered over the frame at varying sizes — cells keep them off each other,
-a shuffle and some jitter keep the grid from showing — because a row of
-identical boxes does not say "several at once, anywhere" the way a scatter
-does.
+stills page. The clip the page opens on arrives with all six already placed,
+from a fixed layout (`OPENING_CROPS`): one ratio, six different widths,
+spread over the frame the way someone actually working would leave them. The
+numbers are fractions of the frame — x, y and width, with the height
+following whatever ratio is in force — read off a layout drawn by hand on the
+1280 × 720 sample, so they land on that plate exactly and stay sensible on
+anything else. Editing that one array is how the opening shot changes.
 
 **The page opens on 16:9 at the crop's own pixels.** Footage arrives 16:9,
 and the first thing anyone does is place crops rather than convert, so that
