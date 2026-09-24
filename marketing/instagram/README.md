@@ -27,74 +27,71 @@
 ## 한국어
 
 ```
-한 장에서, 여러 컷. ✂️  넘겨서 보세요 →
+폰 갤러리나 포토샵으로 하나하나 자르고 계신가요? ✂️
+넘겨서 보세요 →
 
-DetailCrop은 이미지 위에 상자를 끌어 구역을 잡으면
+디테일크롭은 사진 위에 상자만 놓으면
 상자마다 한 장씩 확대컷을 잘라주는 무료 웹 도구예요.
 
-① 한 장에서 최대 6컷
-② 여러 장을 한 번에, 같은 비율·크기·파일명 규칙으로 (최대 200장)
-③ 결과는 zip 파일 하나로
-④ 인스타 피드 3·6·9 분할
-⑤ 회전·원근 보정
+✔️ 한 장에서 최대 6컷까지 한 번에
+✔️ 최대 200장을 같은 비율·크기·파일명으로
+✔️ 결과는 원본 해상도 그대로, zip 파일 하나로
+✔️ 기울어진 사진은 회전·원근 보정으로 반듯하게
+✔️ 덤으로, 인스타 피드 3·6·9 분할까지
 
-모든 처리가 브라우저 안에서 끝나요.
-이미지를 서버에 올리지 않고, 가입도 필요 없어요.
+사진은 어디에도 업로드되지 않아요.
+모든 작업이 지금 쓰시는 브라우저 안에서 끝나요.
+회원가입도, 설치도 필요 없어요.
 
-작품 34점에서 확대컷 204장을 손으로 자르다가 만든 도구입니다.
-상품 상세컷, 그림, 원단, 매물 사진, 인쇄물 작업에 써 보세요.
+프로필 링크에서 바로 써 보세요 👉 detailcrop.com
 
-🔗 detailcrop.com (프로필 링크)
-
-#디테일크롭 #DetailCrop #이미지크롭 #확대컷 #상세페이지 #피드분할 #무료툴
+#디테일크롭 #사진자르기 #이미지크롭 #상세페이지 #스마트스토어 #포토샵대신 #무료툴
 ```
 
 ## English
 
 ```
-One image, many crops. ✂️  Swipe →
+Still cropping one by one in Photoshop or your phone? ✂️
+Swipe →
 
-DetailCrop is a free web tool: drag boxes over an image,
-and every box becomes its own detail crop.
+DetailCrop is a free web tool: place boxes on a photo,
+and each box comes out as its own detail crop.
 
-① Up to 6 crops from one image
-② A whole batch at once, same ratio, size and file names (up to 200 images)
-③ Everything out as one zip
-④ Instagram feed grid in 3, 6 or 9 tiles
-⑤ Rotate and perspective correction
+✔️ Up to 6 crops from one image, all at once
+✔️ Up to 200 images with the same ratio, size and file names
+✔️ Original resolution, downloaded as a single zip
+✔️ Straighten tilted shots with rotation and perspective
+✔️ Bonus: split an image into a 3, 6 or 9-tile Instagram grid
 
-It all runs inside your browser.
-Nothing is uploaded, and there's no sign-up.
+Your photos are never uploaded anywhere.
+Everything happens right in the browser you're using.
+No sign-up, nothing to install.
 
-Built after cropping 204 detail shots from 34 artworks by hand.
-Made for product shots, artwork, fabric, real estate and prints.
+Try it from the link in bio 👉 detailcrop.com
 
-🔗 detailcrop.com (link in bio)
-
-#DetailCrop #imagecrop #batchcrop #detailshots #productphotography #instagramgrid #freetools
+#DetailCrop #imagecrop #batchcrop #productphotography #ecommerce #photoshopalternative #freetools
 ```
 
 ## 日本語
 
 ```
-1枚から、何カットでも。✂️  スワイプして見てください →
+スマホのアルバムやPhotoshopで、1枚ずつ切っていませんか？✂️
+スワイプして見てください →
 
-DetailCropは、画像の上でボックスをドラッグするだけで
+DetailCropは、写真の上にボックスを置くだけで
 ボックスごとにディテールカットを切り出せる無料のWebツールです。
 
-① 1枚から最大6カット
-② 複数枚をまとめて、同じ比率・サイズ・ファイル名ルールで（最大200枚）
-③ 結果はzipファイルひとつ
-④ インスタのフィード分割（3・6・9）
-⑤ 回転・遠近の傾き補正
+✔️ 1枚から最大6カットを同時に
+✔️ 最大200枚を、同じ比率・サイズ・ファイル名で
+✔️ 元の解像度のまま、zipファイルひとつで
+✔️ 傾いた写真は回転・遠近補正でまっすぐに
+✔️ おまけ機能：インスタのフィード3・6・9分割
 
-処理はすべてブラウザの中で完結します。
-画像のアップロードも、会員登録もありません。
+写真がどこかにアップロードされることはありません。
+処理はすべて、お使いのブラウザの中で完結します。
+会員登録もインストールも不要です。
 
-作品34点から204枚のディテールカットを手作業で切り出したのがきっかけで作りました。
-商品詳細カット、アート、生地、物件写真、印刷物に。
+プロフィールのリンクからどうぞ 👉 detailcrop.com
 
-🔗 detailcrop.com（プロフィールのリンクから）
-
-#DetailCrop #ディテールクロップ #画像切り抜き #一括トリミング #商品撮影 #フィード分割 #無料ツール
+#DetailCrop #ディテールクロップ #画像切り抜き #一括トリミング #商品撮影 #ネットショップ #無料ツール
 ```
