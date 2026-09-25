@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DetailCrop — batch detail crops from every image</title>
+<title>Multi Crop — Batch Crop Multiple Images at Once | DetailCrop</title>
 <meta name="description" content="Pull several fixed-ratio detail crops out of every image in a batch, then download them all as a zip. Runs entirely in your browser — nothing is uploaded.">
 <meta property="og:title" content="DetailCrop — batch detail crops from every image">
 <meta property="og:description" content="Several fixed-ratio crops per image, across a whole batch, exported as one zip. Nothing leaves your browser.">
@@ -414,6 +414,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
 .footBody{margin:0; max-width:66ch; line-height:1.75}
 .footSide{display:flex; flex-direction:column; gap:5px}
 .footSide p{margin:0}
+.footLinks{display:flex; flex-wrap:wrap; gap:4px 16px; margin-bottom:6px !important; font-size:13px}
 
 .todayLine{
   margin-top:10px; padding-top:9px; border-top:1px solid var(--line-soft);
@@ -502,7 +503,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
   <div class="split">
     <div class="center">
       <div class="stagewrap">
-        <div class="stage" id="stage"><img id="art" alt=""><div class="sgrid" id="sgrid"></div></div>
+        <div class="stage" id="stage"><img id="art" alt="" data-i-alt="artAlt"><div class="sgrid" id="sgrid"></div></div>
       </div>
 
       <div class="underStage">
@@ -679,6 +680,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
     <p class="footBody" data-i="footBody"></p>
   </div>
   <div class="footSide">
+    <p class="footLinks"><a id="aboutLink" href="/about/" data-i="footAbout"></a><a id="howLink" href="/how-to/" data-i="footHow"></a><a id="usesLink" href="/uses/" data-i="footUses"></a></p>
     <p data-i="footPrivacy"></p>
     <p data-i="footFree"></p>
     <p><span data-i="footContact"></span> <a id="mailLink" href="#">&#8230;</a></p>
@@ -759,13 +761,15 @@ const I18N = {
     footPrivacy:"Runs entirely in your browser. Your images are never uploaded.",
     footFree:"Free to use.",
     todayVisits:"visits today", todayPeople:" people", todayExports:"exports",
-    h1sr:" — batch detail crops from every image, exported as one zip",
+    h1sr:" — Multi Crop: batch crop multiple images at once, several detail crops per image, exported as one zip",
+    artAlt:"The image being cropped, with the Multi Crop boxes laid over it",
+    footAbout:"About DetailCrop", footHow:"How to crop many images at once", footUses:"What people use it for",
     straighten:"Rotate", kHoriz:"Horiz.", kVert:"Vert.", resetZero:"Back to zero", alignTitle:"Alignment",
-    footContact:"Advertising &amp; partnerships:",
+    footContact:"Advertising & partnerships:",
     footStats:"Anonymous usage stats — image sizes, batch size and the settings you pick. Never the images themselves.",
     statsOn:"turn off",
     statsOff:"stats off · turn back on",
-    footLead:"Detail crops for your whole product lineup, in one sitting.",
+    footLead:"Multi Crop — detail crops for your whole product lineup, in one sitting.",
     footBody:"A detail crop is rarely a one-off. The same kind of close-up has to come out of every picture in a lineup — same ratio, same output size, same naming rule. A general image editor has no memory of any of that, so those constraints get rebuilt by hand for every file and quietly drift apart over a long batch. DetailCrop holds them for the whole run instead. What you get back is a set, not a pile of separately cropped files.",
     t1:"Drag a box to move it, or pull the corner dot to resize. Click anywhere on the picture to jump the selected box there.",
     t2:"Set how many crops this image gets — up to six. Choose 0 to skip the image entirely.",
@@ -833,13 +837,15 @@ const I18N = {
     footPrivacy:"모든 처리가 브라우저 안에서 이루어집니다. 이미지는 업로드되지 않습니다.",
     footFree:"무료로 쓰세요.",
     todayVisits:"오늘 방문", todayPeople:"명", todayExports:"내보내기",
-    h1sr:" — 여러 이미지에서 확대컷을 한 번에 뽑아 zip으로 내보내기",
+    h1sr:" — 멀티크롭: 여러 이미지 한번에 자르기, 한 장에서 확대컷 여러 개를 zip으로",
+    artAlt:"멀티크롭 상자가 올라간, 지금 자르고 있는 이미지",
+    footAbout:"디테일크롭 소개", footHow:"여러 이미지 한번에 자르는 법", footUses:"이렇게 씁니다",
     straighten:"회전", kHoriz:"수평", kVert:"수직", resetZero:"0으로 되돌리기", alignTitle:"정렬 보정",
     footContact:"광고·제휴 문의:",
     footStats:"익명 사용 통계 — 이미지 크기, 장수, 고른 설정만 기록합니다. 이미지 자체는 기록하지 않습니다.",
     statsOn:"끄기",
     statsOff:"통계 꺼짐 · 다시 켜기",
-    footLead:"라인업 전체의 확대컷을, 한자리에서.",
+    footLead:"멀티크롭 — 라인업 전체의 확대컷을, 한자리에서.",
     footBody:"확대컷은 한 장을 잘 자르는 일이 아니라, 여러 장을 같은 규칙으로 자르는 일입니다. 같은 종류의 클로즈업이 모든 사진에서 같은 비율, 같은 출력 크기, 같은 파일명 규칙으로 나와야 합니다. 그런데 일반적인 편집기는 그 규칙을 기억하지 않습니다. 파일마다 조건을 다시 세우게 되고, 장수가 쌓일수록 결과는 조금씩 어긋납니다. 이 도구는 그 규칙을 작업 전체에 붙들어 둡니다. 그래서 손에 남는 것은 따로따로 자른 파일 더미가 아니라 하나의 세트입니다.",
     t1:"상자를 끌어 옮기고, 모서리의 점을 당겨 크기를 바꿉니다. 그림 아무 곳이나 클릭하면 선택된 상자가 그 자리로 옵니다.",
     t2:"이 이미지에서 몇 컷을 뽑을지 정합니다. 최대 6컷이고, 0을 고르면 이 이미지는 건너뜁니다.",
@@ -907,13 +913,15 @@ const I18N = {
     footPrivacy:"処理はすべてブラウザ内で行われます。画像がアップロードされることはありません。",
     footFree:"無料で使えます。",
     todayVisits:"本日の訪問", todayPeople:"人", todayExports:"書き出し",
-    h1sr:" — 複数画像からディテールカットを一括で切り出しzipで書き出し",
+    h1sr:" — マルチクロップ：複数の画像を一括トリミング、1枚から複数カットをzipで書き出し",
+    artAlt:"マルチクロップの枠を重ねた、トリミング中の画像",
+    footAbout:"DetailCropについて", footHow:"複数の画像をまとめて切り抜く方法", footUses:"こんな使い方",
     straighten:"回転", kHoriz:"水平", kVert:"垂直", resetZero:"0に戻す", alignTitle:"傾き補正",
     footContact:"広告・提携のお問い合わせ:",
     footStats:"匿名の利用統計 — 画像サイズ、枚数、選んだ設定のみ。画像そのものは記録しません。",
     statsOn:"オフにする",
     statsOff:"統計オフ · 再びオンにする",
-    footLead:"ラインナップ全体のディテールカットを、一度に。",
+    footLead:"マルチクロップ — ラインナップ全体のディテールカットを、一度に。",
     footBody:"ディテールカットは、1枚をうまく切る作業ではなく、複数枚を同じ規則で切る作業です。同じ種類の寄りが、すべての写真から同じ比率・同じ出力サイズ・同じ命名規則で出てこなければなりません。ところが一般的な画像編集ソフトはその規則を覚えていないため、ファイルごとに条件を立て直すことになり、枚数が増えるほど仕上がりは少しずつずれていきます。このツールはその規則を作業全体に固定します。手元に残るのは個別に切った寄せ集めではなく、ひとつのセットです。",
     t1:"ボックスをドラッグして移動、角の点を引いてサイズ変更。画像上をクリックすると選択中のボックスがそこへ移動します。",
     t2:"この画像から何カット取るかを決めます。最大6カット、0を選ぶとこの画像はスキップされます。",
@@ -1103,6 +1111,9 @@ function applyLang(){
   const sfx = S.lang === "en" ? "/" : "/" + S.lang + "/";
   $("#brandLink").href = sfx;
   $("#crossBan").href  = "/video" + sfx;
+  $("#aboutLink").href = sfx + "about/";
+  $("#howLink").href   = sfx + "how-to/";
+  $("#usesLink").href  = sfx + "uses/";
   // ratio labels that are words
   $$("#ratioseg button").forEach(b => {
     if (b.dataset.r === "free") b.textContent = t.free;

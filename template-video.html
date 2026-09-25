@@ -285,6 +285,7 @@ footer{margin-top:34px; padding-top:18px; border-top:1px solid var(--line-soft);
 footer a{color:var(--teal); text-decoration:none; border-bottom:1px solid transparent}
 footer a:hover{border-bottom-color:var(--teal)}
 .footLead{margin:0 0 7px; color:var(--ink-2); font-size:14px; font-weight:600}
+.footLinks{display:flex; flex-wrap:wrap; gap:4px 16px; margin-bottom:6px !important; font-size:13px}
 .footBody{margin:0; max-width:66ch; line-height:1.75}
 .footSide{display:flex; flex-direction:column; gap:5px}
 .footSide p{margin:0}
@@ -574,6 +575,7 @@ footer a:hover{border-bottom-color:var(--teal)}
     <p class="footBody" data-i="footBody"></p>
   </div>
   <div class="footSide">
+    <p class="footLinks"><a id="aboutLink" href="/about/" data-i="footAbout"></a><a id="howLink" href="/how-to/" data-i="footHow"></a><a id="usesLink" href="/uses/" data-i="footUses"></a></p>
     <p data-i="footPrivacy"></p>
     <p data-i="footFree"></p>
     <p data-i="footBrowsers"></p>
@@ -623,6 +625,7 @@ If you want to offset all timestamps of a track such that the first one is zero,
 const I18N = {
   en:{
     h1sr:" — several fixed-ratio crops out of every video, saved as mp4",
+    footAbout:"About DetailCrop", footHow:"How to crop many images at once", footUses:"What people use it for",
     tagline:"Drag boxes over the footage to mark the crops you want. Several at once, one pass per clip, out as mp4. Everything happens in your browser — no upload, no account.",
     dropTitle:"Drop your videos here",
     dropBody:"One source, several fixed-ratio crops. A wide shot becomes a 9:16 for Shorts, a 1:1 for the feed and a 4:5 for the carousel — cut in a single pass. Drop a whole batch and step through it.",
@@ -690,6 +693,7 @@ const I18N = {
   },
   ko:{
     h1sr:" — 여러 영상에서 고정 비율 컷을 뽑아 mp4로 내보내기",
+    footAbout:"디테일크롭 소개", footHow:"여러 이미지 한번에 자르는 법", footUses:"이렇게 씁니다",
     tagline:"영상 위에 상자를 끌어 원하는 컷을 잡습니다. 여러 컷을 한 번의 재생으로, 결과는 mp4로. 모든 처리가 브라우저 안에서 끝나며 업로드도 가입도 없습니다.",
     dropTitle:"영상을 여기에 놓으세요",
     dropBody:"소스 하나에서 고정 비율 컷 여러 개. 가로 원본에서 쇼츠용 9:16, 피드용 1:1, 캐러셀용 4:5를 한 번에 잘라냅니다. 여러 영상을 한꺼번에 올려 차례로 작업할 수도 있습니다.",
@@ -757,6 +761,7 @@ const I18N = {
   },
   ja:{
     h1sr:" — 複数の動画から固定比率のカットを、mp4で書き出し",
+    footAbout:"DetailCropについて", footHow:"複数の画像をまとめて切り抜く方法", footUses:"こんな使い方",
     tagline:"映像の上でボックスをドラッグし、切り出したい範囲を指定します。複数カットを一度の再生で、結果はmp4。処理はすべてブラウザ内で完結し、アップロードも登録も不要です。",
     dropTitle:"ここに動画をドロップ",
     dropBody:"1つの素材から固定比率のカットを複数。横位置の映像からショート用9:16、フィード用1:1、カルーセル用4:5を一度に切り出します。複数の動画をまとめて読み込み、順に作業することもできます。",
@@ -891,6 +896,9 @@ function applyLang(){
   const sfx = S.lang === "en" ? "/" : "/" + S.lang + "/";
   $("#brandLink").href = "/video" + sfx;
   $("#crossBan").href  = sfx;
+  $("#aboutLink").href = sfx + "about/";
+  $("#howLink").href   = sfx + "how-to/";
+  $("#usesLink").href  = sfx + "uses/";
   $$("#ratioseg button").forEach(b => {
     if (b.dataset.r === "free")   b.textContent = t.free;
     if (b.dataset.r === "custom") b.textContent = t.custom;

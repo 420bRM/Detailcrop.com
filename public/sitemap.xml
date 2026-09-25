@@ -6,17 +6,83 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://detailcrop.com/"/>
     <xhtml:link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/"/>
     <xhtml:link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://detailcrop.com/"/>
   </url>
   <url>
     <loc>https://detailcrop.com/ko/</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://detailcrop.com/"/>
     <xhtml:link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/"/>
     <xhtml:link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://detailcrop.com/"/>
   </url>
   <url>
     <loc>https://detailcrop.com/ja/</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://detailcrop.com/"/>
     <xhtml:link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/"/>
     <xhtml:link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://detailcrop.com/"/>
+  </url>
+  <url>
+    <loc>https://detailcrop.com/about/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://detailcrop.com/about/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/about/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/about/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://detailcrop.com/about/"/>
+  </url>
+  <url>
+    <loc>https://detailcrop.com/ko/about/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://detailcrop.com/about/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/about/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/about/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://detailcrop.com/about/"/>
+  </url>
+  <url>
+    <loc>https://detailcrop.com/ja/about/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://detailcrop.com/about/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/about/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/about/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://detailcrop.com/about/"/>
+  </url>
+  <url>
+    <loc>https://detailcrop.com/how-to/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://detailcrop.com/how-to/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/how-to/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/how-to/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://detailcrop.com/how-to/"/>
+  </url>
+  <url>
+    <loc>https://detailcrop.com/ko/how-to/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://detailcrop.com/how-to/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/how-to/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/how-to/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://detailcrop.com/how-to/"/>
+  </url>
+  <url>
+    <loc>https://detailcrop.com/ja/how-to/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://detailcrop.com/how-to/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/how-to/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/how-to/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://detailcrop.com/how-to/"/>
+  </url>
+  <url>
+    <loc>https://detailcrop.com/uses/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://detailcrop.com/uses/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/uses/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/uses/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://detailcrop.com/uses/"/>
+  </url>
+  <url>
+    <loc>https://detailcrop.com/ko/uses/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://detailcrop.com/uses/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/uses/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/uses/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://detailcrop.com/uses/"/>
+  </url>
+  <url>
+    <loc>https://detailcrop.com/ja/uses/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://detailcrop.com/uses/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/uses/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/uses/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://detailcrop.com/uses/"/>
   </url>
 </urlset>

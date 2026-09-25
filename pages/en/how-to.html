@@ -1,0 +1,50 @@
+title: How to crop multiple images at once — Multi Crop guide | DetailCrop
+description: How to batch crop a set of photos to the same ratio with DetailCrop's Multi Crop: load the images, place the crops, and download everything as one zip.
+h1: How to crop many images at once
+lead: A walkthrough of DetailCrop's Multi Crop for first-timers. After one round you probably won't need it again.
+---
+<p>One thing to keep in mind: <strong>the ratio and output settings are set once for the whole batch; the box positions are set per photo.</strong> The rest is just following that order.</p>
+
+<h2>1. Load your images</h2>
+<p>Drop image files onto the <a href="__TOOL__">tool</a> or press <em>Choose images</em>. JPEG, PNG, WebP, AVIF and GIF work, up to 200 files and 200 MB each. Nothing leaves your computer, so there is no upload to wait for.</p>
+<p>If you just want a feel for it, press <em>Try the sample</em>. The <em>How it works</em> button at the top walks you through the screen one step at a time.</p>
+
+<h2>2. Pick a ratio</h2>
+<p>Choose the crop ratio under <em>Settings</em>: 1:1, 4:5, 2:3, 3:4, 5:7, 16:9 or 9:16, or type your own under <em>Custom</em>. With a ratio locked, every crop on every image comes out the same shape.</p>
+<p>Sometimes one image needs more than one shape. Switch the toggle above the ratio buttons from <em>Whole batch</em> to <em>Selected crop</em> and only the box you have selected changes — handy for pulling a 4:5 feed post and a 16:9 banner out of the same photo.</p>
+
+<h2>3. Set the crop count and place the boxes</h2>
+<p>Decide how many crops each image gets — up to six, or 0 to skip it. Once the boxes appear:</p>
+<ul>
+  <li>drag a box to move it,</li>
+  <li>drag its corner dot to resize it,</li>
+  <li>click anywhere on the picture to jump the selected box there.</li>
+</ul>
+<p><em>Auto-place</em> and <em>Spread out</em> lay the boxes out for you. Nudging from there is quicker than placing each one from scratch.</p>
+
+<h2>4. Straighten first if the photo leans</h2>
+<p>If a shot is slightly tilted, fix it with the rotate slider under <em>Alignment</em> before you crop. A guide appears on the picture to line things up against. Rotating after cropping leaves empty corners, so the order matters.</p>
+
+<h2>5. Confirm and move on</h2>
+<p>When the boxes are where you want them, press <em>Confirm &amp; next</em> (or <kbd>Enter</kbd>). Confirmed images get a green dot in the strip at the top, so you always know how far you are.</p>
+
+<h2>6. Output settings</h2>
+<ul>
+  <li><strong>Output size</strong> — <em>Original pixels</em> exports exactly the area you marked. <em>Fixed size</em> scales every crop to the same pixel dimensions (it needs a locked ratio).</li>
+  <li><strong>Format and quality</strong> — WebP, JPEG or PNG. WebP is lightest for the web; PNG or a high-quality JPEG is the safe bet for print.</li>
+  <li><strong>File names</strong> — the default <code>{name}-d{n}</code> gives <code>shirt-d1.webp</code>, <code>shirt-d2.webp</code> and so on. <code>{nn}</code> pads to 01, 02, and <code>{w}×{h}</code> adds the size.</li>
+</ul>
+
+<h2>7. Download the zip</h2>
+<p>Press <em>Export all as .zip</em> and every crop lands in your downloads as one zip. If you only need the image in front of you, use <em>Export this image only</em>.</p>
+
+<h2>Shortcuts worth knowing</h2>
+<table>
+  <tr><th><kbd>1</kbd>–<kbd>6</kbd></th><td>select a box</td></tr>
+  <tr><th><kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd></th><td>move the box (<kbd>Shift</kbd> for bigger steps)</td></tr>
+  <tr><th><kbd>−</kbd> <kbd>+</kbd></th><td>resize</td></tr>
+  <tr><th><kbd>Enter</kbd></th><td>confirm and go to the next image</td></tr>
+  <tr><th><kbd>[</kbd> <kbd>]</kbd></th><td>previous / next image</td></tr>
+  <tr><th>Wheel / <kbd>Ctrl</kbd>+wheel</th><td>move / resize the box over the picture</td></tr>
+</table>
+<p>For ideas on how to put it to work, see <a href="__USES__">what people use it for</a>.</p>
