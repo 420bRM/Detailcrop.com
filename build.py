@@ -57,25 +57,39 @@ LANGS = {
 ALT_NAMES = ["Detail Crop", "Multi Crop", "디테일크롭", "멀티크롭", "ディテールクロップ", "マルチクロップ"]
 
 # The video tool. Same three languages, its own canonical set under /video/.
-# Still noindex and out of the sitemap while it is in testing.
 VLANGS = {
   "en": dict(
     path  = "/video/",
     file  = "video/index.html",
-    title = "DetailCrop Video — batch detail crops from every video",
-    desc  = "Pull several fixed-ratio crops out of every video in a batch and save them all as mp4. Runs entirely in your browser — nothing is uploaded.",
+    title = "Video Multi Crop — Crop Multiple Videos at Once | DetailCrop Video",
+    desc  = "DetailCrop's Multi Crop for video: crop several fixed-ratio clips out of every video at once — 9:16 for Shorts, 1:1 or 4:5 for the feed — and save them all as mp4. Free, runs in your browser, nothing is uploaded.",
+    feats = ["Several crops per video, each with its own ratio and time range",
+             "9:16, 1:1, 4:5, 16:9 and custom ratios",
+             "A whole batch of clips in one sitting",
+             "Every crop saved as its own mp4",
+             "Runs entirely in the browser — no upload"],
   ),
   "ko": dict(
     path  = "/video/ko/",
     file  = "video/ko/index.html",
-    title = "DetailCrop Video — 영상마다 여러 컷을 한 번에",
-    desc  = "여러 영상에서 같은 비율의 컷을 하나당 여러 개씩 잡아 mp4로 내보냅니다. 모든 처리가 브라우저 안에서 끝나며 업로드가 없습니다.",
+    title = "영상 멀티크롭 — 여러 영상 한번에 자르기 | 디테일크롭 DetailCrop Video",
+    desc  = "디테일크롭 영상 멀티크롭으로 여러 영상을 한번에 자르세요. 가로 영상에서 쇼츠용 9:16, 피드용 1:1·4:5 컷을 여러 개씩 잡아 mp4로 내보냅니다. 무료, 업로드 없이 브라우저에서 처리됩니다.",
+    feats = ["영상 하나에서 여러 컷, 컷마다 비율과 구간 따로",
+             "9:16 · 1:1 · 4:5 · 16:9 · 직접 입력 비율",
+             "여러 영상을 한 번에 작업",
+             "컷마다 mp4로 저장",
+             "브라우저 안에서 처리 — 업로드 없음"],
   ),
   "ja": dict(
     path  = "/video/ja/",
     file  = "video/ja/index.html",
-    title = "DetailCrop Video — 動画ごとに複数カットを一度に",
-    desc  = "複数の動画から同じ比率のカットを1本につき何カットも切り出し、mp4で書き出します。処理はすべてブラウザ内で完結し、アップロードはありません。",
+    title = "動画マルチクロップ — 複数の動画を一括トリミング | DetailCrop Video",
+    desc  = "ディテールクロップの動画マルチクロップで、複数の動画をまとめてトリミング。横長の動画からショート用9:16、フィード用1:1・4:5のカットを何本も切り出し、mp4で書き出します。無料・アップロード不要。",
+    feats = ["1本の動画から複数カット、カットごとに比率と区間を設定",
+             "9:16・1:1・4:5・16:9・手入力の比率",
+             "複数の動画をまとめて作業",
+             "カットごとにmp4で保存",
+             "ブラウザ内で処理 — アップロードなし"],
   ),
 }
 
@@ -112,25 +126,27 @@ def website_ld():
     return {"@context": "https://schema.org", "@type": "WebSite", "name": "DetailCrop",
             "alternateName": ALT_NAMES, "url": BASE + "/"}
 
-def jsonld(code, cfg):
-    d = {
+def jsonld_body(code, cfg, name="DetailCrop", sub="Image editor", alt=ALT_NAMES, media="images"):
+    return {
       "@context": "https://schema.org",
       "@type": "WebApplication",
-      "name": "DetailCrop",
-      "alternateName": ALT_NAMES,
+      "name": name,
+      "alternateName": alt,
       "url": BASE + cfg["path"],
       "inLanguage": code,
       "description": cfg["desc"],
       "applicationCategory": "MultimediaApplication",
-      "applicationSubCategory": "Image editor",
+      "applicationSubCategory": sub,
       "operatingSystem": "Any (modern web browser)",
       "browserRequirements": "Requires JavaScript",
       "isAccessibleForFree": True,
       "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
       "featureList": cfg["feats"],
-      "permissions": "No account, no upload; images are processed locally in the browser",
+      "permissions": "No account, no upload; %s are processed locally in the browser" % media,
     }
-    return ldscript(website_ld()) + "\n" + ldscript(d)
+
+def jsonld(code, cfg):
+    return ldscript(website_ld()) + "\n" + ldscript(jsonld_body(code, cfg))
 
 # ---------- text in the HTML before any script runs ----------
 # The tools fill every [data-i] element from I18N at load. Crawlers that do not
@@ -221,6 +237,8 @@ def build_video():
         s = re.sub(r'<meta property="og:description" content="[^"]*">',
                    '<meta property="og:description" content="%s">' % cfg["desc"], s, count=1)
         s = s.replace("__HEAD_URLS__", head_urls(cfg["path"], VLANGS, "/video/"), 1)
+        s = s.replace("__JSONLD__", ldscript(website_ld()) + "\n" + ldscript(jsonld_body(code, cfg, "DetailCrop Video", "Video editor",
+                      ["Multi Crop Video", "디테일크롭 영상", "ディテールクロップ 動画"], "videos")), 1)
         # the links the page renders without JavaScript; applyLang() keeps them
         # in step once the visitor switches language
         stills = "/" if code == "en" else "/%s/" % code
@@ -230,7 +248,7 @@ def build_video():
         s = foot_hrefs(s, code)
         s = prerender(s, strings[code])
         s = s.replace('const PAGE_LANG = "__LANG__";', 'const PAGE_LANG = "%s";' % code, 1)
-        assert "__LANG__" not in s and "__HEAD_URLS__" not in s, code
+        assert "__LANG__" not in s and "__HEAD_URLS__" not in s and "__JSONLD__" not in s, code
         dest = os.path.join(OUT, cfg["file"])
         os.makedirs(os.path.dirname(dest), exist_ok=True)
         io.open(dest, "w", encoding="utf-8").write(s)
@@ -290,8 +308,8 @@ def build_pages():
             print("%-3s %s  %d bytes" % (code, os.path.relpath(dest, OUT), len(s.encode("utf-8"))))
 
 def build_sitemap():
-    # The video tool stays out while it is noindex — add VLANGS here when it goes public.
-    groups = [{c: cfg["path"] for c, cfg in LANGS.items()}]
+    groups = [{c: cfg["path"] for c, cfg in LANGS.items()},
+              {c: cfg["path"] for c, cfg in VLANGS.items()}]
     groups += [{c: page_url(c, slug) for c in LANGS} for slug in PAGES]
     L = ['<?xml version="1.0" encoding="UTF-8"?>',
          '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"',

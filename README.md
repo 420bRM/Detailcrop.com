@@ -10,7 +10,7 @@ served with `noindex` so the two hostnames do not compete in search.
 
 ```
 template.html           the stills tool — one of the two files to edit
-template-video.html     the video tool (/video/, still noindex)
+template-video.html     the video tool (/video/)
 template-page.html      shell for the reading pages (about, how-to, uses)
 pages/<lang>/<slug>.html  their text: a few header lines, "---", then HTML
 build.py                writes every page below, and the sitemap
@@ -154,10 +154,8 @@ Same idea as the stills page, one clip at a time: drag boxes over the
 footage, several at once, and every box comes out as its own mp4. Decoding
 is the `<video>` element, encoding is WebCodecs, muxing is mp4-muxer
 inlined into the page, and the zip writer is the same hand-rolled one — so
-nothing leaves the browser here either. It is `noindex` and out of the
-sitemap while it is in testing; publishing it means deleting the
-`<meta name="robots" content="noindex">` line in `template-video.html` and
-adding its group to `build_sitemap()` in `build.py`.
+nothing leaves the browser here either. It is indexed and in the sitemap
+like the stills pages, with its own JSON-LD.
 
 **A batch, like the stills page.** Drop several clips and the filmstrip
 above the stage steps through them; a green dot marks each clip you have

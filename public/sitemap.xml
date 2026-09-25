@@ -23,6 +23,27 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://detailcrop.com/"/>
   </url>
   <url>
+    <loc>https://detailcrop.com/video/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://detailcrop.com/video/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://detailcrop.com/video/ko/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://detailcrop.com/video/ja/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://detailcrop.com/video/"/>
+  </url>
+  <url>
+    <loc>https://detailcrop.com/video/ko/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://detailcrop.com/video/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://detailcrop.com/video/ko/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://detailcrop.com/video/ja/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://detailcrop.com/video/"/>
+  </url>
+  <url>
+    <loc>https://detailcrop.com/video/ja/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://detailcrop.com/video/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://detailcrop.com/video/ko/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://detailcrop.com/video/ja/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://detailcrop.com/video/"/>
+  </url>
+  <url>
     <loc>https://detailcrop.com/about/</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://detailcrop.com/about/"/>
     <xhtml:link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/about/"/>

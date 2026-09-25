@@ -3,19 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DetailCrop Video — 영상마다 여러 컷을 한 번에</title>
-<meta name="description" content="여러 영상에서 같은 비율의 컷을 하나당 여러 개씩 잡아 mp4로 내보냅니다. 모든 처리가 브라우저 안에서 끝나며 업로드가 없습니다.">
-<meta property="og:title" content="DetailCrop Video — 영상마다 여러 컷을 한 번에">
-<meta property="og:description" content="여러 영상에서 같은 비율의 컷을 하나당 여러 개씩 잡아 mp4로 내보냅니다. 모든 처리가 브라우저 안에서 끝나며 업로드가 없습니다.">
+<title>영상 멀티크롭 — 여러 영상 한번에 자르기 | 디테일크롭 DetailCrop Video</title>
+<meta name="description" content="디테일크롭 영상 멀티크롭으로 여러 영상을 한번에 자르세요. 가로 영상에서 쇼츠용 9:16, 피드용 1:1·4:5 컷을 여러 개씩 잡아 mp4로 내보냅니다. 무료, 업로드 없이 브라우저에서 처리됩니다.">
+<meta property="og:title" content="영상 멀티크롭 — 여러 영상 한번에 자르기 | 디테일크롭 DetailCrop Video">
+<meta property="og:description" content="디테일크롭 영상 멀티크롭으로 여러 영상을 한번에 자르세요. 가로 영상에서 쇼츠용 9:16, 피드용 1:1·4:5 컷을 여러 개씩 잡아 mp4로 내보냅니다. 무료, 업로드 없이 브라우저에서 처리됩니다.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="DetailCrop">
-<meta name="robots" content="noindex">
 <link rel="canonical" href="https://detailcrop.com/video/ko/">
 <meta property="og:url" content="https://detailcrop.com/video/ko/">
 <link rel="alternate" hreflang="en" href="https://detailcrop.com/video/">
 <link rel="alternate" hreflang="ko" href="https://detailcrop.com/video/ko/">
 <link rel="alternate" hreflang="ja" href="https://detailcrop.com/video/ja/">
 <link rel="alternate" hreflang="x-default" href="https://detailcrop.com/video/">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"DetailCrop","alternateName":["Detail Crop","Multi Crop","디테일크롭","멀티크롭","ディテールクロップ","マルチクロップ"],"url":"https://detailcrop.com/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"DetailCrop Video","alternateName":["Multi Crop Video","디테일크롭 영상","ディテールクロップ 動画"],"url":"https://detailcrop.com/video/ko/","inLanguage":"ko","description":"디테일크롭 영상 멀티크롭으로 여러 영상을 한번에 자르세요. 가로 영상에서 쇼츠용 9:16, 피드용 1:1·4:5 컷을 여러 개씩 잡아 mp4로 내보냅니다. 무료, 업로드 없이 브라우저에서 처리됩니다.","applicationCategory":"MultimediaApplication","applicationSubCategory":"Video editor","operatingSystem":"Any (modern web browser)","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["영상 하나에서 여러 컷, 컷마다 비율과 구간 따로","9:16 · 1:1 · 4:5 · 16:9 · 직접 입력 비율","여러 영상을 한 번에 작업","컷마다 mp4로 저장","브라우저 안에서 처리 — 업로드 없음"],"permissions":"No account, no upload; videos are processed locally in the browser"}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap">
@@ -370,7 +371,7 @@ footer a:hover{border-bottom-color:var(--teal)}
 
 <header class="bar">
   <h1 class="brand"><a href="/video/ko/" id="brandLink">Detail<em>Crop</em><span class="vtag">Video <i>(beta)</i></span></a><span class="sr" data-i="h1sr"> — 여러 영상에서 고정 비율 컷을 뽑아 mp4로 내보내기</span></h1>
-  <p class="tagline" data-i="tagline">영상 위에 상자를 끌어 원하는 컷을 잡습니다. 여러 컷을 한 번의 재생으로, 결과는 mp4로. 모든 처리가 브라우저 안에서 끝나며 업로드도 가입도 없습니다.</p>
+  <p class="tagline" data-i="tagline">디테일크롭 영상 멀티크롭 — 영상 위에 상자를 끌어 원하는 컷을 잡습니다. 여러 컷을 한 번의 재생으로, 결과는 mp4로. 모든 처리가 브라우저 안에서 끝나며 업로드도 가입도 없습니다.</p>
   <span class="spacer"></span>
   <div class="headBtns">
     <button type="button" class="hbtn" id="tourBtn" data-i="tourBtn">사용법 보기</button>
@@ -631,7 +632,7 @@ const I18N = {
   en:{
     h1sr:" — several fixed-ratio crops out of every video, saved as mp4",
     footAbout:"About DetailCrop", footHow:"How to crop many images at once", footUses:"What people use it for",
-    tagline:"Drag boxes over the footage to mark the crops you want. Several at once, one pass per clip, out as mp4. Everything happens in your browser — no upload, no account.",
+    tagline:"Multi Crop for video — drag boxes over the footage to mark the crops you want. Several at once, one pass per clip, out as mp4. Everything happens in your browser — no upload, no account.",
     dropTitle:"Drop your videos here",
     dropBody:"One source, several fixed-ratio crops. A wide shot becomes a 9:16 for Shorts, a 1:1 for the feed and a 4:5 for the carousel — cut in a single pass. Drop a whole batch and step through it.",
     pick:"Choose videos",
@@ -699,7 +700,7 @@ const I18N = {
   ko:{
     h1sr:" — 여러 영상에서 고정 비율 컷을 뽑아 mp4로 내보내기",
     footAbout:"디테일크롭 소개", footHow:"여러 이미지 한번에 자르는 법", footUses:"이렇게 씁니다",
-    tagline:"영상 위에 상자를 끌어 원하는 컷을 잡습니다. 여러 컷을 한 번의 재생으로, 결과는 mp4로. 모든 처리가 브라우저 안에서 끝나며 업로드도 가입도 없습니다.",
+    tagline:"디테일크롭 영상 멀티크롭 — 영상 위에 상자를 끌어 원하는 컷을 잡습니다. 여러 컷을 한 번의 재생으로, 결과는 mp4로. 모든 처리가 브라우저 안에서 끝나며 업로드도 가입도 없습니다.",
     dropTitle:"영상을 여기에 놓으세요",
     dropBody:"소스 하나에서 고정 비율 컷 여러 개. 가로 원본에서 쇼츠용 9:16, 피드용 1:1, 캐러셀용 4:5를 한 번에 잘라냅니다. 여러 영상을 한꺼번에 올려 차례로 작업할 수도 있습니다.",
     pick:"영상 고르기",
@@ -767,7 +768,7 @@ const I18N = {
   ja:{
     h1sr:" — 複数の動画から固定比率のカットを、mp4で書き出し",
     footAbout:"DetailCropについて", footHow:"複数の画像をまとめて切り抜く方法", footUses:"こんな使い方",
-    tagline:"映像の上でボックスをドラッグし、切り出したい範囲を指定します。複数カットを一度の再生で、結果はmp4。処理はすべてブラウザ内で完結し、アップロードも登録も不要です。",
+    tagline:"ディテールクロップの動画マルチクロップ — 映像の上でボックスをドラッグし、切り出したい範囲を指定します。複数カットを一度の再生で、結果はmp4。処理はすべてブラウザ内で完結し、アップロードも登録も不要です。",
     dropTitle:"ここに動画をドロップ",
     dropBody:"1つの素材から固定比率のカットを複数。横位置の映像からショート用9:16、フィード用1:1、カルーセル用4:5を一度に切り出します。複数の動画をまとめて読み込み、順に作業することもできます。",
     pick:"動画を選ぶ",
