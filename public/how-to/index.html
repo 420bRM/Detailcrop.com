@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How to crop multiple images at once — Multi Crop guide | DetailCrop</title>
+<meta name="description" content="How to batch crop a set of photos to the same ratio with DetailCrop's Multi Crop: load the images, place the crops, and download everything as one zip.">
+<meta property="og:title" content="How to crop multiple images at once — Multi Crop guide | DetailCrop">
+<meta property="og:description" content="How to batch crop a set of photos to the same ratio with DetailCrop's Multi Crop: load the images, place the crops, and download everything as one zip.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="DetailCrop">
+<meta property="og:image" content="https://detailcrop.com/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://detailcrop.com/how-to/">
+<meta property="og:url" content="https://detailcrop.com/how-to/">
+<link rel="alternate" hreflang="en" href="https://detailcrop.com/how-to/">
+<link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/how-to/">
+<link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/how-to/">
+<link rel="alternate" hreflang="x-default" href="https://detailcrop.com/how-to/">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to crop many images at once","description":"How to batch crop a set of photos to the same ratio with DetailCrop's Multi Crop: load the images, place the crops, and download everything as one zip.","inLanguage":"en","url":"https://detailcrop.com/how-to/","isPartOf":{"@context":"https://schema.org","@type":"WebSite","name":"DetailCrop","alternateName":["Detail Crop","Multi Crop","디테일크롭","멀티크롭","ディテールクロップ","マルチクロップ"],"url":"https://detailcrop.com/"},"publisher":{"@type":"Organization","name":"DetailCrop","url":"https://detailcrop.com/"}}</script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap">
+<style>
+/* Same night palette as the tools, set for reading instead of working. */
+:root{
+  color-scheme:dark;
+  --sky:#080d12; --panel:#12212a; --sunk:#0d1a21; --line:#254250; --line-soft:#1a2f3a;
+  --ink:#e6f0f2; --ink-2:#a8c3ca; --muted:#6d8b96;
+  --amber:#e8b45a; --teal:#35b7e0; --fog:#f4eddf;
+  --display:Newsreader,Georgia,serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  min-height:100vh;
+  background:radial-gradient(150% 70% at 50% 0%, #12222c 0%, #0b131a 48%, var(--sky) 100%) fixed no-repeat var(--sky);
+  color:var(--ink);
+  font-family:Archivo,'Pretendard','Apple SD Gothic Neo','Hiragino Sans','Noto Sans JP','Malgun Gothic',system-ui,sans-serif;
+  font-size:16px; line-height:1.8; -webkit-font-smoothing:antialiased;
+  word-break:keep-all; overflow-wrap:break-word;
+}
+a{color:var(--teal); text-decoration:none; border-bottom:1px solid rgba(53,183,224,.35)}
+a:hover{border-bottom-color:var(--teal)}
+.wrap{max-width:760px; margin:0 auto; padding:20px 16px 56px}
+
+header.bar{display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 18px; margin-bottom:44px}
+.brand{font-family:var(--display); font-size:26px; letter-spacing:.01em; color:var(--fog); line-height:1.1; text-shadow:0 0 26px rgba(232,180,90,.22)}
+.brand a{color:inherit; border:0}
+.brand em{font-style:italic; color:var(--amber)}
+.spacer{flex:1 1 auto}
+.langs{display:flex; border:1px solid var(--line); border-radius:3px; overflow:hidden; background:var(--sunk); font-size:12px}
+.langs a{border:0; padding:4px 10px; color:var(--ink-2); border-right:1px solid var(--line-soft); letter-spacing:.06em}
+.langs a:last-child{border-right:0}
+.langs a[aria-current]{background:var(--amber); color:#12100b; font-weight:600}
+.go{border:1px solid var(--amber); color:var(--amber); border-radius:3px; padding:4px 12px; font-size:13px; white-space:nowrap}
+.go:hover{background:var(--amber); color:#12100b}
+
+article h1{font-family:var(--display); font-weight:500; font-size:clamp(30px,6vw,42px); line-height:1.2; color:var(--fog); margin:0 0 14px; text-wrap:balance}
+.lead{color:var(--ink-2); font-size:17px; margin:0 0 36px}
+article h2{font-family:var(--display); font-weight:500; font-size:25px; color:var(--fog); margin:44px 0 10px; line-height:1.3}
+article h3{font-size:16px; font-weight:600; color:var(--ink); margin:24px 0 4px}
+article p{margin:0 0 14px}
+article ul{margin:0 0 16px; padding-left:1.2em}
+article li{margin:3px 0}
+article strong{color:var(--fog); font-weight:600}
+article em{font-style:normal; color:var(--amber)}
+code{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.9em; background:var(--sunk); border:1px solid var(--line-soft); border-radius:3px; padding:1px 5px; word-break:break-all}
+kbd{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.82em; background:var(--panel); border:1px solid var(--line); border-bottom-width:2px; border-radius:3px; padding:0 5px}
+table{border-collapse:collapse; width:100%; margin:6px 0 18px; font-size:15px}
+th,td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line-soft); vertical-align:top}
+th{white-space:nowrap; font-weight:400; width:1%}
+
+.cta{margin:48px 0 0; padding:22px; border:1px solid var(--line); border-radius:6px; background:var(--sunk); display:flex; flex-wrap:wrap; align-items:center; gap:12px 20px}
+.cta p{margin:0; flex:1 1 260px; color:var(--ink-2)}
+
+footer{margin-top:48px; padding-top:18px; border-top:1px solid var(--line-soft); color:var(--muted); font-size:13px; line-height:1.7}
+footer nav{display:flex; flex-wrap:wrap; gap:4px 18px; margin-bottom:8px}
+footer nav a[aria-current]{color:var(--ink); border-bottom-color:transparent}
+footer p{margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="bar">
+  <p class="brand"><a href="/">Detail<em>Crop</em></a></p>
+  <span class="spacer"></span>
+  <nav class="langs" aria-label="Language"><a href="/how-to/" hreflang="en" aria-current="page">EN</a><a href="/ko/how-to/" hreflang="ko">한국어</a><a href="/ja/how-to/" hreflang="ja">日本語</a></nav>
+  <a class="go" href="/">Open DetailCrop →</a>
+</header>
+
+<article>
+<h1>How to crop many images at once</h1>
+<p class="lead">A walkthrough of DetailCrop's Multi Crop for first-timers. After one round you probably won't need it again.</p>
+<p>One thing to keep in mind: <strong>the ratio and output settings are set once for the whole batch; the box positions are set per photo.</strong> The rest is just following that order.</p>
+
+<h2>1. Load your images</h2>
+<p>Drop image files onto the <a href="/">tool</a> or press <em>Choose images</em>. JPEG, PNG, WebP, AVIF and GIF work, up to 200 files and 200 MB each. Nothing leaves your computer, so there is no upload to wait for.</p>
+<p>If you just want a feel for it, press <em>Try the sample</em>. The <em>How it works</em> button at the top walks you through the screen one step at a time.</p>
+
+<h2>2. Pick a ratio</h2>
+<p>Choose the crop ratio under <em>Settings</em>: 1:1, 4:5, 2:3, 3:4, 5:7, 16:9 or 9:16, or type your own under <em>Custom</em>. With a ratio locked, every crop on every image comes out the same shape.</p>
+<p>Sometimes one image needs more than one shape. Switch the toggle above the ratio buttons from <em>Whole batch</em> to <em>Selected crop</em> and only the box you have selected changes — handy for pulling a 4:5 feed post and a 16:9 banner out of the same photo.</p>
+
+<h2>3. Set the crop count and place the boxes</h2>
+<p>Decide how many crops each image gets — up to six, or 0 to skip it. Once the boxes appear:</p>
+<ul>
+  <li>drag a box to move it,</li>
+  <li>drag its corner dot to resize it,</li>
+  <li>click anywhere on the picture to jump the selected box there.</li>
+</ul>
+<p><em>Auto-place</em> and <em>Spread out</em> lay the boxes out for you. Nudging from there is quicker than placing each one from scratch.</p>
+
+<h2>4. Straighten first if the photo leans</h2>
+<p>If a shot is slightly tilted, fix it with the rotate slider under <em>Alignment</em> before you crop. A guide appears on the picture to line things up against. Rotating after cropping leaves empty corners, so the order matters.</p>
+
+<h2>5. Confirm and move on</h2>
+<p>When the boxes are where you want them, press <em>Confirm &amp; next</em> (or <kbd>Enter</kbd>). Confirmed images get a green dot in the strip at the top, so you always know how far you are.</p>
+
+<h2>6. Output settings</h2>
+<ul>
+  <li><strong>Output size</strong> — <em>Original pixels</em> exports exactly the area you marked. <em>Fixed size</em> scales every crop to the same pixel dimensions (it needs a locked ratio).</li>
+  <li><strong>Format and quality</strong> — WebP, JPEG or PNG. WebP is lightest for the web; PNG or a high-quality JPEG is the safe bet for print.</li>
+  <li><strong>File names</strong> — the default <code>{name}-d{n}</code> gives <code>shirt-d1.webp</code>, <code>shirt-d2.webp</code> and so on. <code>{nn}</code> pads to 01, 02, and <code>{w}×{h}</code> adds the size.</li>
+</ul>
+
+<h2>7. Download the zip</h2>
+<p>Press <em>Export all as .zip</em> and every crop lands in your downloads as one zip. If you only need the image in front of you, use <em>Export this image only</em>.</p>
+
+<h2>Shortcuts worth knowing</h2>
+<table>
+  <tr><th><kbd>1</kbd>–<kbd>6</kbd></th><td>select a box</td></tr>
+  <tr><th><kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd></th><td>move the box (<kbd>Shift</kbd> for bigger steps)</td></tr>
+  <tr><th><kbd>−</kbd> <kbd>+</kbd></th><td>resize</td></tr>
+  <tr><th><kbd>Enter</kbd></th><td>confirm and go to the next image</td></tr>
+  <tr><th><kbd>[</kbd> <kbd>]</kbd></th><td>previous / next image</td></tr>
+  <tr><th>Wheel / <kbd>Ctrl</kbd>+wheel</th><td>move / resize the box over the picture</td></tr>
+</table>
+<p>For ideas on how to put it to work, see <a href="/uses/">what people use it for</a>.</p>
+</article>
+
+<div class="cta">
+  <p>Crop a whole batch of images at once, several crops each. Free, and nothing is uploaded.</p>
+  <a class="go" href="/">Open DetailCrop →</a>
+</div>
+
+<footer>
+  <nav><a href="/">The tool</a><a href="/about/">About</a><a href="/how-to/" aria-current="page">How to use</a><a href="/uses/">Use cases</a></nav>
+  <p>Runs entirely in your browser. Your images are never uploaded.</p>
+  <p>© DetailCrop</p>
+</footer>
+</div>
+<script>
+// the address is assembled here rather than written into the page, to keep it out of scrapers
+document.querySelectorAll("a.mail").forEach(a => {
+  const addr = "contact" + String.fromCharCode(64) + "detailcrop.com";
+  a.textContent = addr;
+  a.href = "mailto:" + addr + "?subject=DetailCrop";
+});
+</script>
+</body>
+</html>

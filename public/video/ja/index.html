@@ -3,19 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DetailCrop Video — 動画ごとに複数カットを一度に</title>
-<meta name="description" content="複数の動画から同じ比率のカットを1本につき何カットも切り出し、mp4で書き出します。処理はすべてブラウザ内で完結し、アップロードはありません。">
-<meta property="og:title" content="DetailCrop Video — batch detail crops from every video">
-<meta property="og:description" content="複数の動画から同じ比率のカットを1本につき何カットも切り出し、mp4で書き出します。処理はすべてブラウザ内で完結し、アップロードはありません。">
+<title>動画マルチクロップ — 複数の動画を一括トリミング | DetailCrop Video</title>
+<meta name="description" content="ディテールクロップの動画マルチクロップで、複数の動画をまとめてトリミング。横長の動画からショート用9:16、フィード用1:1・4:5のカットを何本も切り出し、mp4で書き出します。無料・アップロード不要。">
+<meta property="og:title" content="動画マルチクロップ — 複数の動画を一括トリミング | DetailCrop Video">
+<meta property="og:description" content="ディテールクロップの動画マルチクロップで、複数の動画をまとめてトリミング。横長の動画からショート用9:16、フィード用1:1・4:5のカットを何本も切り出し、mp4で書き出します。無料・アップロード不要。">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="DetailCrop">
-<meta name="robots" content="noindex">
 <link rel="canonical" href="https://detailcrop.com/video/ja/">
 <meta property="og:url" content="https://detailcrop.com/video/ja/">
 <link rel="alternate" hreflang="en" href="https://detailcrop.com/video/">
 <link rel="alternate" hreflang="ko" href="https://detailcrop.com/video/ko/">
 <link rel="alternate" hreflang="ja" href="https://detailcrop.com/video/ja/">
 <link rel="alternate" hreflang="x-default" href="https://detailcrop.com/video/">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"DetailCrop","alternateName":["Detail Crop","Multi Crop","디테일크롭","멀티크롭","ディテールクロップ","マルチクロップ"],"url":"https://detailcrop.com/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"DetailCrop Video","alternateName":["Multi Crop Video","디테일크롭 영상","ディテールクロップ 動画"],"url":"https://detailcrop.com/video/ja/","inLanguage":"ja","description":"ディテールクロップの動画マルチクロップで、複数の動画をまとめてトリミング。横長の動画からショート用9:16、フィード用1:1・4:5のカットを何本も切り出し、mp4で書き出します。無料・アップロード不要。","applicationCategory":"MultimediaApplication","applicationSubCategory":"Video editor","operatingSystem":"Any (modern web browser)","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["1本の動画から複数カット、カットごとに比率と区間を設定","9:16・1:1・4:5・16:9・手入力の比率","複数の動画をまとめて作業","カットごとにmp4で保存","ブラウザ内で処理 — アップロードなし"],"permissions":"No account, no upload; videos are processed locally in the browser"}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap">
@@ -290,6 +291,7 @@ footer{margin-top:34px; padding-top:18px; border-top:1px solid var(--line-soft);
 footer a{color:var(--teal); text-decoration:none; border-bottom:1px solid transparent}
 footer a:hover{border-bottom-color:var(--teal)}
 .footLead{margin:0 0 7px; color:var(--ink-2); font-size:14px; font-weight:600}
+.footLinks{display:flex; flex-wrap:wrap; gap:4px 16px; margin-bottom:6px !important; font-size:13px}
 .footBody{margin:0; max-width:66ch; line-height:1.75}
 .footSide{display:flex; flex-direction:column; gap:5px}
 .footSide p{margin:0}
@@ -368,11 +370,11 @@ footer a:hover{border-bottom-color:var(--teal)}
 <div class="wrap">
 
 <header class="bar">
-  <h1 class="brand"><a href="/video/ja/" id="brandLink">Detail<em>Crop</em><span class="vtag">Video <i>(beta)</i></span></a><span class="sr" data-i="h1sr"></span></h1>
-  <p class="tagline" data-i="tagline"></p>
+  <h1 class="brand"><a href="/video/ja/" id="brandLink">Detail<em>Crop</em><span class="vtag">Video <i>(beta)</i></span></a><span class="sr" data-i="h1sr"> — 複数の動画から固定比率のカットを、mp4で書き出し</span></h1>
+  <p class="tagline" data-i="tagline">ディテールクロップの動画マルチクロップ — 映像の上でボックスをドラッグし、切り出したい範囲を指定します。複数カットを一度の再生で、結果はmp4。処理はすべてブラウザ内で完結し、アップロードも登録も不要です。</p>
   <span class="spacer"></span>
   <div class="headBtns">
-    <button type="button" class="hbtn" id="tourBtn" data-i="tourBtn"></button>
+    <button type="button" class="hbtn" id="tourBtn" data-i="tourBtn">使い方を見る</button>
     <button type="button" class="hbtn" id="wideBtn" aria-pressed="false" hidden></button>
   </div>
   <div class="langs" role="group" aria-label="Language">
@@ -389,20 +391,20 @@ footer a:hover{border-bottom-color:var(--teal)}
 <section class="drop" id="drop">
   <video class="heroVid" id="heroVid" muted loop playsinline preload="auto" aria-hidden="true"></video>
   <div class="dropinner">
-    <h2 data-i="dropTitle"></h2>
-    <p data-i="dropBody"></p>
+    <h2 data-i="dropTitle">ここに動画をドロップ</h2>
+    <p data-i="dropBody">1つの素材から固定比率のカットを複数。横位置の映像からショート用9:16、フィード用1:1、カルーセル用4:5を一度に切り出します。複数の動画をまとめて読み込み、順に作業することもできます。</p>
     <div class="heroBtns">
-      <button class="btn primary" id="pickBtn" data-i="pick"></button>
-      <button class="btn" id="sampleBtn" data-i="trySample"></button>
+      <button class="btn primary" id="pickBtn" data-i="pick">動画を選ぶ</button>
+      <button class="btn" id="sampleBtn" data-i="trySample">サンプルで試す</button>
     </div>
-    <p class="note" data-i="dropNote"></p>
+    <p class="note" data-i="dropNote">mp4 · mov · webm — ファイルはこのブラウザから出ません。</p>
   </div>
 </section>
 
 <!-- ============ editor ============ -->
 <div id="work" hidden>
   <div class="strip" id="strip" role="tablist" aria-label="Clips"></div>
-  <p class="hint" id="stripNote" data-i="stripNote" style="margin:-8px 0 14px"></p>
+  <p class="hint" id="stripNote" data-i="stripNote" style="margin:-8px 0 14px">複数の動画をまとめて読み込むと、ここで切り替えながら作業できます。確定した動画には緑の点が付きます。</p>
 
   <div class="split">
   <div class="center">
@@ -413,40 +415,40 @@ footer a:hover{border-bottom-color:var(--teal)}
     </div>
 
     <section class="card">
-      <div class="hd"><span data-i="trimHd"></span><span id="trimTag">—</span></div>
+      <div class="hd"><span data-i="trimHd">区間 — カットごとに1本</span><span id="trimTag">—</span></div>
       <div class="bd">
         <div class="transport">
           <button type="button" class="playBtn" id="playBtn" aria-label="Play">▶</button>
           <span class="tcode"><b id="tNow">0:00.0</b> / <span id="tDur">0:00.0</span></span>
-          <button type="button" class="btn sm" id="trimReset" data-i="trimReset"></button>
-          <button type="button" class="btn sm" id="trimAll" data-i="trimAll"></button>
+          <button type="button" class="btn sm" id="trimReset" data-i="trimReset">全体</button>
+          <button type="button" class="btn sm" id="trimAll" data-i="trimAll">全カットを同じ区間に</button>
         </div>
         <div class="tl" id="tl">
           <div class="ruler" id="ruler"></div>
           <div class="lanes" id="lanes"></div>
           <div class="headlane" id="headlane"><div class="trackHead" id="trackHead"></div></div>
         </div>
-        <p class="hint" style="margin-top:8px" data-i="laneNote"></p>
+        <p class="hint" style="margin-top:8px" data-i="laneNote">レーンをクリックするとそのカットが選択されます。中央をドラッグで区間ごと移動、両端をドラッグで区間の調整、目盛りをドラッグで再生位置の移動。</p>
         <div class="readout">
-          <span><span data-i="trimIn"></span> <b id="roIn">—</b></span>
-          <span><span data-i="trimOut"></span> <b id="roOut">—</b></span>
-          <span><span data-i="trimLen"></span> <b id="roLen">—</b></span>
+          <span><span data-i="trimIn">開始</span> <b id="roIn">—</b></span>
+          <span><span data-i="trimOut">終了</span> <b id="roOut">—</b></span>
+          <span><span data-i="trimLen">長さ</span> <b id="roLen">—</b></span>
         </div>
       </div>
     </section>
 
     <div class="underStage">
       <section class="card">
-        <div class="hd" data-i="settings"></div>
+        <div class="hd" data-i="settings">設定</div>
         <div class="bd">
-          <p class="sub"><span data-i="ratio"></span><span class="pick" id="ratioPick">—</span></p>
+          <p class="sub"><span data-i="ratio">切り出し比率</span><span class="pick" id="ratioPick">—</span></p>
           <div class="seg" id="scopeseg" style="margin-bottom:6px">
-            <button type="button" data-scope="all" data-i="scopeAll"></button>
-            <button type="button" data-scope="one" data-i="scopeOne"></button>
+            <button type="button" data-scope="all" data-i="scopeAll">動画全体</button>
+            <button type="button" data-scope="one" data-i="scopeOne">選択中のカット</button>
           </div>
           <div class="seg wrapseg ofcrop" id="ratioseg"></div>
           <div class="field" id="customRatioRow">
-            <label data-i="custom"></label>
+            <label data-i="custom">指定</label>
             <div class="xy">
               <input type="number" id="rw" min="1" step="1" inputmode="numeric" aria-label="Ratio width">
               <span>:</span>
@@ -455,10 +457,10 @@ footer a:hover{border-bottom-color:var(--teal)}
           </div>
           <p class="hint" id="ratioNote" style="margin-top:6px"></p>
 
-          <p class="sub" data-i="outSize"></p>
+          <p class="sub" data-i="outSize">出力サイズ</p>
           <div class="seg" id="outseg">
-            <button type="button" data-out="native" data-i="outNative"></button>
-            <button type="button" data-out="fixed" data-i="outFixed"></button>
+            <button type="button" data-out="native" data-i="outNative">切り出しサイズ</button>
+            <button type="button" data-out="fixed" data-i="outFixed">固定</button>
           </div>
           <div class="field" id="fixedRow">
             <div class="xy">
@@ -467,65 +469,65 @@ footer a:hover{border-bottom-color:var(--teal)}
               <input type="number" id="oh" min="16" step="2" inputmode="numeric" aria-label="Output height">
             </div>
           </div>
-          <p class="hint" id="fixedNote" style="margin-top:6px" data-i="fixedNote"></p>
+          <p class="hint" id="fixedNote" style="margin-top:6px" data-i="fixedNote">切り出しサイズは指定した範囲の画素をそのまま使います。固定は選択中のカットを下の規格に合わせ、他のカットはそれぞれの比率に合う規格で書き出します。</p>
 
-          <p class="sub" data-i="quality"></p>
+          <p class="sub" data-i="quality">画質</p>
           <div class="seg" id="qseg">
-            <button type="button" data-q="0.6" data-i="qLow"></button>
-            <button type="button" data-q="1" data-i="qMid"></button>
-            <button type="button" data-q="1.8" data-i="qHigh"></button>
+            <button type="button" data-q="0.6" data-i="qLow">軽め</button>
+            <button type="button" data-q="1" data-i="qMid">標準</button>
+            <button type="button" data-q="1.8" data-i="qHigh">高め</button>
           </div>
           <p class="hint" id="brNote" style="margin-top:6px"></p>
 
-          <p class="sub" data-i="audioHd"></p>
+          <p class="sub" data-i="audioHd">音声</p>
           <div class="seg" id="audseg">
-            <button type="button" data-aud="keep" data-i="audKeep"></button>
-            <button type="button" data-aud="drop" data-i="audDrop"></button>
+            <button type="button" data-aud="keep" data-i="audKeep">残す</button>
+            <button type="button" data-aud="drop" data-i="audDrop">外す</button>
           </div>
 
-          <p class="sub" data-i="modeHd"></p>
+          <p class="sub" data-i="modeHd">取り込み方式</p>
           <div class="seg" id="modeseg">
-            <button type="button" data-mode="exact" data-i="modeExact"></button>
-            <button type="button" data-mode="live" data-i="modeLive"></button>
+            <button type="button" data-mode="exact" data-i="modeExact">1フレームずつ</button>
+            <button type="button" data-mode="live" data-i="modeLive">リアルタイム</button>
           </div>
-          <p class="hint" style="margin-top:6px" data-i="modeNote"></p>
+          <p class="hint" style="margin-top:6px" data-i="modeNote">1フレームずつは順に送りながらすべてのフレームを収めます — 遅いかわりに取りこぼしがありません。リアルタイムは一度の再生で速い一方、処理が詰まるとフレームが落ちます。</p>
 
-          <p class="sub" data-i="fpsHd"></p>
+          <p class="sub" data-i="fpsHd">出力フレームレート</p>
           <div class="seg" id="fpsseg">
             <button type="button" data-fps="24">24</button>
             <button type="button" data-fps="30">30</button>
             <button type="button" data-fps="60">60</button>
           </div>
 
-          <p class="sub" data-i="naming"></p>
+          <p class="sub" data-i="naming">ファイル名</p>
           <input type="text" id="pattern" spellcheck="false" aria-label="Filename pattern">
-          <p class="hint" style="margin-top:6px" data-i="namingNote"></p>
+          <p class="hint" style="margin-top:6px" data-i="namingNote">{name} 元のファイル名 · {n} カット番号 · {i} 動画番号 · {ratio} 比率</p>
         </div>
       </section>
 
       <section class="card">
-        <div class="hd" data-i="exportHd"></div>
+        <div class="hd" data-i="exportHd">書き出し</div>
         <div class="bd">
           <div class="progress"><b id="pctLabel">0%</b><span id="stageLabel"></span></div>
           <div class="pbar"><i id="pbar"></i></div>
           <p class="hint" id="exportSummary" style="margin-top:10px"></p>
           <div style="margin-top:10px">
-            <button class="btn primary" type="button" id="exportAll" data-i="exportAll"></button>
+            <button class="btn primary" type="button" id="exportAll" data-i="exportAll">すべての動画を書き出す</button>
           </div>
           <div style="margin-top:8px">
-            <button class="btn" type="button" id="exportOne" data-i="exportOne"></button>
+            <button class="btn" type="button" id="exportOne" data-i="exportOne">この動画だけ書き出す</button>
           </div>
           <div style="margin-top:8px">
-            <button class="btn" type="button" id="cancelBtn" data-i="cancel" hidden></button>
+            <button class="btn" type="button" id="cancelBtn" data-i="cancel" hidden>中止</button>
           </div>
           <div style="margin-top:8px">
-            <button class="btn" type="button" id="clearAll" data-i="clearAll"></button>
+            <button class="btn" type="button" id="clearAll" data-i="clearAll">最初から</button>
           </div>
           <p class="warn" id="errMsg" hidden></p>
           <p class="okmsg" id="exportMsg" hidden></p>
           <div id="saveAllRow" style="margin-top:10px" hidden>
-            <button class="btn primary" type="button" id="saveZip" data-i="saveZip"></button>
-            <button class="btn" type="button" id="saveAll" style="margin-top:8px" data-i="saveAll"></button>
+            <button class="btn primary" type="button" id="saveZip" data-i="saveZip">すべてzipで保存</button>
+            <button class="btn" type="button" id="saveAll" style="margin-top:8px" data-i="saveAll">1つずつ保存</button>
           </div>
           <div class="results" id="results"></div>
         </div>
@@ -539,22 +541,22 @@ footer a:hover{border-bottom-color:var(--teal)}
       <div class="bd">
         <h2 class="worktitle" id="wtitle">—</h2>
         <div class="metaline" id="wmeta">—</div>
-        <p class="hint" id="sampleTip" style="margin-top:8px" data-i="sampleTip" hidden></p>
+        <p class="hint" id="sampleTip" style="margin-top:8px" data-i="sampleTip" hidden>サンプル映像 — ご自身の動画を入れると自動で外れます。</p>
 
         <div class="crops" id="crops" style="margin-top:12px"></div>
 
-        <p class="sub" data-i="cropCount"></p>
+        <p class="sub" data-i="cropCount">カット数</p>
         <div class="seg" id="countseg"></div>
 
         <div class="readout">
-          <span><span data-i="pos"></span> <b id="roPos">—</b></span>
-          <span><span data-i="size"></span> <b id="roSize">—</b></span>
+          <span><span data-i="pos">位置</span> <b id="roPos">—</b></span>
+          <span><span data-i="size">サイズ</span> <b id="roSize">—</b></span>
         </div>
-        <p class="warn" id="minwarn" hidden data-i="upscaleWarn"></p>
+        <p class="warn" id="minwarn" hidden data-i="upscaleWarn">このカットは出力枠より小さいため、拡大されて甘くなります。</p>
 
         <div class="row" style="margin-top:12px">
-          <button class="btn" type="button" id="fillBtn" data-i="fillFrame"></button>
-          <button class="btn" type="button" id="spreadBtn" data-i="spread"></button>
+          <button class="btn" type="button" id="fillBtn" data-i="fillFrame">画面いっぱい</button>
+          <button class="btn" type="button" id="spreadBtn" data-i="spread">均等に配置</button>
         </div>
         <div style="margin-top:8px">
           <button class="btn" type="button" id="confirmBtn"></button>
@@ -563,7 +565,7 @@ footer a:hover{border-bottom-color:var(--teal)}
     </section>
 
     <section class="card">
-      <div class="hd" data-i="shortcuts"></div>
+      <div class="hd" data-i="shortcuts">ショートカット</div>
       <div class="bd"><p class="hint" id="hintBody"></p></div>
     </section>
   </div>
@@ -575,13 +577,14 @@ footer a:hover{border-bottom-color:var(--teal)}
 
 <footer>
   <div>
-    <p class="footLead" data-i="footLead"></p>
-    <p class="footBody" data-i="footBody"></p>
+    <p class="footLead" data-i="footLead">動画は複数、カットも複数、再生は1本につき一度。</p>
+    <p class="footBody" data-i="footBody">横位置の映像をショート用の縦、フィード用の正方形、カルーセル用の4:5に切るには、普通は編集ソフトを三往復します — しかも動画1本につきです。ここでは同じ映像の上で三つとも枠を決め、残りの動画も同じように切り替えながら指定して、まとめてzipひとつで受け取れます。</p>
   </div>
   <div class="footSide">
-    <p data-i="footPrivacy"></p>
-    <p data-i="footFree"></p>
-    <p data-i="footBrowsers"></p>
+    <p class="footLinks"><a id="aboutLink" href="/ja/about/" data-i="footAbout">DetailCropについて</a><a id="howLink" href="/ja/how-to/" data-i="footHow">複数の画像をまとめて切り抜く方法</a><a id="usesLink" href="/ja/uses/" data-i="footUses">こんな使い方</a></p>
+    <p data-i="footPrivacy">アップロードなし。デコードもエンコードもブラウザ内で完結します。</p>
+    <p data-i="footFree">無料・登録不要。</p>
+    <p data-i="footBrowsers">最新のChrome・Edge・Safariが必要です。</p>
   </div>
 </footer>
 
@@ -591,7 +594,7 @@ footer a:hover{border-bottom-color:var(--teal)}
     <p class="tourStep" id="tourStep"></p>
     <p class="tourText" id="tourText"></p>
     <div class="tourBtns">
-      <button type="button" class="skip" id="tourSkip" data-i="tourSkip"></button>
+      <button type="button" class="skip" id="tourSkip" data-i="tourSkip">スキップ</button>
       <button type="button" class="btn primary" id="tourNext"></button>
     </div>
   </div>
@@ -600,11 +603,11 @@ footer a:hover{border-bottom-color:var(--teal)}
 <a class="crossban" id="crossBan" href="/ja/" style="--cb:var(--amber)">
   <span class="cb-edge" aria-hidden="true"></span>
   <span class="cb-text">
-    <span class="cb-kicker" data-i="cbKicker"></span>
+    <span class="cb-kicker" data-i="cbKicker">DetailCropのもう半分</span>
     <span class="cb-title">Detail<b>Crop</b></span>
-    <span class="cb-body" data-i="cbBody"></span>
+    <span class="cb-body" data-i="cbBody">画像はまとめて — 1枚から固定比率のカットを何枚も、必要なら傾きも直して、zipひとつで。</span>
   </span>
-  <span class="cb-go"><span data-i="cbGo"></span> <i aria-hidden="true">→</i></span>
+  <span class="cb-go"><span data-i="cbGo">画像ツールを開く</span> <i aria-hidden="true">→</i></span>
 </a>
 
 </div>
@@ -628,7 +631,8 @@ If you want to offset all timestamps of a track such that the first one is zero,
 const I18N = {
   en:{
     h1sr:" — several fixed-ratio crops out of every video, saved as mp4",
-    tagline:"Drag boxes over the footage to mark the crops you want. Several at once, one pass per clip, out as mp4. Everything happens in your browser — no upload, no account.",
+    footAbout:"About DetailCrop", footHow:"How to crop many images at once", footUses:"What people use it for",
+    tagline:"Multi Crop for video — drag boxes over the footage to mark the crops you want. Several at once, one pass per clip, out as mp4. Everything happens in your browser — no upload, no account.",
     dropTitle:"Drop your videos here",
     dropBody:"One source, several fixed-ratio crops. A wide shot becomes a 9:16 for Shorts, a 1:1 for the feed and a 4:5 for the carousel — cut in a single pass. Drop a whole batch and step through it.",
     pick:"Choose videos",
@@ -695,7 +699,8 @@ const I18N = {
   },
   ko:{
     h1sr:" — 여러 영상에서 고정 비율 컷을 뽑아 mp4로 내보내기",
-    tagline:"영상 위에 상자를 끌어 원하는 컷을 잡습니다. 여러 컷을 한 번의 재생으로, 결과는 mp4로. 모든 처리가 브라우저 안에서 끝나며 업로드도 가입도 없습니다.",
+    footAbout:"디테일크롭 소개", footHow:"여러 이미지 한번에 자르는 법", footUses:"이렇게 씁니다",
+    tagline:"디테일크롭 영상 멀티크롭 — 영상 위에 상자를 끌어 원하는 컷을 잡습니다. 여러 컷을 한 번의 재생으로, 결과는 mp4로. 모든 처리가 브라우저 안에서 끝나며 업로드도 가입도 없습니다.",
     dropTitle:"영상을 여기에 놓으세요",
     dropBody:"소스 하나에서 고정 비율 컷 여러 개. 가로 원본에서 쇼츠용 9:16, 피드용 1:1, 캐러셀용 4:5를 한 번에 잘라냅니다. 여러 영상을 한꺼번에 올려 차례로 작업할 수도 있습니다.",
     pick:"영상 고르기",
@@ -762,7 +767,8 @@ const I18N = {
   },
   ja:{
     h1sr:" — 複数の動画から固定比率のカットを、mp4で書き出し",
-    tagline:"映像の上でボックスをドラッグし、切り出したい範囲を指定します。複数カットを一度の再生で、結果はmp4。処理はすべてブラウザ内で完結し、アップロードも登録も不要です。",
+    footAbout:"DetailCropについて", footHow:"複数の画像をまとめて切り抜く方法", footUses:"こんな使い方",
+    tagline:"ディテールクロップの動画マルチクロップ — 映像の上でボックスをドラッグし、切り出したい範囲を指定します。複数カットを一度の再生で、結果はmp4。処理はすべてブラウザ内で完結し、アップロードも登録も不要です。",
     dropTitle:"ここに動画をドロップ",
     dropBody:"1つの素材から固定比率のカットを複数。横位置の映像からショート用9:16、フィード用1:1、カルーセル用4:5を一度に切り出します。複数の動画をまとめて読み込み、順に作業することもできます。",
     pick:"動画を選ぶ",
@@ -896,6 +902,9 @@ function applyLang(){
   const sfx = S.lang === "en" ? "/" : "/" + S.lang + "/";
   $("#brandLink").href = "/video" + sfx;
   $("#crossBan").href  = sfx;
+  $("#aboutLink").href = sfx + "about/";
+  $("#howLink").href   = sfx + "how-to/";
+  $("#usesLink").href  = sfx + "uses/";
   $$("#ratioseg button").forEach(b => {
     if (b.dataset.r === "free")   b.textContent = t.free;
     if (b.dataset.r === "custom") b.textContent = t.custom;

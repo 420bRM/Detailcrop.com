@@ -10,8 +10,10 @@ served with `noindex` so the two hostnames do not compete in search.
 
 ```
 template.html           the stills tool — one of the two files to edit
-template-video.html     the video tool (/video/, still noindex)
-build.py                writes the six language pages below
+template-video.html     the video tool (/video/)
+template-page.html      shell for the reading pages (about, how-to, uses)
+pages/<lang>/<slug>.html  their text: a few header lines, "---", then HTML
+build.py                writes every page below, and the sitemap
 public/
   index.html            en  →  /
   ko/index.html         ko  →  /ko/
@@ -23,7 +25,8 @@ public/
   favicon.ico           16/32/48/64/128/256, each drawn at its own size
   apple-touch-icon.png  180
   icon-512.png
-  robots.txt  sitemap.xml
+  about/ how-to/ uses/  reading pages; also under ko/ and ja/
+  robots.txt  sitemap.xml   (sitemap is generated)
 src/
   index.js              Worker: serves assets, POST /e, routes /stats
   stats.js              the /stats dashboard and /api/today
@@ -35,6 +38,10 @@ language, `<title>`, description and canonical (the stills pages also carry
 JSON-LD). **They are generated. Edit `template.html` or
 `template-video.html`, then run `python3 build.py`** — a change hand-typed
 into `public/ko/index.html` is gone the next time anyone builds.
+
+The build also writes each page language's interface text into the HTML, so
+crawlers that don't run JavaScript (Naver, link previews) see real text instead
+of empty tags. The script sets the same text again when the page loads.
 
 ## Deploy
 
@@ -147,9 +154,8 @@ Same idea as the stills page, one clip at a time: drag boxes over the
 footage, several at once, and every box comes out as its own mp4. Decoding
 is the `<video>` element, encoding is WebCodecs, muxing is mp4-muxer
 inlined into the page, and the zip writer is the same hand-rolled one — so
-nothing leaves the browser here either. It is `noindex` and out of the
-sitemap while it is in testing; publishing it means deleting one meta line
-and adding three URLs to the sitemap.
+nothing leaves the browser here either. It is indexed and in the sitemap
+like the stills pages, with its own JSON-LD.
 
 **A batch, like the stills page.** Drop several clips and the filmstrip
 above the stage steps through them; a green dot marks each clip you have

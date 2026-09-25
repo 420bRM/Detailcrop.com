@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DetailCrop — ラインナップ全体のディテールカットを一度に</title>
-<meta name="description" content="複数の画像から同じ比率のディテールカットを1枚につき何カットも切り出し、zipひとつでダウンロードします。処理はすべてブラウザ内で完結し、アップロードはありません。">
-<meta property="og:title" content="DetailCrop — batch detail crops from every image">
-<meta property="og:description" content="複数の画像から同じ比率のディテールカットを1枚につき何カットも切り出し、zipひとつでダウンロードします。処理はすべてブラウザ内で完結し、アップロードはありません。">
+<title>マルチクロップ — 複数の画像を一括トリミング | DetailCrop ディテールクロップ</title>
+<meta name="description" content="DetailCrop（ディテールクロップ）のマルチクロップで、複数の画像をまとめてトリミング。1枚につき同じ比率のカットを最大6つ切り出し、zipひとつでダウンロード。無料・アップロード不要。">
+<meta property="og:title" content="マルチクロップ — 複数の画像を一括トリミング | DetailCrop ディテールクロップ">
+<meta property="og:description" content="DetailCrop（ディテールクロップ）のマルチクロップで、複数の画像をまとめてトリミング。1枚につき同じ比率のカットを最大6つ切り出し、zipひとつでダウンロード。無料・アップロード不要。">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="DetailCrop">
 <meta property="og:image" content="https://detailcrop.com/og.jpg">
@@ -19,7 +19,8 @@
 <link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/">
 <link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/">
 <link rel="alternate" hreflang="x-default" href="https://detailcrop.com/">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"DetailCrop","url":"https://detailcrop.com/ja/","inLanguage":"ja","description":"複数の画像から同じ比率のディテールカットを1枚につき何カットも切り出し、zipひとつでダウンロードします。処理はすべてブラウザ内で完結し、アップロードはありません。","applicationCategory":"MultimediaApplication","applicationSubCategory":"Image editor","operatingSystem":"Any (modern web browser)","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["1画像あたり最大6カット","バッチ全体で比率を固定","切り抜く前に写真の傾きを補正","インスタのフィードを3・6・9分割","すべてのカットをzipひとつで書き出し","ブラウザ内で処理 — アップロードなし"],"permissions":"No account, no upload; images are processed locally in the browser"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"DetailCrop","alternateName":["Detail Crop","Multi Crop","디테일크롭","멀티크롭","ディテールクロップ","マルチクロップ"],"url":"https://detailcrop.com/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"DetailCrop","alternateName":["Detail Crop","Multi Crop","디테일크롭","멀티크롭","ディテールクロップ","マルチクロップ"],"url":"https://detailcrop.com/ja/","inLanguage":"ja","description":"DetailCrop（ディテールクロップ）のマルチクロップで、複数の画像をまとめてトリミング。1枚につき同じ比率のカットを最大6つ切り出し、zipひとつでダウンロード。無料・アップロード不要。","applicationCategory":"MultimediaApplication","applicationSubCategory":"Image editor","operatingSystem":"Any (modern web browser)","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["1画像あたり最大6カット","バッチ全体で比率を固定","切り抜く前に写真の傾きを補正","インスタのフィードを3・6・9分割","すべてのカットをzipひとつで書き出し","ブラウザ内で処理 — アップロードなし"],"permissions":"No account, no upload; images are processed locally in the browser"}</script>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -419,6 +420,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
 .footBody{margin:0; max-width:66ch; line-height:1.75}
 .footSide{display:flex; flex-direction:column; gap:5px}
 .footSide p{margin:0}
+.footLinks{display:flex; flex-wrap:wrap; gap:4px 16px; margin-bottom:6px !important; font-size:13px}
 
 .todayLine{
   margin-top:10px; padding-top:9px; border-top:1px solid var(--line-soft);
@@ -472,11 +474,11 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
 <div class="wrap">
 
 <header class="bar">
-  <h1 class="brand"><a href="/" id="brandLink">Detail<em>Crop</em></a><span class="sr" data-i="h1sr"></span></h1>
-  <p class="tagline" data-i="tagline"></p>
+  <h1 class="brand"><a href="/ja/" id="brandLink">Detail<em>Crop</em></a><span class="sr" data-i="h1sr"> — マルチクロップ：複数の画像を一括トリミング、1枚から複数カットをzipで書き出し</span></h1>
+  <p class="tagline" data-i="tagline">ディテールクロップのマルチクロップ — 画像の上でボックスをドラッグし、切り出したい部分を指定します。1枚に複数カット、複数の画像をまとめてトリミング、結果はzipひとつ。処理はすべてブラウザ内で完結し、アップロードも登録も不要です。</p>
   <span class="spacer"></span>
   <div class="headBtns">
-    <button type="button" class="hbtn" id="tourBtn" data-i="tourBtn"></button>
+    <button type="button" class="hbtn" id="tourBtn" data-i="tourBtn">使い方を見る</button>
     <button type="button" class="hbtn" id="wideBtn" aria-pressed="false"></button>
   </div>
   <div class="langs" role="group" aria-label="Language">
@@ -490,13 +492,13 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
 <div class="shell" id="shell">
 <section class="drop" id="drop">
   <div class="dropinner">
-    <h2 data-i="dropTitle"></h2>
-    <p data-i="dropBody"></p>
+    <h2 data-i="dropTitle">ここに画像をドロップ</h2>
+    <p data-i="dropBody">JPEG、PNG、WebP、AVIF、GIF。最大200ファイル、1ファイル200MBまで。ファイルがこの端末から出ることはありません。</p>
     <div class="heroBtns">
-      <button class="btn primary" id="pickBtn" data-i="pick"></button>
-      <button class="btn" id="sampleBtn" data-i="trySample"></button>
+      <button class="btn primary" id="pickBtn" data-i="pick">画像を選ぶ</button>
+      <button class="btn" id="sampleBtn" data-i="trySample">サンプルで試す</button>
     </div>
-    <p class="note" data-i="dropNote"></p>
+    <p class="note" data-i="dropNote">並んだ商品や作品すべてから同じ種類のディテールカットを用意する人のための道具です — 商品詳細画像、アート、プリント、生地、物件写真。</p>
   </div>
 </section>
 
@@ -507,22 +509,22 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
   <div class="split">
     <div class="center">
       <div class="stagewrap">
-        <div class="stage" id="stage"><img id="art" alt=""><div class="sgrid" id="sgrid"></div></div>
+        <div class="stage" id="stage"><img id="art" alt="マルチクロップの枠を重ねた、トリミング中の画像" data-i-alt="artAlt"><div class="sgrid" id="sgrid"></div></div>
       </div>
 
       <div class="underStage">
         <section class="card">
-          <div class="hd" data-i="settings"></div>
+          <div class="hd" data-i="settings">設定</div>
           <div class="bd">
-            <p class="sub"><span data-i="ratio"></span><span class="pick" id="ratioPick">—</span></p>
+            <p class="sub"><span data-i="ratio">切り抜き比率</span><span class="pick" id="ratioPick">—</span></p>
             <div class="seg" id="scopeseg" style="margin-bottom:6px">
-              <button type="button" data-scope="all" data-i="scopeAll"></button>
-              <button type="button" data-scope="one" data-i="scopeOne"></button>
+              <button type="button" data-scope="all" data-i="scopeAll">全体</button>
+              <button type="button" data-scope="one" data-i="scopeOne">選択中のカット</button>
             </div>
             <div class="seg wrapseg" id="ratioseg"></div>
             <p class="hint" id="ratioNote" style="margin:6px 0 0"></p>
             <div class="field" id="customRatioRow">
-              <label data-i="custom"></label>
+              <label data-i="custom">手入力</label>
               <div class="xy">
                 <input type="number" id="rw" min="1" step="1" inputmode="numeric" aria-label="Ratio width">
                 <span>:</span>
@@ -530,19 +532,19 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
               </div>
             </div>
 
-            <p class="sub" data-i="feedHd"></p>
+            <p class="sub" data-i="feedHd">インスタ フィード分割</p>
           <div class="seg" id="feedseg">
-            <button type="button" data-feed="3" data-i="feed3"></button>
-            <button type="button" data-feed="6" data-i="feed6"></button>
-            <button type="button" data-feed="9" data-i="feed9"></button>
-            <button type="button" data-feed="0" data-i="feedOff"></button>
+            <button type="button" data-feed="3" data-i="feed3">3分割</button>
+            <button type="button" data-feed="6" data-i="feed6">6分割</button>
+            <button type="button" data-feed="9" data-i="feed9">9分割</button>
+            <button type="button" data-feed="0" data-i="feedOff">オフ</button>
           </div>
-          <p class="hint" id="feedNote" hidden data-i="feedNote" style="margin-top:8px"></p>
+          <p class="hint" id="feedNote" hidden data-i="feedNote" style="margin-top:8px">番号は読む順ではなく投稿する順です。1番から順に投稿してください — プロフィールは新しい投稿が左上に来るため、右下のピースを先に上げないと絵が合いません。</p>
 
-          <p class="sub" data-i="outSize"></p>
+          <p class="sub" data-i="outSize">出力サイズ</p>
             <div class="seg" id="outseg">
-              <button type="button" data-out="native" data-i="outNative"></button>
-              <button type="button" data-out="fixed" data-i="outFixed"></button>
+              <button type="button" data-out="native" data-i="outNative">元の解像度</button>
+              <button type="button" data-out="fixed" data-i="outFixed">固定サイズ</button>
             </div>
             <div class="field" id="fixedRow">
               <div class="xy">
@@ -551,39 +553,39 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
                 <input type="number" id="oh" min="1" step="1" inputmode="numeric" aria-label="Output height">
               </div>
             </div>
-            <p class="hint" id="fixedNote" style="margin-top:6px" data-i="fixedNote"></p>
+            <p class="hint" id="fixedNote" style="margin-top:6px" data-i="fixedNote">固定サイズは比率を固定しているときだけ使えます。これより小さいボックスは拡大されて甘くなります。</p>
 
-            <p class="sub" data-i="format"></p>
+            <p class="sub" data-i="format">形式</p>
             <div class="seg" id="fmtseg">
               <button type="button" data-fmt="image/webp">WebP</button>
               <button type="button" data-fmt="image/jpeg">JPEG</button>
               <button type="button" data-fmt="image/png">PNG</button>
             </div>
             <div class="field" id="qualityRow">
-              <label><span data-i="quality"></span> <b id="qval" style="color:var(--ink-2)">86</b></label>
+              <label><span data-i="quality">画質</span> <b id="qval" style="color:var(--ink-2)">86</b></label>
               <input type="range" id="quality" min="40" max="100" step="1" value="86">
             </div>
 
-            <p class="sub" data-i="naming"></p>
+            <p class="sub" data-i="naming">ファイル名</p>
             <input type="text" id="pattern" spellcheck="false" aria-label="Filename pattern">
-            <p class="hint" style="margin-top:6px" data-i="namingNote"></p>
+            <p class="hint" style="margin-top:6px" data-i="namingNote">{name} 元のファイル名 · {n} カット番号 · {nn} 01, 02… · {i} 画像番号 · {w}×{h} 出力サイズ</p>
           </div>
         </section>
 
         <section class="card">
-          <div class="hd" data-i="exportHd"></div>
+          <div class="hd" data-i="exportHd">書き出し</div>
           <div class="bd">
             <div class="progress"><b id="doneCount">0</b><span id="doneTotal">/ 0</span></div>
             <div class="pbar"><i id="pbar"></i></div>
             <p class="hint" id="exportSummary" style="margin-top:10px"></p>
             <div style="margin-top:10px">
-              <button class="btn primary" type="button" id="exportAll" data-i="exportAll"></button>
+              <button class="btn primary" type="button" id="exportAll" data-i="exportAll">すべてzipで書き出す</button>
             </div>
             <div style="margin-top:8px">
-              <button class="btn" type="button" id="exportOne" data-i="exportOne"></button>
+              <button class="btn" type="button" id="exportOne" data-i="exportOne">この画像だけ書き出す</button>
             </div>
             <div style="margin-top:8px">
-              <button class="btn" type="button" id="clearAll" data-i="clearAll"></button>
+              <button class="btn" type="button" id="clearAll" data-i="clearAll">画像をすべて消す</button>
             </div>
             <p class="okmsg" id="exportMsg" hidden></p>
           </div>
@@ -601,7 +603,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
 
           <div class="crops" id="crops" style="margin-top:12px"></div>
 
-          <p class="sub" data-i="cropCount"></p>
+          <p class="sub" data-i="cropCount">この画像のカット数 · 0でスキップ</p>
           <div class="seg" id="countseg"></div>
 
           <div class="padwrap">
@@ -610,14 +612,14 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
               <button type="button" data-nudge="up" aria-label="Up">↑</button>
               <span class="mid"></span>
               <button type="button" data-nudge="left" aria-label="Left">←</button>
-              <span class="mid" data-i="move"></span>
+              <span class="mid" data-i="move">移動</span>
               <button type="button" data-nudge="right" aria-label="Right">→</button>
               <span class="mid"></span>
               <button type="button" data-nudge="down" aria-label="Down">↓</button>
               <span class="mid"></span>
             </div>
             <div class="sizecol">
-              <span class="lbl" data-i="size"></span>
+              <span class="lbl" data-i="size">サイズ</span>
               <button type="button" data-nudge="bigger" aria-label="Bigger">＋</button>
               <button type="button" data-nudge="smaller" aria-label="Smaller">－</button>
             </div>
@@ -625,23 +627,23 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
           <div class="align" id="alignPanel">
             <button type="button" class="disc" id="alignToggle" aria-expanded="false" aria-controls="alignBody">
               <span class="disc-ic" aria-hidden="true"></span>
-              <span data-i="alignTitle"></span>
+              <span data-i="alignTitle">傾き補正</span>
               <span class="disc-sum" id="alignSum"></span>
             </button>
             <div id="alignBody" hidden>
               <div class="rotrow">
-                <label for="rotSlider" data-i="straighten"></label>
+                <label for="rotSlider" data-i="straighten">回転</label>
                 <span class="rottrack"><input type="range" id="rotSlider" min="-15" max="15" step="0.1" value="0"></span>
                 <button type="button" class="rotVal" id="rotReset">0.0°</button>
               </div>
               <div id="perspRows">
                 <div class="rotrow">
-                  <label for="khSlider" data-i="kHoriz"></label>
+                  <label for="khSlider" data-i="kHoriz">水平</label>
                   <span class="rottrack"><input type="range" id="khSlider" min="-100" max="100" step="1" value="0"></span>
                   <button type="button" class="rotVal" id="khReset">0</button>
                 </div>
                 <div class="rotrow">
-                  <label for="kvSlider" data-i="kVert"></label>
+                  <label for="kvSlider" data-i="kVert">垂直</label>
                   <span class="rottrack"><input type="range" id="kvSlider" min="-100" max="100" step="1" value="0"></span>
                   <button type="button" class="rotVal" id="kvReset">0</button>
                 </div>
@@ -650,23 +652,23 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
           </div>
 
           <div class="readout">
-            <span><span data-i="pos"></span> <b id="roPos">—</b></span>
-            <span><span data-i="size"></span> <b id="roSize">—</b></span>
+            <span><span data-i="pos">位置</span> <b id="roPos">—</b></span>
+            <span><span data-i="size">サイズ</span> <b id="roSize">—</b></span>
           </div>
-          <p class="warn" id="minwarn" hidden data-i="upscaleWarn"></p>
+          <p class="warn" id="minwarn" hidden data-i="upscaleWarn">ボックスが出力サイズより小さいため、拡大されて解像感が落ちます。ボックスを大きくしてください。</p>
 
           <div class="row" style="margin-top:12px">
-            <button class="btn" type="button" id="autoBtn" data-i="autoPlace"></button>
-            <button class="btn" type="button" id="spreadBtn" data-i="spread"></button>
+            <button class="btn" type="button" id="autoBtn" data-i="autoPlace">自動配置</button>
+            <button class="btn" type="button" id="spreadBtn" data-i="spread">均等に広げる</button>
           </div>
           <div style="margin-top:8px">
-            <button class="btn primary" type="button" id="nextBtn" data-i="confirmNext"></button>
+            <button class="btn primary" type="button" id="nextBtn" data-i="confirmNext">確定して次へ →</button>
           </div>
         </div>
       </section>
 
       <section class="card">
-        <div class="hd" data-i="shortcuts"></div>
+        <div class="hd" data-i="shortcuts">ショートカット</div>
         <div class="bd">
           <p class="hint" id="hintBody"></p>
         </div>
@@ -680,26 +682,27 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
 
 <footer>
   <div>
-    <p class="footLead" data-i="footLead"></p>
-    <p class="footBody" data-i="footBody"></p>
+    <p class="footLead" data-i="footLead">マルチクロップ — ラインナップ全体のディテールカットを、一度に。</p>
+    <p class="footBody" data-i="footBody">ディテールカットは、1枚をうまく切る作業ではなく、複数枚を同じ規則で切る作業です。同じ種類の寄りが、すべての写真から同じ比率・同じ出力サイズ・同じ命名規則で出てこなければなりません。ところが一般的な画像編集ソフトはその規則を覚えていないため、ファイルごとに条件を立て直すことになり、枚数が増えるほど仕上がりは少しずつずれていきます。このツールはその規則を作業全体に固定します。手元に残るのは個別に切った寄せ集めではなく、ひとつのセットです。</p>
   </div>
   <div class="footSide">
-    <p data-i="footPrivacy"></p>
-    <p data-i="footFree"></p>
-    <p><span data-i="footContact"></span> <a id="mailLink" href="#">&#8230;</a></p>
-    <p style="margin-top:6px"><span data-i="footStats"></span> <button type="button" class="linkbtn" id="statsToggle"></button></p>
+    <p class="footLinks"><a id="aboutLink" href="/ja/about/" data-i="footAbout">DetailCropについて</a><a id="howLink" href="/ja/how-to/" data-i="footHow">複数の画像をまとめて切り抜く方法</a><a id="usesLink" href="/ja/uses/" data-i="footUses">こんな使い方</a></p>
+    <p data-i="footPrivacy">処理はすべてブラウザ内で行われます。画像がアップロードされることはありません。</p>
+    <p data-i="footFree">無料で使えます。</p>
+    <p><span data-i="footContact">広告・提携のお問い合わせ:</span> <a id="mailLink" href="#">&#8230;</a></p>
+    <p style="margin-top:6px"><span data-i="footStats">匿名の利用統計 — 画像サイズ、枚数、選んだ設定のみ。画像そのものは記録しません。</span> <button type="button" class="linkbtn" id="statsToggle"></button></p>
     <p class="todayLine" id="todayLine" hidden></p>
   </div>
 </footer>
 
-<a class="crossban" id="crossBan" href="/video/" style="--cb:var(--teal)">
+<a class="crossban" id="crossBan" href="/video/ja/" style="--cb:var(--teal)">
   <span class="cb-edge" aria-hidden="true"></span>
   <span class="cb-text">
-    <span class="cb-kicker" data-i="cbKicker"></span>
-    <span class="cb-title">Detail<b>Crop</b> Video <u data-i="cbBeta"></u></span>
-    <span class="cb-body" data-i="cbBody"></span>
+    <span class="cb-kicker" data-i="cbKicker">DetailCropのもう半分</span>
+    <span class="cb-title">Detail<b>Crop</b> Video <u data-i="cbBeta">ベータ</u></span>
+    <span class="cb-body" data-i="cbBody">同じ考え方で動く映像も — 1本の動画の上にカットをいくつも取れば、一度の再生ですべてmp4になります。ショート用9:16、フィード用1:1、カルーセル用4:5を一度に。</span>
   </span>
-  <span class="cb-go"><span data-i="cbGo"></span> <i aria-hidden="true">→</i></span>
+  <span class="cb-go"><span data-i="cbGo">動画ツールを開く</span> <i aria-hidden="true">→</i></span>
 </a>
 
 <div class="tour" id="tour" hidden>
@@ -708,7 +711,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
     <p class="tourStep" id="tourStep"></p>
     <p class="tourText" id="tourText"></p>
     <div class="tourBtns">
-      <button type="button" class="skip" id="tourSkip" data-i="tourSkip"></button>
+      <button type="button" class="skip" id="tourSkip" data-i="tourSkip">スキップ</button>
       <button type="button" class="btn primary" id="tourNext"></button>
     </div>
   </div>
@@ -723,7 +726,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
    ===================================================================== */
 const I18N = {
   en:{
-    tagline:"Drag boxes over each image to mark the detail crops you want. Several per image, a whole batch in one sitting, out as a single zip. Everything happens in your browser — no upload, no account.",
+    tagline:"Multi Crop by DetailCrop — drag boxes over each image to mark the detail crops you want. Several per image, multiple images cropped at once, out as a single zip. Everything happens in your browser — no upload, no account.",
     dropTitle:"Drop your images here",
     dropBody:"JPEG, PNG, WebP, AVIF or GIF. Up to 200 files, 200 MB each. Your files never leave this computer.",
     pick:"Choose images",
@@ -764,13 +767,15 @@ const I18N = {
     footPrivacy:"Runs entirely in your browser. Your images are never uploaded.",
     footFree:"Free to use.",
     todayVisits:"visits today", todayPeople:" people", todayExports:"exports",
-    h1sr:" — batch detail crops from every image, exported as one zip",
+    h1sr:" — Multi Crop: batch crop multiple images at once, several detail crops per image, exported as one zip",
+    artAlt:"The image being cropped, with the Multi Crop boxes laid over it",
+    footAbout:"About DetailCrop", footHow:"How to crop many images at once", footUses:"What people use it for",
     straighten:"Rotate", kHoriz:"Horiz.", kVert:"Vert.", resetZero:"Back to zero", alignTitle:"Alignment",
-    footContact:"Advertising &amp; partnerships:",
+    footContact:"Advertising & partnerships:",
     footStats:"Anonymous usage stats — image sizes, batch size and the settings you pick. Never the images themselves.",
     statsOn:"turn off",
     statsOff:"stats off · turn back on",
-    footLead:"Detail crops for your whole product lineup, in one sitting.",
+    footLead:"Multi Crop — detail crops for your whole product lineup, in one sitting.",
     footBody:"A detail crop is rarely a one-off. The same kind of close-up has to come out of every picture in a lineup — same ratio, same output size, same naming rule. A general image editor has no memory of any of that, so those constraints get rebuilt by hand for every file and quietly drift apart over a long batch. DetailCrop holds them for the whole run instead. What you get back is a set, not a pile of separately cropped files.",
     t1:"Drag a box to move it, or pull the corner dot to resize. Click anywhere on the picture to jump the selected box there.",
     t2:"Set how many crops this image gets — up to six. Choose 0 to skip the image entirely.",
@@ -797,7 +802,7 @@ const I18N = {
     sampleTip:"Sample image — it steps aside as soon as you add your own",
   },
   ko:{
-    tagline:"이미지 위에 상자를 끌어 원하는 확대컷 구역을 잡습니다. 한 장에 여러 컷, 여러 장을 한 번에, 결과는 zip 하나로. 모든 처리가 브라우저 안에서 끝나며 업로드도 가입도 없습니다.",
+    tagline:"디테일크롭의 멀티크롭 — 이미지 위에 상자를 끌어 원하는 확대컷 구역을 잡습니다. 한 장에 여러 컷, 여러 이미지를 한번에 자르고, 결과는 zip 하나로. 모든 처리가 브라우저 안에서 끝나며 업로드도 가입도 없습니다.",
     dropTitle:"여기에 이미지를 놓으세요",
     dropBody:"JPEG, PNG, WebP, AVIF, GIF. 최대 200장, 장당 200MB. 파일은 이 컴퓨터를 벗어나지 않습니다.",
     pick:"이미지 선택",
@@ -838,13 +843,15 @@ const I18N = {
     footPrivacy:"모든 처리가 브라우저 안에서 이루어집니다. 이미지는 업로드되지 않습니다.",
     footFree:"무료로 쓰세요.",
     todayVisits:"오늘 방문", todayPeople:"명", todayExports:"내보내기",
-    h1sr:" — 여러 이미지에서 확대컷을 한 번에 뽑아 zip으로 내보내기",
+    h1sr:" — 멀티크롭: 여러 이미지 한번에 자르기, 한 장에서 확대컷 여러 개를 zip으로",
+    artAlt:"멀티크롭 상자가 올라간, 지금 자르고 있는 이미지",
+    footAbout:"디테일크롭 소개", footHow:"여러 이미지 한번에 자르는 법", footUses:"이렇게 씁니다",
     straighten:"회전", kHoriz:"수평", kVert:"수직", resetZero:"0으로 되돌리기", alignTitle:"정렬 보정",
     footContact:"광고·제휴 문의:",
     footStats:"익명 사용 통계 — 이미지 크기, 장수, 고른 설정만 기록합니다. 이미지 자체는 기록하지 않습니다.",
     statsOn:"끄기",
     statsOff:"통계 꺼짐 · 다시 켜기",
-    footLead:"라인업 전체의 확대컷을, 한자리에서.",
+    footLead:"멀티크롭 — 라인업 전체의 확대컷을, 한자리에서.",
     footBody:"확대컷은 한 장을 잘 자르는 일이 아니라, 여러 장을 같은 규칙으로 자르는 일입니다. 같은 종류의 클로즈업이 모든 사진에서 같은 비율, 같은 출력 크기, 같은 파일명 규칙으로 나와야 합니다. 그런데 일반적인 편집기는 그 규칙을 기억하지 않습니다. 파일마다 조건을 다시 세우게 되고, 장수가 쌓일수록 결과는 조금씩 어긋납니다. 이 도구는 그 규칙을 작업 전체에 붙들어 둡니다. 그래서 손에 남는 것은 따로따로 자른 파일 더미가 아니라 하나의 세트입니다.",
     t1:"상자를 끌어 옮기고, 모서리의 점을 당겨 크기를 바꿉니다. 그림 아무 곳이나 클릭하면 선택된 상자가 그 자리로 옵니다.",
     t2:"이 이미지에서 몇 컷을 뽑을지 정합니다. 최대 6컷이고, 0을 고르면 이 이미지는 건너뜁니다.",
@@ -871,7 +878,7 @@ const I18N = {
     sampleTip:"예시 이미지 — 직접 올린 이미지가 들어오면 자동으로 빠집니다",
   },
   ja:{
-    tagline:"画像の上でボックスをドラッグし、切り出したい部分を指定します。1枚に複数カット、まとめて一括、結果はzipひとつ。処理はすべてブラウザ内で完結し、アップロードも登録も不要です。",
+    tagline:"ディテールクロップのマルチクロップ — 画像の上でボックスをドラッグし、切り出したい部分を指定します。1枚に複数カット、複数の画像をまとめてトリミング、結果はzipひとつ。処理はすべてブラウザ内で完結し、アップロードも登録も不要です。",
     dropTitle:"ここに画像をドロップ",
     dropBody:"JPEG、PNG、WebP、AVIF、GIF。最大200ファイル、1ファイル200MBまで。ファイルがこの端末から出ることはありません。",
     pick:"画像を選ぶ",
@@ -912,13 +919,15 @@ const I18N = {
     footPrivacy:"処理はすべてブラウザ内で行われます。画像がアップロードされることはありません。",
     footFree:"無料で使えます。",
     todayVisits:"本日の訪問", todayPeople:"人", todayExports:"書き出し",
-    h1sr:" — 複数画像からディテールカットを一括で切り出しzipで書き出し",
+    h1sr:" — マルチクロップ：複数の画像を一括トリミング、1枚から複数カットをzipで書き出し",
+    artAlt:"マルチクロップの枠を重ねた、トリミング中の画像",
+    footAbout:"DetailCropについて", footHow:"複数の画像をまとめて切り抜く方法", footUses:"こんな使い方",
     straighten:"回転", kHoriz:"水平", kVert:"垂直", resetZero:"0に戻す", alignTitle:"傾き補正",
     footContact:"広告・提携のお問い合わせ:",
     footStats:"匿名の利用統計 — 画像サイズ、枚数、選んだ設定のみ。画像そのものは記録しません。",
     statsOn:"オフにする",
     statsOff:"統計オフ · 再びオンにする",
-    footLead:"ラインナップ全体のディテールカットを、一度に。",
+    footLead:"マルチクロップ — ラインナップ全体のディテールカットを、一度に。",
     footBody:"ディテールカットは、1枚をうまく切る作業ではなく、複数枚を同じ規則で切る作業です。同じ種類の寄りが、すべての写真から同じ比率・同じ出力サイズ・同じ命名規則で出てこなければなりません。ところが一般的な画像編集ソフトはその規則を覚えていないため、ファイルごとに条件を立て直すことになり、枚数が増えるほど仕上がりは少しずつずれていきます。このツールはその規則を作業全体に固定します。手元に残るのは個別に切った寄せ集めではなく、ひとつのセットです。",
     t1:"ボックスをドラッグして移動、角の点を引いてサイズ変更。画像上をクリックすると選択中のボックスがそこへ移動します。",
     t2:"この画像から何カット取るかを決めます。最大6カット、0を選ぶとこの画像はスキップされます。",
@@ -1108,6 +1117,9 @@ function applyLang(){
   const sfx = S.lang === "en" ? "/" : "/" + S.lang + "/";
   $("#brandLink").href = sfx;
   $("#crossBan").href  = "/video" + sfx;
+  $("#aboutLink").href = sfx + "about/";
+  $("#howLink").href   = sfx + "how-to/";
+  $("#usesLink").href  = sfx + "uses/";
   // ratio labels that are words
   $$("#ratioseg button").forEach(b => {
     if (b.dataset.r === "free") b.textContent = t.free;
