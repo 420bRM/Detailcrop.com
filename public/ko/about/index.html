@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="naver-site-verification" content="d3f153a78cae843ba9debf13f66f479e10a227dd">
-<title>디테일크롭 소개 — 멀티크롭으로 여러 이미지 한번에 자르기 | DetailCrop</title>
-<meta name="description" content="디테일크롭(DetailCrop)은 이미지 한 장에서 같은 비율의 컷을 여러 개씩, 여러 장을 한번에 잘라내는 무료 멀티크롭 도구입니다. 설치·가입·업로드 없이 브라우저에서 처리됩니다.">
-<meta property="og:title" content="디테일크롭 소개 — 멀티크롭으로 여러 이미지 한번에 자르기 | DetailCrop">
-<meta property="og:description" content="디테일크롭(DetailCrop)은 이미지 한 장에서 같은 비율의 컷을 여러 개씩, 여러 장을 한번에 잘라내는 무료 멀티크롭 도구입니다. 설치·가입·업로드 없이 브라우저에서 처리됩니다.">
+<title>About | 디테일크롭 — 여러 이미지 한번에 자르는 멀티크롭</title>
+<meta name="description" content="디테일크롭은 사진 한 장에서 확대컷을 여러 개씩, 여러 장을 한 번에 잘라 zip으로 받는 무료 도구입니다. 설치나 가입 없이 브라우저에서 바로 쓰고, 사진은 서버로 올라가지 않습니다.">
+<meta property="og:title" content="About | 디테일크롭 — 여러 이미지 한번에 자르는 멀티크롭">
+<meta property="og:description" content="디테일크롭은 사진 한 장에서 확대컷을 여러 개씩, 여러 장을 한 번에 잘라 zip으로 받는 무료 도구입니다. 설치나 가입 없이 브라우저에서 바로 쓰고, 사진은 서버로 올라가지 않습니다.">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="DetailCrop">
 <meta property="og:image" content="https://detailcrop.com/og.jpg">
@@ -20,12 +20,12 @@
 <link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/about/">
 <link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/about/">
 <link rel="alternate" hreflang="x-default" href="https://detailcrop.com/about/">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"AboutPage","name":"디테일크롭 소개","description":"디테일크롭(DetailCrop)은 이미지 한 장에서 같은 비율의 컷을 여러 개씩, 여러 장을 한번에 잘라내는 무료 멀티크롭 도구입니다. 설치·가입·업로드 없이 브라우저에서 처리됩니다.","inLanguage":"ko","url":"https://detailcrop.com/ko/about/","isPartOf":{"@context":"https://schema.org","@type":"WebSite","name":"DetailCrop","alternateName":["Detail Crop","Multi Crop","디테일크롭","멀티크롭","ディテールクロップ","マルチクロップ"],"url":"https://detailcrop.com/"},"publisher":{"@type":"Organization","name":"DetailCrop","url":"https://detailcrop.com/"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"AboutPage","name":"About","description":"디테일크롭은 사진 한 장에서 확대컷을 여러 개씩, 여러 장을 한 번에 잘라 zip으로 받는 무료 도구입니다. 설치나 가입 없이 브라우저에서 바로 쓰고, 사진은 서버로 올라가지 않습니다.","inLanguage":"ko","url":"https://detailcrop.com/ko/about/","isPartOf":{"@context":"https://schema.org","@type":"WebSite","name":"DetailCrop","alternateName":["Detail Crop","Multi Crop","디테일크롭","멀티크롭","ディテールクロップ","マルチクロップ"],"url":"https://detailcrop.com/"},"publisher":{"@type":"Organization","name":"DetailCrop","url":"https://detailcrop.com/"}}</script>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Noto+Serif+KR:wght@500&display=swap">
 <style>
 /* Same night palette as the tools, set for reading instead of working. */
 :root{
@@ -34,7 +34,11 @@
   --ink:#e6f0f2; --ink-2:#a8c3ca; --muted:#6d8b96;
   --amber:#e8b45a; --teal:#35b7e0; --fog:#f4eddf;
   --display:Newsreader,Georgia,serif;
+  --heading:var(--display);
 }
+/* Newsreader has no Hangul or kana, so those headings would fall to whatever serif the OS has. */
+html[lang="ko"]{--heading:'Noto Serif KR',Georgia,serif}
+html[lang="ja"]{--heading:'Noto Serif JP',Georgia,serif}
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
@@ -61,9 +65,9 @@ header.bar{display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 18px; mar
 .go{border:1px solid var(--amber); color:var(--amber); border-radius:3px; padding:4px 12px; font-size:13px; white-space:nowrap}
 .go:hover{background:var(--amber); color:#12100b}
 
-article h1{font-family:var(--display); font-weight:500; font-size:clamp(30px,6vw,42px); line-height:1.2; color:var(--fog); margin:0 0 14px; text-wrap:balance}
-.lead{color:var(--ink-2); font-size:17px; margin:0 0 36px}
-article h2{font-family:var(--display); font-weight:500; font-size:25px; color:var(--fog); margin:44px 0 10px; line-height:1.3}
+article h1{font-family:var(--heading); font-weight:500; font-size:clamp(30px,6vw,42px); line-height:1.2; color:var(--fog); margin:0 0 28px; text-wrap:balance}
+.lead{color:var(--ink-2); font-size:17px; margin:-14px 0 36px}
+article h2{font-family:var(--heading); font-weight:500; font-size:25px; color:var(--fog); margin:44px 0 10px; line-height:1.3}
 article h3{font-size:16px; font-weight:600; color:var(--ink); margin:24px 0 4px}
 article p{margin:0 0 14px}
 article ul{margin:0 0 16px; padding-left:1.2em}
@@ -75,6 +79,8 @@ kbd{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.82em; backgrou
 table{border-collapse:collapse; width:100%; margin:6px 0 18px; font-size:15px}
 th,td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line-soft); vertical-align:top}
 th{white-space:nowrap; font-weight:400; width:1%}
+article figure{margin:14px 0 18px}
+article figure img{display:block; max-width:100%; height:auto; border:1px solid var(--line); border-radius:6px; background:var(--sunk)}
 
 .cta{margin:48px 0 0; padding:22px; border:1px solid var(--line); border-radius:6px; background:var(--sunk); display:flex; flex-wrap:wrap; align-items:center; gap:12px 20px}
 .cta p{margin:0; flex:1 1 260px; color:var(--ink-2)}
@@ -96,66 +102,49 @@ footer p{margin:0}
 </header>
 
 <article>
-<h1>디테일크롭 소개</h1>
-<p class="lead">한 장에서 여러 컷, 여러 장을 한 번에. 디테일크롭(DetailCrop)이 하는 일과 만든 이유를 적어 둡니다.</p>
-<h2>멀티크롭(Multi Crop)이란</h2>
-<p>보통 이미지 자르기는 한 장에서 한 구역을 잘라 저장하는 일입니다. 일괄 크롭 도구는 여기서 한 걸음 나아가 여러 장을 같은 위치, 같은 크기로 한꺼번에 잘라 줍니다. 그런데 실제로 필요한 건 그 사이 어딘가일 때가 많았습니다.</p>
-<p>제품 사진 스무 장이 있고, 장마다 원단 질감·단추·로고·밑단처럼 확대컷이 네 개씩 필요하다고 해 봅시다. 확대할 부분은 사진마다 위치가 다르니 일괄 크롭으로는 안 되고, 한 장씩 편집기를 열어 자르면 여든 번을 반복해야 합니다. 그 사이 비율이나 파일명이 한두 번 어긋나는 건 거의 피할 수 없습니다.</p>
-<p>디테일크롭은 이 작업을 <strong>멀티크롭</strong>이라고 부릅니다.</p>
-<ul>
-  <li>이미지 한 장에 크롭 상자를 <strong>최대 6개</strong>까지 올립니다.</li>
-  <li>상자 위치는 사진마다 따로 잡습니다.</li>
-  <li>비율·출력 크기·파일명 규칙은 작업 전체에 똑같이 적용됩니다.</li>
-  <li>다 잡고 나면 모든 컷이 <strong>zip 하나</strong>로 내려옵니다.</li>
-</ul>
-<p>위치는 사람이 고르고, 반복은 도구가 맡는 방식입니다.</p>
+<h1>About</h1>
+<h2>디테일크롭은</h2>
+<p>사진 한 장에서 필요한 부분을 여러 군데 잘라 내는 도구입니다. 그걸 사진 수십 장에 한 번에 합니다.</p>
+<p>옷 사진이 20장 있고 장마다 원단, 단추, 로고, 밑단 확대컷이 필요하다면 잘라야 할 컷은 80개입니다. 확대할 위치가 사진마다 달라서 같은 자리를 한꺼번에 자르는 일괄 크롭으로는 안 되고, 편집기로 한 장씩 자르다 보면 중간에 비율이나 파일 이름이 한두 번은 꼭 틀어집니다.</p>
+<p>디테일크롭에서는 사진마다 상자만 옮겨 놓으면 됩니다. 비율, 출력 크기, 파일 이름은 처음에 한 번 정해 두면 모든 컷에 똑같이 들어가고, 다 끝나면 80장이 zip 하나로 내려옵니다. 이 방식을 <strong>멀티크롭</strong>이라고 부릅니다.</p>
 
-<h2>할 수 있는 것</h2>
+<h2>주요 기능</h2>
 <ul>
-  <li>JPEG, PNG, WebP, AVIF, GIF 이미지를 한 번에 최대 200장까지 불러오기</li>
-  <li>1:1, 4:5, 2:3, 3:4, 5:7, 16:9, 9:16 비율 고정, 또는 직접 입력한 비율이나 자유 비율</li>
-  <li>선택한 컷 하나만 다른 비율로 두기 (한 장에서 4:5와 16:9를 같이 뽑기)</li>
-  <li>자르기 전에 기울어진 사진 수평 맞추기</li>
-  <li>원본 픽셀 그대로, 또는 정해 둔 크기로 출력</li>
-  <li>WebP · JPEG · PNG 선택과 품질 조절</li>
-  <li><code>{name}-d{n}</code> 같은 파일명 규칙으로 자동 이름 붙이기</li>
-  <li>인스타그램 피드용 3 · 6 · 9분할</li>
+  <li>사진 한 장에 상자 최대 6개</li>
+  <li>한 번에 200장까지 (JPEG, PNG, WebP, AVIF, GIF)</li>
+  <li>작업 전체에 같은 비율 고정, 필요하면 컷마다 다른 비율</li>
+  <li>기울어진 사진 수평 맞추기</li>
+  <li>인스타그램 피드 3·6·9분할</li>
+  <li>WebP·JPEG·PNG 저장, 파일 이름 자동 지정</li>
 </ul>
+<p>순서대로 따라 하는 방법은 <a href="/ko/how-to/">사용법</a>에, 실제 작업 예시는 <a href="/ko/uses/">활용 예시</a>에 있습니다.</p>
 
-<h2>이미지는 업로드되지 않습니다</h2>
-<p>디테일크롭의 모든 처리는 여러분의 브라우저 안에서 끝납니다. 사진은 서버로 전송되지 않고, 전송하는 코드 자체가 없습니다. 출시 전 제품 사진이나 고객에게 받은 원본처럼 밖으로 내보내기 곤란한 파일도 그대로 쓰셔도 됩니다. 기록하는 건 이미지 크기, 장수, 고른 설정 같은 익명 사용 통계뿐이고, 도구 하단에서 끌 수 있습니다.</p>
-
-<h2>이런 분들이 씁니다</h2>
-<ul>
-  <li>상세페이지 확대컷을 제품마다 만들어야 하는 쇼핑몰 운영자</li>
-  <li>작품의 붓 터치나 질감을 따로 보여 주고 싶은 작가, 프린트 판매자</li>
-  <li>한 장의 사진으로 피드·스토리·썸네일을 모두 만들어야 하는 SNS 담당자</li>
-  <li>매물 사진에서 마감재나 창밖 풍경을 따로 떼어 보여 주는 부동산·인테리어 업체</li>
-</ul>
-<p>구체적인 예시는 <a href="/ko/uses/">활용법</a>에, 순서대로 따라 하는 방법은 <a href="/ko/how-to/">사용법</a>에 정리했습니다.</p>
+<h2>사진은 서버로 올라가지 않습니다</h2>
+<p>자르는 작업은 전부 지금 쓰고 계신 브라우저 안에서 처리됩니다. 사진을 서버로 보내는 코드가 아예 없어서, 출시 전 제품 사진이나 고객이 보낸 원본도 걱정 없이 쓰셔도 됩니다.</p>
+<p>어떤 설정을 많이 쓰는지 보려고 이미지 크기, 장수, 고른 설정 정도는 익명으로 기록합니다. 사진 자체는 기록하지 않고, 이 기록도 도구 화면 맨 아래에서 끌 수 있습니다.</p>
 
 <h2>자주 묻는 질문</h2>
 <h3>무료인가요?</h3>
-<p>네. 가입도 설치도 필요 없습니다.</p>
+<p>네, 무료입니다. 가입이나 설치도 필요 없습니다.</p>
 <h3>화질이 떨어지지 않나요?</h3>
-<p>기본값은 원본 픽셀을 그대로 잘라 내는 방식이라 화질 손실이 없습니다(포맷 압축은 고른 품질만큼만 적용됩니다). 출력 크기를 고정했는데 상자가 그보다 작으면 확대가 일어나 흐려지는데, 이 경우엔 화면에 경고가 뜹니다.</p>
+<p>기본 설정은 원본 픽셀을 그대로 잘라 내기 때문에 화질이 떨어지지 않습니다. 다만 출력 크기를 고정해 두고 그보다 작게 상자를 잡으면 사진이 늘어나면서 흐려집니다. 그럴 때는 화면에 경고가 뜹니다.</p>
 <h3>휴대폰에서도 되나요?</h3>
-<p>열리긴 하지만, 상자를 여러 개 다루는 작업이라 PC 브라우저의 넓은 화면이 훨씬 편합니다.</p>
+<p>열리기는 합니다. 하지만 상자 여러 개를 옮기고 크기를 맞추는 작업이라 PC가 훨씬 편합니다.</p>
 <h3>영상도 자를 수 있나요?</h3>
-<p>같은 방식의 <a href="/video/ko/">영상 도구(베타)</a>가 있습니다. 영상 하나에 상자를 여러 개 올리면 컷마다 mp4로 나옵니다.</p>
+<p>네. <a href="/video/ko/">영상 도구(베타)</a>에서 같은 방식으로 영상에 상자를 여러 개 올리면 컷마다 mp4 파일로 저장됩니다.</p>
 
 <h2>문의</h2>
-<p>광고·제휴나 기능 제안은 <a class="mail" href="#">contact@detailcrop.com</a>으로 보내 주세요.</p>
+<p>광고·제휴 문의나 기능 제안은 <a class="mail" href="#">contact@detailcrop.com</a>으로 보내 주세요.</p>
 </article>
 
 <div class="cta">
-  <p>여러 이미지를 한번에, 한 장에서 여러 컷씩. 무료이고 업로드는 없습니다.</p>
+  <p>사진 여러 장을 한 번에, 한 장에서 여러 컷씩. 무료이고, 사진은 서버에 올라가지 않습니다.</p>
   <a class="go" href="/ko/">디테일크롭 열기 →</a>
 </div>
 
 <footer>
-  <nav><a href="/ko/">도구</a><a href="/ko/about/" aria-current="page">소개</a><a href="/ko/how-to/">사용법</a><a href="/ko/uses/">활용법</a></nav>
-  <p>모든 처리가 브라우저 안에서 이루어집니다. 이미지는 업로드되지 않습니다.</p>
+  <nav><a href="/ko/">도구</a><a href="/ko/about/" aria-current="page">About</a><a href="/ko/how-to/">사용법</a><a href="/ko/uses/">활용 예시</a></nav>
+  <p>사진은 브라우저 안에서만 처리되고 서버로 전송되지 않습니다.</p>
   <p>© DetailCrop</p>
 </footer>
 </div>

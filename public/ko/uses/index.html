@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="naver-site-verification" content="d3f153a78cae843ba9debf13f66f479e10a227dd">
-<title>멀티크롭 활용법 — 상세페이지 확대컷, 인스타 분할, 작품 디테일 | 디테일크롭</title>
-<meta name="description" content="상세페이지 확대컷, 인스타그램 피드 분할, 작품 디테일컷, 한 장으로 여러 비율 만들기까지. 디테일크롭 멀티크롭을 실제로 어떻게 쓰는지 예시로 정리했습니다.">
-<meta property="og:title" content="멀티크롭 활용법 — 상세페이지 확대컷, 인스타 분할, 작품 디테일 | 디테일크롭">
-<meta property="og:description" content="상세페이지 확대컷, 인스타그램 피드 분할, 작품 디테일컷, 한 장으로 여러 비율 만들기까지. 디테일크롭 멀티크롭을 실제로 어떻게 쓰는지 예시로 정리했습니다.">
+<title>활용 예시 | 디테일크롭 — 상세페이지 확대컷, 인스타 분할, 작품 디테일</title>
+<meta name="description" content="쇼핑몰 상세페이지 확대컷, 인스타그램 피드 분할, 그림 디테일컷, 사진 한 장으로 여러 비율 만들기. 디테일크롭을 실제로 어떻게 쓰는지 설정값과 함께 정리했습니다.">
+<meta property="og:title" content="활용 예시 | 디테일크롭 — 상세페이지 확대컷, 인스타 분할, 작품 디테일">
+<meta property="og:description" content="쇼핑몰 상세페이지 확대컷, 인스타그램 피드 분할, 그림 디테일컷, 사진 한 장으로 여러 비율 만들기. 디테일크롭을 실제로 어떻게 쓰는지 설정값과 함께 정리했습니다.">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="DetailCrop">
 <meta property="og:image" content="https://detailcrop.com/og.jpg">
@@ -20,12 +20,12 @@
 <link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/uses/">
 <link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/uses/">
 <link rel="alternate" hreflang="x-default" href="https://detailcrop.com/uses/">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"멀티크롭, 이렇게 씁니다","description":"상세페이지 확대컷, 인스타그램 피드 분할, 작품 디테일컷, 한 장으로 여러 비율 만들기까지. 디테일크롭 멀티크롭을 실제로 어떻게 쓰는지 예시로 정리했습니다.","inLanguage":"ko","url":"https://detailcrop.com/ko/uses/","isPartOf":{"@context":"https://schema.org","@type":"WebSite","name":"DetailCrop","alternateName":["Detail Crop","Multi Crop","디테일크롭","멀티크롭","ディテールクロップ","マルチクロップ"],"url":"https://detailcrop.com/"},"publisher":{"@type":"Organization","name":"DetailCrop","url":"https://detailcrop.com/"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"활용 예시","description":"쇼핑몰 상세페이지 확대컷, 인스타그램 피드 분할, 그림 디테일컷, 사진 한 장으로 여러 비율 만들기. 디테일크롭을 실제로 어떻게 쓰는지 설정값과 함께 정리했습니다.","inLanguage":"ko","url":"https://detailcrop.com/ko/uses/","isPartOf":{"@context":"https://schema.org","@type":"WebSite","name":"DetailCrop","alternateName":["Detail Crop","Multi Crop","디테일크롭","멀티크롭","ディテールクロップ","マルチクロップ"],"url":"https://detailcrop.com/"},"publisher":{"@type":"Organization","name":"DetailCrop","url":"https://detailcrop.com/"}}</script>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Noto+Serif+KR:wght@500&display=swap">
 <style>
 /* Same night palette as the tools, set for reading instead of working. */
 :root{
@@ -34,7 +34,11 @@
   --ink:#e6f0f2; --ink-2:#a8c3ca; --muted:#6d8b96;
   --amber:#e8b45a; --teal:#35b7e0; --fog:#f4eddf;
   --display:Newsreader,Georgia,serif;
+  --heading:var(--display);
 }
+/* Newsreader has no Hangul or kana, so those headings would fall to whatever serif the OS has. */
+html[lang="ko"]{--heading:'Noto Serif KR',Georgia,serif}
+html[lang="ja"]{--heading:'Noto Serif JP',Georgia,serif}
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
@@ -61,9 +65,9 @@ header.bar{display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 18px; mar
 .go{border:1px solid var(--amber); color:var(--amber); border-radius:3px; padding:4px 12px; font-size:13px; white-space:nowrap}
 .go:hover{background:var(--amber); color:#12100b}
 
-article h1{font-family:var(--display); font-weight:500; font-size:clamp(30px,6vw,42px); line-height:1.2; color:var(--fog); margin:0 0 14px; text-wrap:balance}
-.lead{color:var(--ink-2); font-size:17px; margin:0 0 36px}
-article h2{font-family:var(--display); font-weight:500; font-size:25px; color:var(--fog); margin:44px 0 10px; line-height:1.3}
+article h1{font-family:var(--heading); font-weight:500; font-size:clamp(30px,6vw,42px); line-height:1.2; color:var(--fog); margin:0 0 28px; text-wrap:balance}
+.lead{color:var(--ink-2); font-size:17px; margin:-14px 0 36px}
+article h2{font-family:var(--heading); font-weight:500; font-size:25px; color:var(--fog); margin:44px 0 10px; line-height:1.3}
 article h3{font-size:16px; font-weight:600; color:var(--ink); margin:24px 0 4px}
 article p{margin:0 0 14px}
 article ul{margin:0 0 16px; padding-left:1.2em}
@@ -75,6 +79,8 @@ kbd{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.82em; backgrou
 table{border-collapse:collapse; width:100%; margin:6px 0 18px; font-size:15px}
 th,td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line-soft); vertical-align:top}
 th{white-space:nowrap; font-weight:400; width:1%}
+article figure{margin:14px 0 18px}
+article figure img{display:block; max-width:100%; height:auto; border:1px solid var(--line); border-radius:6px; background:var(--sunk)}
 
 .cta{margin:48px 0 0; padding:22px; border:1px solid var(--line); border-radius:6px; background:var(--sunk); display:flex; flex-wrap:wrap; align-items:center; gap:12px 20px}
 .cta p{margin:0; flex:1 1 260px; color:var(--ink-2)}
@@ -96,45 +102,43 @@ footer p{margin:0}
 </header>
 
 <article>
-<h1>멀티크롭, 이렇게 씁니다</h1>
-<p class="lead">기능 설명보다 실제 작업 장면이 더 와닿을 것 같아서, 자주 쓰는 경우를 몇 가지 골라 설정값과 함께 적었습니다.</p>
+<h1>활용 예시</h1>
 <h2>쇼핑몰 상세페이지 확대컷</h2>
-<p>가장 흔한 경우입니다. 옷 스무 벌의 정면 사진이 있고, 벌마다 원단 질감·단추·라벨·밑단 박음질을 확대해서 보여 주고 싶습니다.</p>
+<p>가장 많이 쓰는 경우입니다. 옷 20벌의 정면 사진에서 원단, 단추, 라벨, 밑단 박음질을 각각 확대해 보여 주려고 합니다.</p>
 <ul>
-  <li>비율 <strong>1:1</strong>, 출력 <strong>고정 크기 1000px</strong></li>
-  <li>컷 수 <strong>4</strong>, 파일명 <code>{name}-d{nn}</code></li>
+  <li>비율 <strong>1:1</strong>, 출력 크기 <strong>고정 1000×1000</strong></li>
+  <li>컷 수 <strong>4</strong>, 파일 이름 <code>{name}-d{nn}</code></li>
 </ul>
-<p>사진마다 상자 네 개를 옮겨 놓고 <kbd>Enter</kbd>, 다음 사진. 스무 벌이 끝나면 <code>coat-d01.webp</code>부터 차례로 이름이 붙은 여든 장이 zip 하나로 떨어집니다. 상세페이지 편집기에 그대로 올리면 크기가 전부 같아서 레이아웃이 틀어지지 않습니다.</p>
-<p>원본 해상도가 충분하지 않은 사진에서 상자를 너무 작게 잡으면 확대 경고가 뜹니다. 그럴 땐 상자를 키우거나, 그 사진만 원본 해상도로 내보내는 편이 낫습니다.</p>
+<p>사진마다 상자 4개를 옮기고 <kbd>Enter</kbd>. 20벌을 다 하면 <code>coat-d01.webp</code>부터 번호가 붙은 80장이 zip 하나로 받아집니다. 크기가 전부 같아서 상세페이지에 올려도 줄이 흐트러지지 않습니다.</p>
+<p>해상도가 낮은 사진에서 상자를 너무 작게 잡으면 확대 경고가 뜹니다. 그럴 때는 상자를 키우세요.</p>
 
-<h2>그림·프린트 작품의 디테일컷</h2>
-<p>작품 판매 페이지에서는 전체 이미지만큼 붓 자국, 종이 질감, 서명 부분이 중요합니다. 이때는 <strong>원본 해상도</strong>로 두는 걸 권합니다. 고해상도 스캔에서 필요한 구역만 손대지 않고 떼어 낼 수 있습니다.</p>
-<p>작품 비율이 제각각이어도 확대컷 비율은 통일하는 게 보기 좋습니다. 보통 <strong>4:5</strong>나 <strong>1:1</strong>로 고정해 둡니다.</p>
+<h2>그림·프린트 작품 디테일컷</h2>
+<p>작품을 파는 페이지에서는 전체 이미지만큼 붓 자국, 종이 질감, 서명이 중요합니다. 이때는 출력 크기를 <strong>원본 해상도</strong>로 두세요. 고해상도 스캔에서 필요한 부분만 화질 손실 없이 떼어 낼 수 있습니다.</p>
+<p>작품마다 비율이 달라도 디테일컷은 <strong>4:5</strong>나 <strong>1:1</strong> 하나로 맞추는 편이 페이지가 깔끔합니다.</p>
 
-<h2>인스타그램 피드 3 · 6 · 9분할</h2>
-<p>설정의 <em>인스타 피드 분할</em>을 켜면 한 장을 3칸, 6칸, 9칸으로 나눕니다. 블록을 끌어 원하는 구도를 잡으면 되고, 한 칸 한 칸은 피드 비율에 맞춰 나옵니다.</p>
-<p>주의할 점이 하나 있습니다. 칸에 붙는 번호는 <strong>올리는 순서</strong>입니다. 프로필 그리드는 최신 게시물이 왼쪽 위에 오기 때문에, 오른쪽 아래 조각을 가장 먼저 올려야 합니다. 파일 이름도 <code>-post01</code>부터 그 순서대로 붙으니 번호대로 올리기만 하면 됩니다.</p>
+<h2>인스타그램 피드 3·6·9분할</h2>
+<p>설정의 <em>인스타 피드 분할</em>에서 3분할, 6분할, 9분할 중 하나를 고르면 사진 한 장이 여러 칸으로 나뉩니다. 칸 묶음을 끌어서 구도를 잡으면 되고, 칸은 피드 비율인 4:5로 나옵니다.</p>
+<p>칸에 붙는 번호는 올리는 순서입니다. 프로필 화면은 최신 게시물이 왼쪽 위에 오기 때문에 오른쪽 아래 조각부터 올려야 그림이 맞습니다. 파일 이름도 <code>-post01</code>부터 이 순서대로 붙으니 번호 순서대로 올리면 됩니다.</p>
 
-<h2>한 장으로 피드·스토리·썸네일 한꺼번에</h2>
-<p>행사 사진 한 장으로 인스타 피드(4:5), 스토리(9:16), 유튜브 썸네일(16:9)을 다 만들어야 할 때가 있습니다. 비율 토글을 <em>선택한 컷</em>으로 바꾼 뒤, 상자마다 다른 비율을 지정하세요. 한 번 내보내면 세 가지가 같이 나옵니다.</p>
+<h2>사진 한 장으로 피드·스토리·썸네일</h2>
+<p>행사 사진 한 장으로 인스타 피드(4:5), 스토리(9:16), 유튜브 썸네일(16:9)을 다 만들어야 할 때입니다. 비율 토글을 <em>선택한 컷</em>으로 바꾸고 상자마다 비율을 따로 고르세요. 한 번 내보내면 세 가지가 같이 나옵니다.</p>
 
 <h2>매물·인테리어 사진</h2>
-<p>거실 전경 한 장에서 마감재, 조명, 창밖 풍경을 따로 보여 주는 식입니다. 실내 사진은 살짝 기운 경우가 많으니 <em>정렬 보정</em>으로 수평부터 맞추고 자르면 결과가 훨씬 단정해집니다.</p>
+<p>거실 사진 한 장에서 마감재, 조명, 창밖 풍경을 따로 보여 줄 때 좋습니다. 실내 사진은 살짝 기운 경우가 많으니 <em>정렬 보정</em>으로 수평부터 맞추고 자르면 결과물이 훨씬 반듯해집니다.</p>
 
-<h2>그냥 여러 장을 같은 비율로 자를 때</h2>
-<p>꼭 확대컷이 아니어도 됩니다. 사진 서른 장을 모두 1:1로 잘라야 한다면 컷 수를 1로 두고 상자 위치만 넘기면서 확인하면 됩니다. 이미지 한번에 자르기 용도로도 충분히 빠릅니다.</p>
-
-<p>처음이라면 <a href="/ko/how-to/">사용법</a>부터 한 번 훑어보세요. 바로 해 보고 싶다면 <a href="/ko/">여기서 시작</a>하면 됩니다.</p>
+<h2>여러 장을 같은 비율로 자르기만 할 때</h2>
+<p>꼭 확대컷이 아니어도 됩니다. 사진 30장을 전부 1:1로 잘라야 한다면 컷 수를 1로 두고 사진을 넘기면서 위치만 확인하세요. 여러 이미지를 한번에 자르는 용도로도 충분히 빠릅니다.</p>
+<p>처음이라면 <a href="/ko/how-to/">사용법</a>을 먼저 보세요.</p>
 </article>
 
 <div class="cta">
-  <p>여러 이미지를 한번에, 한 장에서 여러 컷씩. 무료이고 업로드는 없습니다.</p>
+  <p>사진 여러 장을 한 번에, 한 장에서 여러 컷씩. 무료이고, 사진은 서버에 올라가지 않습니다.</p>
   <a class="go" href="/ko/">디테일크롭 열기 →</a>
 </div>
 
 <footer>
-  <nav><a href="/ko/">도구</a><a href="/ko/about/">소개</a><a href="/ko/how-to/">사용법</a><a href="/ko/uses/" aria-current="page">활용법</a></nav>
-  <p>모든 처리가 브라우저 안에서 이루어집니다. 이미지는 업로드되지 않습니다.</p>
+  <nav><a href="/ko/">도구</a><a href="/ko/about/">About</a><a href="/ko/how-to/">사용법</a><a href="/ko/uses/" aria-current="page">활용 예시</a></nav>
+  <p>사진은 브라우저 안에서만 처리되고 서버로 전송되지 않습니다.</p>
   <p>© DetailCrop</p>
 </footer>
 </div>

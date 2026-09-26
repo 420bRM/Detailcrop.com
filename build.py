@@ -100,14 +100,16 @@ PAGE_UI = {
   "en": dict(open="Open DetailCrop", nav=["About", "How to use", "Use cases"], tool="The tool",
              cta="Crop a whole batch of images at once, several crops each. Free, and nothing is uploaded.",
              privacy="Runs entirely in your browser. Your images are never uploaded."),
-  "ko": dict(open="디테일크롭 열기", nav=["소개", "사용법", "활용법"], tool="도구",
-             cta="여러 이미지를 한번에, 한 장에서 여러 컷씩. 무료이고 업로드는 없습니다.",
-             privacy="모든 처리가 브라우저 안에서 이루어집니다. 이미지는 업로드되지 않습니다."),
+  "ko": dict(open="디테일크롭 열기", nav=["About", "사용법", "활용 예시"], tool="도구",
+             cta="사진 여러 장을 한 번에, 한 장에서 여러 컷씩. 무료이고, 사진은 서버에 올라가지 않습니다.",
+             privacy="사진은 브라우저 안에서만 처리되고 서버로 전송되지 않습니다."),
   "ja": dict(open="DetailCropを開く", nav=["DetailCropについて", "使い方", "使い方の例"], tool="ツール",
              cta="複数の画像をまとめて、1枚から何カットも。無料で、アップロードはありません。",
              privacy="処理はすべてブラウザ内で行われます。画像がアップロードされることはありません。"),
 }
 LANG_LABEL = {"en": "EN", "ko": "한국어", "ja": "日本語"}
+# Heading faces for scripts Newsreader does not cover, appended to the Google Fonts request.
+PAGE_FONTS = {"en": "", "ko": "&family=Noto+Serif+KR:wght@500", "ja": "&family=Noto+Serif+JP:wght@500"}
 
 
 def head_urls(path, langs=None, xdefault="/"):
@@ -292,12 +294,14 @@ def build_pages():
               "publisher": {"@type": "Organization", "name": "DetailCrop", "url": BASE + "/"},
             })
             s = tpl
-            for k, v in (("__LANG__", code), ("__TITLE__", esc(meta["title"], True)),
+            if not meta.get("lead"):
+                s = s.replace('<p class="lead">__LEAD__</p>\n', "", 1)
+            for k, v in (("__LANG__", code), ("__FONTS__", PAGE_FONTS[code]), ("__TITLE__", esc(meta["title"], True)),
                          ("__DESC__", esc(meta["description"], True)),
                          ("__HEAD_URLS__", head_urls(path, alts, page_url("en", slug))),
                          ("__JSONLD__", ld), ("__LANGLINKS__", langlinks),
                          ("__FOOTLINKS__", footlinks), ("__H1__", meta["h1"]),
-                         ("__LEAD__", meta["lead"]), ("__CTA__", ui["cta"]),
+                         ("__LEAD__", meta.get("lead", "")), ("__CTA__", ui["cta"]),
                          ("__PRIVACY__", ui["privacy"]), ("__OPEN__", ui["open"]),
                          ("__TOOL__", tool), ("__BODY__", body)):
                 s = s.replace(k, v)

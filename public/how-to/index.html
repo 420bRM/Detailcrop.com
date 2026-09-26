@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="naver-site-verification" content="d3f153a78cae843ba9debf13f66f479e10a227dd">
 <title>How to crop multiple images at once — Multi Crop guide | DetailCrop</title>
-<meta name="description" content="How to batch crop a set of photos to the same ratio with DetailCrop's Multi Crop: load the images, place the crops, and download everything as one zip.">
+<meta name="description" content="How to batch crop a set of photos to the same ratio with DetailCrop's Multi Crop: load the images, set the ratio, place the crops, and download everything as one zip — step by step, with screenshots.">
 <meta property="og:title" content="How to crop multiple images at once — Multi Crop guide | DetailCrop">
-<meta property="og:description" content="How to batch crop a set of photos to the same ratio with DetailCrop's Multi Crop: load the images, place the crops, and download everything as one zip.">
+<meta property="og:description" content="How to batch crop a set of photos to the same ratio with DetailCrop's Multi Crop: load the images, set the ratio, place the crops, and download everything as one zip — step by step, with screenshots.">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="DetailCrop">
 <meta property="og:image" content="https://detailcrop.com/og.jpg">
@@ -20,7 +20,7 @@
 <link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/how-to/">
 <link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/how-to/">
 <link rel="alternate" hreflang="x-default" href="https://detailcrop.com/how-to/">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to crop many images at once","description":"How to batch crop a set of photos to the same ratio with DetailCrop's Multi Crop: load the images, place the crops, and download everything as one zip.","inLanguage":"en","url":"https://detailcrop.com/how-to/","isPartOf":{"@context":"https://schema.org","@type":"WebSite","name":"DetailCrop","alternateName":["Detail Crop","Multi Crop","디테일크롭","멀티크롭","ディテールクロップ","マルチクロップ"],"url":"https://detailcrop.com/"},"publisher":{"@type":"Organization","name":"DetailCrop","url":"https://detailcrop.com/"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to crop many images at once","description":"How to batch crop a set of photos to the same ratio with DetailCrop's Multi Crop: load the images, set the ratio, place the crops, and download everything as one zip — step by step, with screenshots.","inLanguage":"en","url":"https://detailcrop.com/how-to/","isPartOf":{"@context":"https://schema.org","@type":"WebSite","name":"DetailCrop","alternateName":["Detail Crop","Multi Crop","디테일크롭","멀티크롭","ディテールクロップ","マルチクロップ"],"url":"https://detailcrop.com/"},"publisher":{"@type":"Organization","name":"DetailCrop","url":"https://detailcrop.com/"}}</script>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,7 +34,11 @@
   --ink:#e6f0f2; --ink-2:#a8c3ca; --muted:#6d8b96;
   --amber:#e8b45a; --teal:#35b7e0; --fog:#f4eddf;
   --display:Newsreader,Georgia,serif;
+  --heading:var(--display);
 }
+/* Newsreader has no Hangul or kana, so those headings would fall to whatever serif the OS has. */
+html[lang="ko"]{--heading:'Noto Serif KR',Georgia,serif}
+html[lang="ja"]{--heading:'Noto Serif JP',Georgia,serif}
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
@@ -61,9 +65,9 @@ header.bar{display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 18px; mar
 .go{border:1px solid var(--amber); color:var(--amber); border-radius:3px; padding:4px 12px; font-size:13px; white-space:nowrap}
 .go:hover{background:var(--amber); color:#12100b}
 
-article h1{font-family:var(--display); font-weight:500; font-size:clamp(30px,6vw,42px); line-height:1.2; color:var(--fog); margin:0 0 14px; text-wrap:balance}
-.lead{color:var(--ink-2); font-size:17px; margin:0 0 36px}
-article h2{font-family:var(--display); font-weight:500; font-size:25px; color:var(--fog); margin:44px 0 10px; line-height:1.3}
+article h1{font-family:var(--heading); font-weight:500; font-size:clamp(30px,6vw,42px); line-height:1.2; color:var(--fog); margin:0 0 28px; text-wrap:balance}
+.lead{color:var(--ink-2); font-size:17px; margin:-14px 0 36px}
+article h2{font-family:var(--heading); font-weight:500; font-size:25px; color:var(--fog); margin:44px 0 10px; line-height:1.3}
 article h3{font-size:16px; font-weight:600; color:var(--ink); margin:24px 0 4px}
 article p{margin:0 0 14px}
 article ul{margin:0 0 16px; padding-left:1.2em}
@@ -75,6 +79,8 @@ kbd{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.82em; backgrou
 table{border-collapse:collapse; width:100%; margin:6px 0 18px; font-size:15px}
 th,td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line-soft); vertical-align:top}
 th{white-space:nowrap; font-weight:400; width:1%}
+article figure{margin:14px 0 18px}
+article figure img{display:block; max-width:100%; height:auto; border:1px solid var(--line); border-radius:6px; background:var(--sunk)}
 
 .cta{margin:48px 0 0; padding:22px; border:1px solid var(--line); border-radius:6px; background:var(--sunk); display:flex; flex-wrap:wrap; align-items:center; gap:12px 20px}
 .cta p{margin:0; flex:1 1 260px; color:var(--ink-2)}
@@ -97,40 +103,48 @@ footer p{margin:0}
 
 <article>
 <h1>How to crop many images at once</h1>
-<p class="lead">A walkthrough of DetailCrop's Multi Crop for first-timers. After one round you probably won't need it again.</p>
-<p>One thing to keep in mind: <strong>the ratio and output settings are set once for the whole batch; the box positions are set per photo.</strong> The rest is just following that order.</p>
+<p>One thing to keep in mind: <strong>the ratio and output settings are set once for the whole batch; the box positions are set per photo.</strong> The rest is just following the steps below.</p>
 
 <h2>1. Load your images</h2>
-<p>Drop image files onto the <a href="/">tool</a> or press <em>Choose images</em>. JPEG, PNG, WebP, AVIF and GIF work, up to 200 files and 200 MB each. Nothing leaves your computer, so there is no upload to wait for.</p>
-<p>If you just want a feel for it, press <em>Try the sample</em>. The <em>How it works</em> button at the top walks you through the screen one step at a time.</p>
+<figure><img src="/img/how-to/en/01-load.webp" width="1440" height="900" alt="The DetailCrop screen: a drop area on the left, and the sample image with six crop boxes in the middle" loading="lazy" decoding="async"></figure>
+<p>Drop image files onto the left panel of the <a href="/">tool</a> or press <em>Choose images</em>. JPEG, PNG, WebP, AVIF and GIF work, up to 200 files and 200 MB each. Nothing leaves your computer, so there is no upload to wait for.</p>
+<p>The tool opens with a sample image already loaded, so you can try things right away. The <em>How it works</em> button at the top walks you through the screen one step at a time.</p>
 
 <h2>2. Pick a ratio</h2>
-<p>Choose the crop ratio under <em>Settings</em>: 1:1, 4:5, 2:3, 3:4, 5:7, 16:9 or 9:16, or type your own under <em>Custom</em>. With a ratio locked, every crop on every image comes out the same shape.</p>
+<figure><img src="/img/how-to/en/02-ratio.webp" width="349" height="281" alt="The crop ratio setting, applied to the whole batch, with 1:1 selected" loading="lazy" decoding="async"></figure>
+<p>Choose the crop ratio in the <em>Settings</em> panel under the picture: 1:1, 4:5, 2:3, 3:4, 5:7, 16:9 or 9:16, a ratio of your own under <em>Custom</em>, or <em>Free</em> for no ratio at all. With a ratio locked, every crop on every image comes out the same shape.</p>
 <p>Sometimes one image needs more than one shape. Switch the toggle above the ratio buttons from <em>Whole batch</em> to <em>Selected crop</em> and only the box you have selected changes — handy for pulling a 4:5 feed post and a 16:9 banner out of the same photo.</p>
 
-<h2>3. Set the crop count and place the boxes</h2>
-<p>Decide how many crops each image gets — up to six, or 0 to skip it. Once the boxes appear:</p>
-<ul>
-  <li>drag a box to move it,</li>
-  <li>drag its corner dot to resize it,</li>
-  <li>click anywhere on the picture to jump the selected box there.</li>
-</ul>
-<p><em>Auto-place</em> and <em>Spread out</em> lay the boxes out for you. Nudging from there is quicker than placing each one from scratch.</p>
-
-<h2>4. Straighten first if the photo leans</h2>
-<p>If a shot is slightly tilted, fix it with the rotate slider under <em>Alignment</em> before you crop. A guide appears on the picture to line things up against. Rotating after cropping leaves empty corners, so the order matters.</p>
-
-<h2>5. Confirm and move on</h2>
-<p>When the boxes are where you want them, press <em>Confirm &amp; next</em> (or <kbd>Enter</kbd>). Confirmed images get a green dot in the strip at the top, so you always know how far you are.</p>
-
-<h2>6. Output settings</h2>
+<h2>3. Output size, format and file names</h2>
+<figure><img src="/img/how-to/en/03-output.webp" width="349" height="302" alt="The output size, format, quality and file name settings" loading="lazy" decoding="async"></figure>
 <ul>
   <li><strong>Output size</strong> — <em>Original pixels</em> exports exactly the area you marked. <em>Fixed size</em> scales every crop to the same pixel dimensions (it needs a locked ratio).</li>
   <li><strong>Format and quality</strong> — WebP, JPEG or PNG. WebP is lightest for the web; PNG or a high-quality JPEG is the safe bet for print.</li>
   <li><strong>File names</strong> — the default <code>{name}-d{n}</code> gives <code>shirt-d1.webp</code>, <code>shirt-d2.webp</code> and so on. <code>{nn}</code> pads to 01, 02, and <code>{w}×{h}</code> adds the size.</li>
 </ul>
+<p>You can change these right before exporting, but if you want a fixed size, set it now: a box smaller than the output size gets a warning while you work, rather than after you have finished.</p>
+
+<h2>4. Straighten first if the photo leans</h2>
+<figure><img src="/img/how-to/en/04-straighten.webp" width="1050" height="708" alt="Alignment opened with rotation at −4°, a grid over the picture to line things up against" loading="lazy" decoding="async"></figure>
+<p>If a shot is slightly tilted, open <em>Alignment</em> on the right and fix it with the rotate slider before you place any boxes. A grid appears over the picture to line things up against. The horizontal and vertical sliders pull a keystoned wall or frame back to square.</p>
+<p>Straightening trims the usable area a little, so it is easier to place the boxes afterwards.</p>
+
+<h2>5. Set the crop count and place the boxes</h2>
+<figure><img src="/img/how-to/en/05-boxes.webp" width="1050" height="708" alt="Dragging a box, resizing it from its corner dot, then clicking the picture to move another box there" loading="lazy" decoding="async"></figure>
+<p>Choose how many crops this image gets on the right — up to six, or 0 to skip it. The count is per image, and each new image starts at one.</p>
+<ul>
+  <li>drag a box to move it,</li>
+  <li>drag its corner dot to resize it,</li>
+  <li>click anywhere on the picture to jump the selected box there.</li>
+</ul>
+<p>Select a box by its number tag or with the <kbd>1</kbd>–<kbd>6</kbd> keys. <em>Auto-place</em> and <em>Spread out</em> lay the boxes out for you; nudging from there is quicker than placing each one from scratch.</p>
+
+<h2>6. Confirm and move on</h2>
+<figure><img src="/img/how-to/en/06-confirm.webp" width="331" height="80" alt="The image strip at the top, with green dots on the three confirmed images" loading="lazy" decoding="async"></figure>
+<p>When the boxes are where you want them, press <em>Confirm &amp; next</em> (or <kbd>Enter</kbd>). Confirmed images get a green dot in the strip at the top, so you always know how far you are.</p>
 
 <h2>7. Download the zip</h2>
+<figure><img src="/img/how-to/en/07-export.webp" width="349" height="288" alt="The export panel: 5 of 5 images confirmed, 20 crops ready, and the Export all as .zip button" loading="lazy" decoding="async"></figure>
 <p>Press <em>Export all as .zip</em> and every crop lands in your downloads as one zip. If you only need the image in front of you, use <em>Export this image only</em>.</p>
 
 <h2>Shortcuts worth knowing</h2>

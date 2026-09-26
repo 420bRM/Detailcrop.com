@@ -25,7 +25,7 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Noto+Serif+JP:wght@500&display=swap">
 <style>
 /* Same night palette as the tools, set for reading instead of working. */
 :root{
@@ -34,7 +34,11 @@
   --ink:#e6f0f2; --ink-2:#a8c3ca; --muted:#6d8b96;
   --amber:#e8b45a; --teal:#35b7e0; --fog:#f4eddf;
   --display:Newsreader,Georgia,serif;
+  --heading:var(--display);
 }
+/* Newsreader has no Hangul or kana, so those headings would fall to whatever serif the OS has. */
+html[lang="ko"]{--heading:'Noto Serif KR',Georgia,serif}
+html[lang="ja"]{--heading:'Noto Serif JP',Georgia,serif}
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
@@ -61,9 +65,9 @@ header.bar{display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 18px; mar
 .go{border:1px solid var(--amber); color:var(--amber); border-radius:3px; padding:4px 12px; font-size:13px; white-space:nowrap}
 .go:hover{background:var(--amber); color:#12100b}
 
-article h1{font-family:var(--display); font-weight:500; font-size:clamp(30px,6vw,42px); line-height:1.2; color:var(--fog); margin:0 0 14px; text-wrap:balance}
-.lead{color:var(--ink-2); font-size:17px; margin:0 0 36px}
-article h2{font-family:var(--display); font-weight:500; font-size:25px; color:var(--fog); margin:44px 0 10px; line-height:1.3}
+article h1{font-family:var(--heading); font-weight:500; font-size:clamp(30px,6vw,42px); line-height:1.2; color:var(--fog); margin:0 0 28px; text-wrap:balance}
+.lead{color:var(--ink-2); font-size:17px; margin:-14px 0 36px}
+article h2{font-family:var(--heading); font-weight:500; font-size:25px; color:var(--fog); margin:44px 0 10px; line-height:1.3}
 article h3{font-size:16px; font-weight:600; color:var(--ink); margin:24px 0 4px}
 article p{margin:0 0 14px}
 article ul{margin:0 0 16px; padding-left:1.2em}
@@ -75,6 +79,8 @@ kbd{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.82em; backgrou
 table{border-collapse:collapse; width:100%; margin:6px 0 18px; font-size:15px}
 th,td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line-soft); vertical-align:top}
 th{white-space:nowrap; font-weight:400; width:1%}
+article figure{margin:14px 0 18px}
+article figure img{display:block; max-width:100%; height:auto; border:1px solid var(--line); border-radius:6px; background:var(--sunk)}
 
 .cta{margin:48px 0 0; padding:22px; border:1px solid var(--line); border-radius:6px; background:var(--sunk); display:flex; flex-wrap:wrap; align-items:center; gap:12px 20px}
 .cta p{margin:0; flex:1 1 260px; color:var(--ink-2)}
@@ -97,7 +103,6 @@ footer p{margin:0}
 
 <article>
 <h1>マルチクロップ、こんな使い方</h1>
-<p class="lead">機能の説明より実際の作業のほうが伝わると思うので、よくある場面をいくつか選んで設定と一緒にまとめました。</p>
 <h2>ネットショップのディテールカット</h2>
 <p>いちばん多い使い方です。服20着の正面写真があり、1着ごとに生地の質感・ボタン・タグ・裾のステッチを寄りで見せたいとします。</p>
 <ul>
@@ -105,7 +110,7 @@ footer p{margin:0}
   <li>カット数 <strong>4</strong>、ファイル名 <code>{name}-d{nn}</code></li>
 </ul>
 <p>写真ごとに枠を4つ動かして<kbd>Enter</kbd>、次の写真へ。20着終わると、<code>coat-d01.webp</code>から順に名前の付いた80枚がzipひとつで届きます。サイズがすべて同じなので、商品ページに並べてもレイアウトが崩れません。</p>
-<p>解像度の足りない写真で枠を小さくしすぎると、拡大の警告が出ます。枠を大きくするか、その写真だけ元の解像度で書き出すほうがいいでしょう。</p>
+<p>解像度の足りない写真で枠を小さくしすぎると、拡大の警告が出ます。そのときは枠を大きくしてください。</p>
 
 <h2>絵画・プリント作品の寄り</h2>
 <p>作品の販売ページでは、全体像と同じくらい筆あと・紙の質感・サインが大切です。ここでは<strong>元の解像度</strong>のままをおすすめします。高解像度のスキャンから必要な部分だけを手を加えずに切り出せます。</p>
@@ -124,7 +129,7 @@ footer p{margin:0}
 <h2>ただ何枚も同じ比率で切りたいとき</h2>
 <p>ディテールカットでなくても大丈夫です。写真30枚をすべて1:1にしたいなら、カット数を1にして位置を確かめながら送っていくだけ。ふつうの一括トリミングとしても十分速く使えます。</p>
 
-<p>はじめてなら<a href="/ja/how-to/">使い方</a>にひととおり目を通してみてください。すぐ試したいなら<a href="/ja/">こちらから</a>どうぞ。</p>
+<p>はじめてなら<a href="/ja/how-to/">使い方</a>にひととおり目を通してみてください。</p>
 </article>
 
 <div class="cta">
