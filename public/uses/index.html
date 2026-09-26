@@ -34,7 +34,11 @@
   --ink:#e6f0f2; --ink-2:#a8c3ca; --muted:#6d8b96;
   --amber:#e8b45a; --teal:#35b7e0; --fog:#f4eddf;
   --display:Newsreader,Georgia,serif;
+  --heading:var(--display);
 }
+/* Newsreader has no Hangul or kana, so those headings would fall to whatever serif the OS has. */
+html[lang="ko"]{--heading:'Noto Serif KR',Georgia,serif}
+html[lang="ja"]{--heading:'Noto Serif JP',Georgia,serif}
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
@@ -61,9 +65,9 @@ header.bar{display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 18px; mar
 .go{border:1px solid var(--amber); color:var(--amber); border-radius:3px; padding:4px 12px; font-size:13px; white-space:nowrap}
 .go:hover{background:var(--amber); color:#12100b}
 
-article h1{font-family:var(--display); font-weight:500; font-size:clamp(30px,6vw,42px); line-height:1.2; color:var(--fog); margin:0 0 14px; text-wrap:balance}
-.lead{color:var(--ink-2); font-size:17px; margin:0 0 36px}
-article h2{font-family:var(--display); font-weight:500; font-size:25px; color:var(--fog); margin:44px 0 10px; line-height:1.3}
+article h1{font-family:var(--heading); font-weight:500; font-size:clamp(30px,6vw,42px); line-height:1.2; color:var(--fog); margin:0 0 28px; text-wrap:balance}
+.lead{color:var(--ink-2); font-size:17px; margin:-14px 0 36px}
+article h2{font-family:var(--heading); font-weight:500; font-size:25px; color:var(--fog); margin:44px 0 10px; line-height:1.3}
 article h3{font-size:16px; font-weight:600; color:var(--ink); margin:24px 0 4px}
 article p{margin:0 0 14px}
 article ul{margin:0 0 16px; padding-left:1.2em}
@@ -75,6 +79,8 @@ kbd{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.82em; backgrou
 table{border-collapse:collapse; width:100%; margin:6px 0 18px; font-size:15px}
 th,td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line-soft); vertical-align:top}
 th{white-space:nowrap; font-weight:400; width:1%}
+article figure{margin:14px 0 18px}
+article figure img{display:block; max-width:100%; height:auto; border:1px solid var(--line); border-radius:6px; background:var(--sunk)}
 
 .cta{margin:48px 0 0; padding:22px; border:1px solid var(--line); border-radius:6px; background:var(--sunk); display:flex; flex-wrap:wrap; align-items:center; gap:12px 20px}
 .cta p{margin:0; flex:1 1 260px; color:var(--ink-2)}
@@ -97,7 +103,6 @@ footer p{margin:0}
 
 <article>
 <h1>What people use Multi Crop for</h1>
-<p class="lead">A few real jobs, with the settings that suit them — easier to picture than a feature list.</p>
 <h2>Detail shots for product listings</h2>
 <p>The most common one. You have front shots of twenty garments and want to show the fabric, a button, the label and the hem stitching for each.</p>
 <ul>
@@ -105,7 +110,7 @@ footer p{margin:0}
   <li>Crop count <strong>4</strong>, file names <code>{name}-d{nn}</code></li>
 </ul>
 <p>Move four boxes into place, press <kbd>Enter</kbd>, next photo. After twenty garments you get eighty files, named in order from <code>coat-d01.webp</code>, in one zip. They are all the same size, so the listing layout doesn't jump around.</p>
-<p>If a photo doesn't have the resolution and you draw a box too small, the tool warns you it will be scaled up. Make the box bigger, or export that one at original pixels.</p>
+<p>If a photo doesn't have the resolution and you draw a box too small, the tool warns you it will be scaled up. Make the box bigger.</p>
 
 <h2>Close-ups of paintings and prints</h2>
 <p>On an artwork page the brushstrokes, paper texture and signature matter as much as the full image. Here we'd keep <strong>original pixels</strong>, so the area comes out of the high-res scan untouched.</p>
@@ -124,7 +129,7 @@ footer p{margin:0}
 <h2>Just cropping a pile of photos to one ratio</h2>
 <p>It doesn't have to be detail shots. If thirty photos all need to be 1:1, set the crop count to 1 and step through checking each position. For plain batch cropping it's quick enough.</p>
 
-<p>New to it? Start with <a href="/how-to/">how to crop many images at once</a>, or just <a href="/">open the tool</a>.</p>
+<p>New to it? Start with <a href="/how-to/">how to crop many images at once</a>.</p>
 </article>
 
 <div class="cta">
