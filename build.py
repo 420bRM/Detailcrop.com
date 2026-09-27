@@ -108,6 +108,9 @@ PAGE_UI = {
              privacy="処理はすべてブラウザ内で行われます。画像がアップロードされることはありません。"),
 }
 LANG_LABEL = {"en": "EN", "ko": "한국어", "ja": "日本語"}
+# Self-hosted, so Korean pages do not depend on a font CDN (public/fonts/pretendard, OFL-1.1).
+PAGE_HEAD = {"en": "", "ja": "",
+             "ko": '<link rel="stylesheet" href="/fonts/pretendard/pretendardvariable-dynamic-subset.css">'}
 
 
 def head_urls(path, langs=None, xdefault="/"):
@@ -294,7 +297,7 @@ def build_pages():
             s = tpl
             if not meta.get("lead"):
                 s = s.replace('<p class="lead">__LEAD__</p>\n', "", 1)
-            for k, v in (("__LANG__", code), ("__TITLE__", esc(meta["title"], True)),
+            for k, v in (("__LANG__", code), ("__HEAD_EXTRA__", PAGE_HEAD[code]), ("__TITLE__", esc(meta["title"], True)),
                          ("__DESC__", esc(meta["description"], True)),
                          ("__HEAD_URLS__", head_urls(path, alts, page_url("en", slug))),
                          ("__JSONLD__", ld), ("__LANGLINKS__", langlinks),
