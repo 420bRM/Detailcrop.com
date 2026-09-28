@@ -2123,7 +2123,11 @@ addEventListener("drop", e => { e.preventDefault(); if (e.dataTransfer.files.len
 $("#playBtn").addEventListener("click", () => { vid.paused ? vid.play() : vid.pause(); });
 vid.addEventListener("play",  () => { $("#playBtn").textContent = "❚❚"; startLoop(); });
 vid.addEventListener("pause", () => { $("#playBtn").textContent = "▶"; stopLoop(); drawHead(); drawPreviews(); });
-vid.addEventListener("ended", () => { stopLoop(); drawHead(); });
+vid.addEventListener("ended", () => {
+  stopLoop(); drawHead();
+  /* the sample loops, so the opening playback keeps going */
+  if (!S.busy && cur() && cur().isSample){ vid.currentTime = 0; vid.play().catch(() => {}); }
+});
 vid.addEventListener("timeupdate", () => { if (!S.busy && vid.paused) drawHead(); });
 vid.addEventListener("seeked", () => { if (!S.busy && vid.paused) { drawHead(); drawPreviews(); } });
 vid.addEventListener("loadeddata", () => { if (!S.busy) { drawBoxes(); drawPreviews(); drawTrack(); } });
@@ -2317,7 +2321,15 @@ $("#capWarn").hidden = capable();
 applyLang();
 /* open on the sample, the way the stills page does: the editor is up and
    working before anyone has chosen a file */
-loadSample().catch(err => console.error(err));
+loadSample().then(() => {
+  /* and have it playing, so the page opens on moving footage rather than a
+     still frame. Muted, so browsers allow it; a blocked play just leaves the
+     first frame up. */
+  if (!cur() || !cur().isSample) return;
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const go = () => { if (cur() && cur().isSample && !S.busy) vid.play().catch(() => {}); };
+  if (vid.readyState >= 2) go(); else vid.addEventListener("loadeddata", go, {once:true});
+}).catch(err => console.error(err));
 let tourSeen = null;
 try { tourSeen = localStorage.getItem("dcv.tour"); } catch(e){}
 if (!tourSeen) $("#tourBtn").classList.add("pulse");
