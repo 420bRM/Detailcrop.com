@@ -2117,11 +2117,7 @@ addEventListener("drop", e => { e.preventDefault(); if (e.dataTransfer.files.len
 $("#playBtn").addEventListener("click", () => { vid.paused ? vid.play() : vid.pause(); });
 vid.addEventListener("play",  () => { $("#playBtn").textContent = "❚❚"; startLoop(); });
 vid.addEventListener("pause", () => { $("#playBtn").textContent = "▶"; stopLoop(); drawHead(); drawPreviews(); });
-vid.addEventListener("ended", () => {
-  stopLoop(); drawHead();
-  /* the sample loops, so the opening playback keeps going */
-  if (!S.busy && cur() && cur().isSample){ vid.currentTime = 0; vid.play().catch(() => {}); }
-});
+vid.addEventListener("ended", () => { stopLoop(); drawHead(); });
 vid.addEventListener("timeupdate", () => { if (!S.busy && vid.paused) drawHead(); });
 vid.addEventListener("seeked", () => { if (!S.busy && vid.paused) { drawHead(); drawPreviews(); } });
 vid.addEventListener("loadeddata", () => { if (!S.busy) { drawBoxes(); drawPreviews(); drawTrack(); } });
