@@ -143,6 +143,17 @@ other tool's accent colour rather than a button in the header — the header is
 for the job in front of you. Both pages carry it; the markup and the CSS are
 the same on each side, so a change to one belongs in both.
 
+**The next image starts from the boxes you just confirmed.** A batch is
+usually the same kind of shot again and again, so the details worth cropping
+sit in the same places. *Confirm & next* hands its boxes to the next image if
+that image has never been opened — an unopened image only holds the default
+single box, so nothing is lost. An image you have already visited keeps what
+it has, and for those **Same boxes as previous image** copies from the image
+to its left in the strip. Positions are fractions of the working area. On an
+image of another shape each box keeps its centre and its share of the picture
+while its ratio holds. A feed grid carries over as a grid. Straighten values
+are per photo and do not carry.
+
 **Numbers are posting order, not reading order.** A profile grid stacks
 newest first, so the bottom-right tile must be posted before the top-left
 one. On-canvas tags and filenames both count in posting order, and grid
