@@ -68,6 +68,16 @@ gives you, then add the domain under **Settings → Domains & Routes**. The
 nameserver change alone is not enough — without the custom domain entry
 there is no DNS record and the domain will not resolve at all.
 
+**Search pings (IndexNow).** After a push to `main` that touches `public/`,
+`.github/workflows/indexnow.yml` waits for the *Workers Builds: detailcrop*
+check to pass, then sends the pages whose files changed to IndexNow — Bing,
+Naver and the other participating engines. Only URLs in the sitemap are ever
+sent. Google does not take IndexNow and keeps reading the sitemap. The key is
+`public/838e8b259cdca4a42f8713d62c15708c.txt`; it is public on purpose, and
+deleting or renaming it makes every ping fail. To announce every page at once,
+run the workflow by hand from the Actions tab. `python3 scripts/indexnow.py
+all --dry-run` lists what would be sent.
+
 ## Limits
 
 | | | why |

@@ -1,0 +1,47 @@
+# After a push to main that changes the site, wait for Cloudflare to deploy it,
+# then tell Bing and Naver which pages changed (IndexNow). Google ignores
+# IndexNow and keeps reading the sitemap. Run it by hand from the Actions tab
+# to announce every page in the sitemap at once.
+name: IndexNow
+
+on:
+  push:
+    branches: [main]
+    paths: ["public/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: read
+
+concurrency:
+  group: indexnow
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Wait for the Cloudflare deploy
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/indexnow.py wait "${{ github.sha }}"
+
+      - name: Send the changed pages
+        if: github.event_name == 'push'
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          base="$BEFORE"
+          if [ -z "$base" ] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then base="HEAD~1"; fi
+          python3 scripts/indexnow.py changed "$base" HEAD
+
+      - name: Send every page in the sitemap
+        if: github.event_name == 'workflow_dispatch'
+        run: python3 scripts/indexnow.py all
