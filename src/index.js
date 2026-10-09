@@ -9,7 +9,10 @@
 
 import { statsPage, todayJSON } from "./stats.js";
 
-const ALLOWED_EVENTS = new Set(["visit", "add", "export", "skip", "use", "tour"]);
+// visit … tour come from the stills page; why is its one question after an
+// export; vvisit and vexport are the video page.
+const ALLOWED_EVENTS = new Set(["visit", "add", "export", "skip", "use", "tour",
+                                "why", "vvisit", "vexport"]);
 const MAX_BODY = 1024;
 const BOT_UA = /bot|crawler|spider|crawl|slurp|headless|phantom|puppeteer|playwright|python-requests|curl\/|wget|scrapy|monitor|preview|fetch|http-client|axios|okhttp/;
 
@@ -72,22 +75,22 @@ async function recordEvent(request, env) {
   env.EVENTS.writeDataPoint({
     indexes: [str(d.e, 32)],
     blobs: [
-      str(d.e, 32),                              // blob1  event: visit | add | export
+      str(d.e, 32),                              // blob1  event (ALLOWED_EVENTS above)
       str(d.lang, 8),                            // blob2  ui language
       str(cf.country, 4),                        // blob3  country
       str(d.ref, 64),                            // blob4  referrer host
-      str(d.ratio, 16),                          // blob5  crop ratio preset
-      str(d.fmt, 16),                            // blob6  output format
+      str(d.ratio, 16),                          // blob5  crop ratio preset, or "mixed"
+      str(d.fmt, 16),                            // blob6  output format (video: codec)
       str(d.out, 8),                             // blob7  native | fixed
       str(d.id, 24),                             // blob8  anonymous id
       vw > 0 && vw < 820 ? "mobile" : "desktop", // blob9  device class
-      str(d.feat, 24)                            // blob10 feature key ('use' events)
+      str(d.feat, 24)                            // blob10 feature key ('use') / purpose ('why')
     ],
     doubles: [
       num(d.v),      // double1  visit number for this browser
-      num(d.n),      // double2  images in the batch
-      num(d.iw),     // double3  median image width
-      num(d.ih),     // double4  median image height
+      num(d.n),      // double2  images in the batch (video: clips)
+      num(d.iw),     // double3  median image width ('add', 'vexport')
+      num(d.ih),     // double4  median image height ('add', 'vexport')
       num(d.mb),     // double5  median file size, MB
       num(d.crops),  // double6  crops exported
       num(d.ow),     // double7  output width  (fixed mode only)

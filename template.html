@@ -374,6 +374,14 @@ input[type=range]{width:100%; accent-color:var(--amber)}
 .hint kbd{font-family:inherit; font-size:11px; border:1px solid var(--line); border-bottom-width:2px; border-radius:3px; padding:1px 5px; color:var(--teal); background:var(--sunk)}
 .warn{color:var(--coral); font-size:12px; margin:8px 0 0}
 .okmsg{color:var(--green); font-size:12px; margin:8px 0 0}
+.why{margin-top:12px; padding:10px; border:1px solid var(--line); border-radius:3px; background:var(--sunk)}
+.whyQ{margin:0 0 8px; font-size:13px; color:var(--ink)}
+.whyOpts{display:flex; flex-wrap:wrap; gap:6px}
+.whyOpts button{background:transparent; border:1px solid var(--line); border-radius:3px; padding:5px 8px; font-size:12px; line-height:1.4; color:var(--ink-2); text-align:left}
+.whyOpts button:hover{border-color:var(--teal); color:var(--ink)}
+.whyOpts button[aria-pressed="true"]{background:var(--amber); border-color:var(--amber); color:#12100b; font-weight:600}
+.whyFoot{display:flex; align-items:center; gap:14px; margin-top:10px}
+.btn.whySend{width:auto; padding:6px 16px}
 
 .progress{display:flex; align-items:baseline; gap:8px; font-variant-numeric:tabular-nums}
 .progress b{font-family:var(--display); font-size:26px; font-weight:500; color:var(--fog)}
@@ -583,6 +591,23 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
               <button class="btn" type="button" id="clearAll" data-i="clearAll"></button>
             </div>
             <p class="okmsg" id="exportMsg" hidden></p>
+            <div class="why" id="whyBox" hidden>
+              <p class="whyQ" data-i="whyQ"></p>
+              <div class="whyOpts" id="whyOpts">
+                <button type="button" aria-pressed="false" data-why="shop" data-i="whyShop"></button>
+                <button type="button" aria-pressed="false" data-why="art" data-i="whyArt"></button>
+                <button type="button" aria-pressed="false" data-why="social" data-i="whySocial"></button>
+                <button type="button" aria-pressed="false" data-why="dataset" data-i="whyData"></button>
+                <button type="button" aria-pressed="false" data-why="photo" data-i="whyPhoto"></button>
+                <button type="button" aria-pressed="false" data-why="docs" data-i="whyDocs"></button>
+                <button type="button" aria-pressed="false" data-why="try" data-i="whyTry"></button>
+                <button type="button" aria-pressed="false" data-why="other" data-i="whyOther"></button>
+              </div>
+              <div class="whyFoot">
+                <button type="button" class="btn primary whySend" id="whySend" data-i="whySend" disabled></button>
+                <button type="button" class="linkbtn" id="whySkip" data-i="whySkip"></button>
+              </div>
+            </div>
           </div>
         </section>
       </div>
@@ -770,7 +795,7 @@ const I18N = {
     footAbout:"About DetailCrop", footHow:"How to crop many images at once", footUses:"What people use it for",
     straighten:"Rotate", kHoriz:"Horiz.", kVert:"Vert.", resetZero:"Back to zero", alignTitle:"Alignment",
     footContact:"Advertising & partnerships:",
-    footStats:"Anonymous usage stats — image sizes, batch size and the settings you pick. Never the images themselves.",
+    footStats:"Anonymous usage stats — image sizes, batch size, the settings you pick and, if you answer it, what the batch was for. Never the images themselves.",
     statsOn:"turn off",
     statsOff:"stats off · turn back on",
     footLead:"Multi Crop — detail crops for your whole product lineup, in one sitting.",
@@ -798,6 +823,12 @@ const I18N = {
     wideOff:"Show the intro panel",
     sampleBadge:"SAMPLE",
     sampleTip:"Sample image — it steps aside as soon as you add your own",
+    whyQ:"What was this batch for? (pick any)",
+    whyShop:"Product photos for a shop", whyArt:"Artwork or prints", whySocial:"Instagram or social posts",
+    whyData:"AI training dataset", whyPhoto:"Photo delivery or prints", whyDocs:"Documents, scans or screenshots",
+    whyTry:"Just trying it out", whyOther:"Something else",
+    whySend:"Send", whySkip:"Skip",
+    whyThanks:"Thanks — that helps.",
   },
   ko:{
     tagline:"디테일크롭의 멀티크롭 — 이미지 위에 상자를 끌어 원하는 확대컷 구역을 잡습니다. 한 장에 여러 컷, 여러 이미지를 한번에 자르고, 결과는 zip 하나로. 모든 처리가 브라우저 안에서 끝나며 업로드도 가입도 없습니다.",
@@ -846,7 +877,7 @@ const I18N = {
     footAbout:"About", footHow:"사용법", footUses:"활용 예시",
     straighten:"회전", kHoriz:"수평", kVert:"수직", resetZero:"0으로 되돌리기", alignTitle:"정렬 보정",
     footContact:"광고·제휴 문의:",
-    footStats:"익명 사용 통계 — 이미지 크기, 장수, 고른 설정만 기록합니다. 이미지 자체는 기록하지 않습니다.",
+    footStats:"익명 사용 통계 — 이미지 크기, 장수, 고른 설정, 답해 주신 용도만 기록합니다. 이미지 자체는 기록하지 않습니다.",
     statsOn:"끄기",
     statsOff:"통계 꺼짐 · 다시 켜기",
     footLead:"멀티크롭 — 라인업 전체의 확대컷을, 한자리에서.",
@@ -874,6 +905,12 @@ const I18N = {
     wideOff:"설명 칸 다시 보기",
     sampleBadge:"예시",
     sampleTip:"예시 이미지 — 직접 올린 이미지가 들어오면 자동으로 빠집니다",
+    whyQ:"이번 작업, 어디에 쓰시나요? (복수 선택 가능)",
+    whyShop:"쇼핑몰 상품 사진", whyArt:"작품·프린트", whySocial:"인스타·SNS 게시물",
+    whyData:"AI 학습용 데이터셋", whyPhoto:"사진 납품·인쇄", whyDocs:"문서·스캔·화면 캡처",
+    whyTry:"그냥 써 보는 중", whyOther:"기타",
+    whySend:"보내기", whySkip:"건너뛰기",
+    whyThanks:"고맙습니다. 큰 도움이 됩니다.",
   },
   ja:{
     tagline:"ディテールクロップのマルチクロップ — 画像の上でボックスをドラッグし、切り出したい部分を指定します。1枚に複数カット、複数の画像をまとめてトリミング、結果はzipひとつ。処理はすべてブラウザ内で完結し、アップロードも登録も不要です。",
@@ -922,7 +959,7 @@ const I18N = {
     footAbout:"DetailCropについて", footHow:"複数の画像をまとめて切り抜く方法", footUses:"こんな使い方",
     straighten:"回転", kHoriz:"水平", kVert:"垂直", resetZero:"0に戻す", alignTitle:"傾き補正",
     footContact:"広告・提携のお問い合わせ:",
-    footStats:"匿名の利用統計 — 画像サイズ、枚数、選んだ設定のみ。画像そのものは記録しません。",
+    footStats:"匿名の利用統計 — 画像サイズ、枚数、選んだ設定、ご回答いただいた用途のみ。画像そのものは記録しません。",
     statsOn:"オフにする",
     statsOff:"統計オフ · 再びオンにする",
     footLead:"マルチクロップ — ラインナップ全体のディテールカットを、一度に。",
@@ -950,6 +987,12 @@ const I18N = {
     wideOff:"説明パネルを表示",
     sampleBadge:"見本",
     sampleTip:"サンプル画像 — ご自身の画像を追加すると自動で外れます",
+    whyQ:"今回の作業、何に使いますか？（複数選択可）",
+    whyShop:"ネットショップの商品写真", whyArt:"作品・プリント", whySocial:"インスタ・SNSの投稿",
+    whyData:"AI学習用データセット", whyPhoto:"写真の納品・プリント", whyDocs:"書類・スキャン・スクリーンショット",
+    whyTry:"試しに使っている", whyOther:"その他",
+    whySend:"送信", whySkip:"スキップ",
+    whyThanks:"ありがとうございます。とても参考になります。",
   }
 };
 
@@ -2420,19 +2463,24 @@ async function runExport(only){
     const stamp = new Date().toISOString().slice(0, 10);
     saveBlob(zip, `crops-${stamp}.zip`);
     flash(T().exported(entries.length), false);
-    track("export", {
+    const shape = {
       n: targets.length,
       crops: entries.length,
-      sample: targets.every(t => t.isSample) ? 1 : 0,
-      ratio: S.ratioId, fmt: S.fmt, out: S.outMode,
+      ratio: ratioTag(targets), out: S.outMode,
       grid: targets.reduce((a, t) => Math.max(a, t.grid ? t.boxes.length : 0), 0),
+      ow: S.outMode === "fixed" ? S.ow : 0,
+      oh: S.outMode === "fixed" ? S.oh : 0
+    };
+    const sample = targets.every(t => t.isSample);
+    track("export", Object.assign({
+      sample: sample ? 1 : 0,
+      fmt: S.fmt,
       rot: Math.round(targets.reduce((a, t) => Math.max(a, Math.abs(rotOf(t))), 0) * 10) / 10,
       persp: targets.reduce((a, t) => Math.max(a, Math.abs(khOf(t)), Math.abs(kvOf(t))), 0),
-      ow: S.outMode === "fixed" ? S.ow : 0,
-      oh: S.outMode === "fixed" ? S.oh : 0,
       q: S.quality,
       secs: elapsedSecs()
-    });
+    }, shape));
+    if (!sample) offerWhy(shape);
   } catch (err){
     console.error(err);
     flash(String(err && err.message || err), true);
@@ -2641,6 +2689,7 @@ $("#rh").addEventListener("input", e => setCustomSide("rh", parseInt(e.target.va
 Array.from($("#scopeseg").children).forEach(b => b.addEventListener("click", () => {
   if (b.disabled) return;
   S.ratioScope = b.dataset.scope;
+  if (S.ratioScope === "one") markUse("scope");
   /* coming back to the whole batch puts every crop on the one ratio again, so
      the toggle always says what the crops are actually doing */
   if (S.ratioScope === "all") setRatio(S.ratioId);
@@ -2780,6 +2829,63 @@ function markUse(feat){
   usedFeatures.add(feat);
   track("use", { feat: feat });
 }
+/* The ratio an export carried. Crops can hold ratios of their own (the scope
+   toggle), so the batch ratio alone would misreport a mixed export. */
+function ratioTag(targets){
+  const seen = new Map();
+  targets.forEach(t => t.boxes.forEach(b => {
+    const r = ratioOf(b);
+    seen.set(r.id === "custom" ? r.w + ":" + r.h : r.id, r.id);
+  }));
+  if (seen.size > 1) return "mixed";
+  return seen.size ? seen.values().next().value : S.ratioId;
+}
+
+/* What the batch was for. The numbers above say what people do, not who they
+   are, so after the first export of the visitor's own images the page asks
+   once: fixed choices, any number of them, nothing typed. Only while stats
+   are on — with them off there is nowhere for an answer to go. Each answer
+   carries the shape of the export it followed, so a purpose reads next to
+   its crops per image without a JOIN. "Once" is literal: the box stays up for
+   the rest of that visit, and a browser that has seen it is not asked again.
+   A skip is recorded too. */
+const WHY_KEY = "dc.why";
+let whyShape = null;
+function whyDone(){
+  try { return !!localStorage.getItem(WHY_KEY); }
+  catch { return true; }              // nowhere to remember it, so never ask
+}
+function offerWhy(shape){
+  whyShape = shape;                   // a later export in the same visit updates it
+  if (statsMuted() || whyDone()) return;
+  try { localStorage.setItem(WHY_KEY, "asked"); } catch {}
+  const box = $("#whyBox");
+  box.hidden = false;
+  // it lands under the export buttons, often below the fold
+  box.scrollIntoView({block: "nearest", behavior: "smooth"});
+}
+/* Several answers are fine, so each one goes as its own event: per-purpose
+   counts stay plain counts, and a person who picked three shows up under all
+   three. */
+function answerWhy(keys){
+  try { localStorage.setItem(WHY_KEY, keys.join("+")); } catch {}
+  $("#whyBox").hidden = true;
+  keys.forEach(k => track("why", Object.assign({}, whyShape, {feat: k})));
+  if (keys[0] !== "skip") flash(T().whyThanks, false);
+}
+function whyPicked(){
+  return $$("#whyOpts button").filter(b => b.getAttribute("aria-pressed") === "true").map(b => b.dataset.why);
+}
+$$("#whyOpts button").forEach(b => b.addEventListener("click", () => {
+  b.setAttribute("aria-pressed", String(b.getAttribute("aria-pressed") !== "true"));
+  $("#whySend").disabled = !whyPicked().length;
+}));
+$("#whySend").addEventListener("click", () => {
+  const keys = whyPicked();
+  if (keys.length) answerWhy(keys);
+});
+$("#whySkip").addEventListener("click", () => answerWhy(["skip"]));
+
 function paintStatsToggle(){
   const b = $("#statsToggle");
   if (!b) return;
@@ -2787,6 +2893,7 @@ function paintStatsToggle(){
 }
 $("#statsToggle").addEventListener("click", () => {
   STATS.off = !STATS.off;
+  if (STATS.off) $("#whyBox").hidden = true;
   statsSave();
   paintStatsToggle();
 });
