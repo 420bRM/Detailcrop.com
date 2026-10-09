@@ -27,7 +27,20 @@ const FEATURE_LABELS = {
   grid:   "격자(피드 분할)",
   rot:    "회전 보정",
   persp:  "왜곡 보정",
-  sample: "샘플 이미지"
+  sample: "샘플 이미지",
+  prev:   "이전 이미지와 같은 상자",
+  scope:  "컷별 비율"
+};
+/* Answers to the question the page asks once after an export. */
+const WHY_LABELS = {
+  shop:    "쇼핑몰 상품 사진",
+  art:     "작품·프린트",
+  social:  "인스타·SNS 게시물",
+  dataset: "AI 학습용 데이터셋",
+  photo:   "사진 납품·인쇄",
+  docs:    "문서·스캔·캡처",
+  try:     "그냥 써 보는 중",
+  other:   "기타"
 };
 /* Walkthrough steps, in the order TOUR[] defines them in the page. */
 const TOUR_LABELS = ["크롭 박스", "컷 개수", "컷 목록", "비율", "필름스트립", "내보내기"];
@@ -132,7 +145,31 @@ npx wrangler secret put STATS_KEY</pre>
              GROUP BY visit_no ORDER BY visit_no ASC LIMIT 8`,
     devices: `SELECT blob9 AS device, blob2 AS lang, sum(_sample_interval) AS visits
               FROM ${DATASET} WHERE blob1='visit' AND ${W}
-              GROUP BY device, lang ORDER BY visits DESC LIMIT 8`
+              GROUP BY device, lang ORDER BY visits DESC LIMIT 8`,
+
+    /* The question after an export. Asked once per browser; several answers
+       allowed, one event each, and every event carries the export it
+       followed, so crops per image comes along. */
+    why: `SELECT blob10 AS purpose, count(DISTINCT blob8) AS people,
+                 sum(double6) AS crops, sum(double2) AS imgs,
+                 countIf(double11 > 0) AS grid_runs
+          FROM ${DATASET} WHERE blob1='why' AND ${W}
+          GROUP BY purpose ORDER BY people DESC LIMIT 12`,
+    /* people who answered at all — not the sum of the rows above, since one
+       person can sit under several purposes */
+    whyPeople: `SELECT count(DISTINCT blob8) AS people
+                FROM ${DATASET} WHERE blob1='why' AND blob10 != 'skip' AND ${W}`,
+
+    /* The video page's own events. Exports of the sample clip are left out. */
+    video: `SELECT blob1 AS step, count(DISTINCT blob8) AS people,
+                   sum(_sample_interval) AS n
+            FROM ${DATASET}
+            WHERE (blob1='vvisit' OR (blob1='vexport' AND double10=0)) AND ${W}
+            GROUP BY step`,
+    vratios: `SELECT blob5 AS ratio, sum(_sample_interval) AS exports,
+                     avg(double6) AS crops, avg(double2) AS clips
+              FROM ${DATASET} WHERE blob1='vexport' AND double10=0 AND ${W}
+              GROUP BY ratio ORDER BY exports DESC LIMIT 8`
   };
 
   const weakKey = env.STATS_KEY.length < 16;
@@ -366,6 +403,32 @@ function render(R, days, failed, weakKey) {
 
   const NOT_YET = "아직 수집 전입니다 — template.html에 track() 추가가 필요합니다.";
 
+  /* the question after an export: answers apart from skips. Several answers
+     per person are allowed, so each row is a share of the people who
+     answered, and the rows can add up to more than 100%. */
+  const whyRows = R.why.rows || [];
+  const skipped = num((whyRows.find(r => r.purpose === "skip") || {}).people);
+  const answers = whyRows.filter(r => r.purpose !== "skip");
+  const answered = num(first(R.whyPeople).people);
+  const whyList = answers.map(r => ({
+    label: WHY_LABELS[r.purpose] || r.purpose || "?",
+    value: answered > 0 ? share(num(r.people), answered) : 0,
+    display: `${n0(r.people)}명`,
+    sub: `${answered > 0 ? Math.round(share(num(r.people), answered)) : 0}% · 장당 ${
+      num(r.imgs) > 0 ? n1(num(r.crops) / num(r.imgs)) : "—"}컷${
+      num(r.grid_runs) ? ` · 격자 ${n0(r.grid_runs)}` : ""}`
+  }));
+
+  /* the video page */
+  const vBy = {};
+  (R.video.rows || []).forEach(r => { vBy[r.step] = r; });
+  const vv = vBy.vvisit || {}, ve = vBy.vexport || {};
+  const vratioList = (R.vratios.rows || []).map(r => ({
+    label: r.ratio === "mixed" ? "비율 섞음" : (r.ratio || "?"),
+    value: num(r.exports),
+    sub: `건 · 평균 ${n1(r.crops)}컷 · 영상 ${n1(r.clips)}개`
+  }));
+
   return `
   ${weakKey ? `<div class="warnbar">이 페이지의 키가 짧습니다. <code>STATS_KEY</code>를 긴 무작위 문자열로 바꾸세요.</div>` : ""}
   ${failed.length ? `<div class="warnbar">불러오지 못한 패널: ${failed.map(esc).join(", ")}</div>` : ""}
@@ -489,6 +552,28 @@ function render(R, days, failed, weakKey) {
       <h2>무엇으로 보는가 <span>기기 · 언어 · ${days}일</span></h2>
       ${deviceSplit.length ? segBar("기기", deviceSplit) : empty()}
       ${langSplit.length ? segBar("언어", langSplit) : ""}
+    </div>
+  </section>
+
+  <section class="panelGrid">
+    <div class="panel">
+      <h2>무엇에 쓰는가 <span>내보낸 뒤 질문 · 복수 응답 · ${days}일</span></h2>
+      <div class="strip">
+        ${mini("답함", n0(answered))}
+        ${mini("건너뜀", n0(skipped))}
+        ${mini("응답률", answered + skipped > 0 ? Math.round(share(answered, answered + skipped)) + "%" : "—")}
+      </div>
+      <div style="margin-top:14px">${rankList(whyList, { scaleMax: 100, emptyNote: "아직 응답이 없습니다." })}</div>
+    </div>
+    <div class="panel">
+      <h2>영상 도구 <span>내보내기는 예시 영상 제외 · ${days}일</span></h2>
+      <div class="strip">
+        ${mini("방문", n0(vv.n))}
+        ${mini("사람", n0(vv.people))}
+        ${mini("내보내기", n0(ve.n))}
+        ${mini("내보낸 사람", n0(ve.people))}
+      </div>
+      <div style="margin-top:14px">${rankList(vratioList, { emptyNote: "아직 내보낸 기록이 없습니다." })}</div>
     </div>
   </section>
 

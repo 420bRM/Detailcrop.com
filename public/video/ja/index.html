@@ -296,6 +296,8 @@ footer a:hover{border-bottom-color:var(--teal)}
 .footBody{margin:0; max-width:66ch; line-height:1.75}
 .footSide{display:flex; flex-direction:column; gap:5px}
 .footSide p{margin:0}
+.linkbtn{background:none; border:0; padding:0; color:var(--teal); font-size:12px; text-decoration:none; border-bottom:1px solid transparent}
+.linkbtn:hover{border-bottom-color:var(--teal)}
 
 /* ---------- first-run guided tour ----------
    The same walkthrough the stills page carries, with this page's steps. */
@@ -586,6 +588,7 @@ footer a:hover{border-bottom-color:var(--teal)}
     <p data-i="footPrivacy">アップロードなし。デコードもエンコードもブラウザ内で完結します。</p>
     <p data-i="footFree">無料・登録不要。</p>
     <p data-i="footBrowsers">最新のChrome・Edge・Safariが必要です。</p>
+    <p style="margin-top:6px"><span data-i="footStats">匿名の利用統計 — 動画のサイズ、カット数、選んだ設定のみ。動画そのものは記録しません。</span> <button type="button" class="linkbtn" id="statsToggle"></button></p>
   </div>
 </footer>
 
@@ -680,6 +683,8 @@ const I18N = {
     footPrivacy:"No upload. The video is decoded and re-encoded in your browser.",
     footFree:"Free, no account.",
     footBrowsers:"Needs a recent Chrome, Edge or Safari.",
+    footStats:"Anonymous usage stats — clip size, number of crops and the settings you pick. Never the video itself.",
+    statsOn:"turn off", statsOff:"stats off · turn back on",
     capWarn:"<b>This browser can't encode video yet.</b> The page needs the WebCodecs video encoder, which recent Chrome, Edge and Safari have. Everything else on the page still works, but Export will stay off.",
     stAudio:"reading audio", stVideo:"capturing frames", stMux:"writing mp4", stDone:"done",
     stClip:(a,b)=>`clip ${a} / ${b}`,
@@ -748,6 +753,8 @@ const I18N = {
     footPrivacy:"업로드 없음. 디코딩도 인코딩도 브라우저 안에서 끝납니다.",
     footFree:"무료, 가입 없음.",
     footBrowsers:"최신 Chrome · Edge · Safari가 필요합니다.",
+    footStats:"익명 사용 통계 — 영상 크기, 컷 수, 고른 설정만 기록합니다. 영상 자체는 기록하지 않습니다.",
+    statsOn:"끄기", statsOff:"통계 꺼짐 · 다시 켜기",
     capWarn:"<b>이 브라우저는 아직 영상 인코딩을 지원하지 않습니다.</b> WebCodecs 영상 인코더가 필요하며 최신 Chrome · Edge · Safari에 들어 있습니다. 나머지 기능은 그대로 쓸 수 있지만 내보내기는 꺼진 상태로 둡니다.",
     stAudio:"소리 읽는 중", stVideo:"프레임 캡처 중", stMux:"mp4 쓰는 중", stDone:"완료",
     stClip:(a,b)=>`${a} / ${b}번째 영상`,
@@ -816,6 +823,8 @@ const I18N = {
     footPrivacy:"アップロードなし。デコードもエンコードもブラウザ内で完結します。",
     footFree:"無料・登録不要。",
     footBrowsers:"最新のChrome・Edge・Safariが必要です。",
+    footStats:"匿名の利用統計 — 動画のサイズ、カット数、選んだ設定のみ。動画そのものは記録しません。",
+    statsOn:"オフにする", statsOff:"統計オフ · 再びオンにする",
     capWarn:"<b>このブラウザはまだ動画のエンコードに対応していません。</b> WebCodecsの動画エンコーダーが必要で、最新のChrome・Edge・Safariに搭載されています。他の機能は使えますが、書き出しは無効のままです。",
     stAudio:"音声を読み込み中", stVideo:"フレーム取り込み中", stMux:"mp4を書き込み中", stDone:"完了",
     stClip:(a,b)=>`${b}本中${a}本目`,
@@ -912,6 +921,7 @@ function applyLang(){
   });
   if (!capable()) $("#capWarn").innerHTML = t.capWarn;
   if (typeof tourIdx === "number" && tourIdx >= 0) paintTourStep();
+  paintStatsToggle();
   updateShell();
   render();
 }
@@ -1173,6 +1183,7 @@ async function addFiles(list, isSample){
   }
 
   if (S.items.length > before) S.cur = before;
+  if (!isSample && S.items.length > before) markAdded();
   const t = T();
   const msgs = [];
   if (notVideo) msgs.push(t.notVideo(notVideo));
@@ -1814,6 +1825,7 @@ async function runExport(scope){
     $("#exportMsg").textContent = t.doneMsg + (codecLabel && codecLabel !== "H.264" ? " " + t.codecNote(codecLabel) : "");
     $("#exportMsg").hidden = false;
     targets.forEach(it => { it.done = true; });
+    track("vexport", exportShape(targets, codecLabel));
 
   } catch(err){
     failed = err;
@@ -2303,6 +2315,88 @@ document.addEventListener("keydown", e => {
   if (e.key === "Escape"){ endTour(); e.preventDefault(); }
 }, true);
 
+/* ===================== anonymous usage stats =====================
+   The record the stills page keeps (dc.stats): the same anonymous id and the
+   same off switch, so one browser reads as one person across both tools.
+   Two events, 'vvisit' on load and 'vexport' when a run finishes. What leaves
+   the browser is the shape of the job — clips, crops, the ratios, frame size,
+   the codec this browser offered — never a frame of the video. */
+const STATS_KEY = "dc.stats";
+function statsRead(){
+  try { return JSON.parse(localStorage.getItem(STATS_KEY) || "{}") || {}; }
+  catch(e){ return {}; }
+}
+function statsWrite(o){
+  try { localStorage.setItem(STATS_KEY, JSON.stringify(o)); } catch(e){}
+}
+let STATS = statsRead();
+if (!STATS.id){
+  STATS.id = Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+  STATS.visits = 0;
+  statsWrite(STATS);
+}
+let vvisits = 0;           // this page's own visit count, kept apart from the stills one
+function statsMuted(){
+  // navigator.webdriver: headless crawlers, same rule as the stills page
+  return !!STATS.off || navigator.webdriver === true
+      || navigator.doNotTrack === "1" || window.doNotTrack === "1";
+}
+function track(event, extra){
+  if (statsMuted()) return;
+  let ref = "";
+  try { ref = document.referrer ? new URL(document.referrer).host : ""; } catch(e){}
+  const body = JSON.stringify(Object.assign({
+    e: event, id: STATS.id, v: vvisits, lang: S.lang, ref: ref, w: innerWidth
+  }, extra || {}));
+  try {
+    if (navigator.sendBeacon) navigator.sendBeacon("/e", new Blob([body], {type:"application/json"}));
+    else fetch("/e", {method:"POST", body: body, keepalive:true, headers:{"content-type":"application/json"}});
+  } catch(e){}
+}
+const median = list => {
+  if (!list.length) return 0;
+  const a = list.slice().sort((x, y) => x - y);
+  return a[Math.floor(a.length / 2)];
+};
+/* when the first real clip landed; the sample does not start the clock */
+let addedAt = 0;
+function markAdded(){ if (!addedAt) addedAt = Date.now(); }
+function elapsedSecs(){
+  return addedAt ? Math.min(1800, Math.round((Date.now() - addedAt) / 1000)) : 0;
+}
+/* ratio is one id, or "mixed" when the crops of the run carry different ones —
+   one clip into a 9:16, a 1:1 and a 4:5 is exactly the case worth seeing */
+function exportShape(targets, codec){
+  const seen = new Map();
+  targets.forEach(it => it.boxes.forEach(b => seen.set(b.rid === "custom" ? b.rw + ":" + b.rh : b.rid, b.rid)));
+  return {
+    n: targets.length,
+    crops: results.length,
+    ratio: seen.size > 1 ? "mixed" : (seen.size ? seen.values().next().value : S.ratioId),
+    sample: targets.every(it => it.isSample) ? 1 : 0,
+    out: S.outMode,
+    fmt: codec || "",
+    iw: median(targets.map(it => it.vw || 0)),
+    ih: median(targets.map(it => it.vh || 0)),
+    mb: Math.round(median(targets.map(it => it.file ? it.file.size : 0)) / 104857.6) / 10,
+    secs: elapsedSecs()
+  };
+}
+function paintStatsToggle(){
+  const b = $("#statsToggle");
+  if (b) b.textContent = STATS.off ? T().statsOff : T().statsOn;
+}
+$("#statsToggle").addEventListener("click", () => {
+  /* read before writing: the stills page may have saved the record since this
+     page loaded, and only the switch is this page's to change */
+  const o = statsRead();
+  o.id = o.id || STATS.id;
+  o.off = !STATS.off;
+  statsWrite(o);
+  STATS = o;
+  paintStatsToggle();
+});
+
 /* ===================== boot ===================== */
 S.lang = PAGE_LANG;
 try { S.wide = localStorage.getItem("dcv.wide") === "1"; } catch(e){}
@@ -2319,6 +2413,11 @@ $("#capWarn").hidden = capable();
 })();
 
 applyLang();
+try {
+  vvisits = (parseInt(localStorage.getItem("dcv.visits"), 10) || 0) + 1;
+  localStorage.setItem("dcv.visits", String(vvisits));
+} catch(e){}
+track("vvisit", {});
 /* open on the sample, the way the stills page does: the editor is up and
    working before anyone has chosen a file */
 loadSample().then(() => {

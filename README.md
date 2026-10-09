@@ -293,9 +293,31 @@ certificate transparency logs within minutes and get swept.
 
 ## Usage stats
 
-`POST /e` records one row per event. Four events: `visit`, `add`, `export`,
-`skip`. Payloads run ~170 bytes and the Worker drops anything over 1 KB, so
-it could not receive an image even by accident.
+`POST /e` records one row per event. The stills page sends `visit`, `add`,
+`export`, `skip`, `use` (one per feature per load), `tour` and `why`; the
+video page sends `vvisit` and `vexport`. Anything else is dropped
+(`ALLOWED_EVENTS` in `src/index.js`). Payloads run ~170–250 bytes and the
+Worker drops anything over 1 KB, so it could not receive an image even by
+accident.
+
+Both pages share one record in `localStorage` (`dc.stats`): the same
+anonymous id and the same off switch, so a browser reads as one person across
+the two tools. Each page counts its own visits (`dc.stats.visits` for stills,
+`dcv.visits` for video).
+
+**`why` — the one question.** After the first export of the visitor's own
+images (never the sample), the export card asks once what the batch was for:
+eight fixed choices, any number of them, then *Send* — or *Skip*. Nothing is
+typed. It is only shown while stats are on, and `dc.why` in `localStorage`
+makes it once per browser — it is marked when shown, and stays up for the rest
+of that visit. Each chosen option is its own `why` event with the key in
+`blob10` (`shop`, `art`, `social`, `dataset`, `photo`, `docs`, `try`,
+`other`; a skip sends one event with `skip`), and every one of them carries
+the shape of the export it followed (`n`, `crops`, `ratio`, `grid`, `out`,
+`ow`, `oh`), so a purpose can be read next to its crops per image without a
+JOIN. Because one person can pick several, count respondents with
+`count(DISTINCT blob8)`, not by adding up the purposes. The /stats page shows
+it as *무엇에 쓰는가*.
 
 **Never collected:** the images, any pixel data, file names, IP addresses, or
 anything identifying a person. `blob8` is a random string the browser
@@ -304,21 +326,28 @@ is honoured.
 
 | column | meaning | column | meaning |
 |---|---|---|---|
-| blob1 | event | double1 | visit number for this browser |
-| blob2 | ui language | double2 | images in batch / files rejected |
-| blob3 | country | double3 | median image width |
-| blob4 | referrer host | double4 | median image height |
-| blob5 | crop ratio | double5 | median file size, MB |
-| blob6 | output format | double6 | crops exported |
+| blob1 | event | double1 | visit number for this browser (per page) |
+| blob2 | ui language | double2 | images (video: clips) in batch / files rejected |
+| blob3 | country | double3 | median image width (`add`, `vexport`) |
+| blob4 | referrer host | double4 | median image height (`add`, `vexport`) |
+| blob5 | crop ratio, or `mixed` | double5 | median file size, MB |
+| blob6 | output format (video: codec) | double6 | crops exported |
 | blob7 | native / fixed | double7 | output width (fixed only) |
 | blob8 | anonymous id | double8 | output height (fixed only) |
 | blob9 | desktop / mobile | double9 | quality |
-| | | double10 | 1 = demo plate only |
+| blob10 | feature key (`use`) / purpose (`why`) | double10 | 1 = demo plate (or sample clip) only |
 | | | double11 | feed-grid tiles (0 = free crops) |
 | | | double12 | files rejected as not images |
 | | | double13 | files rejected past the side limit |
 | | | double14 | largest straighten angle used, degrees |
 | | | double15 | largest keystone slider used, 0-100 |
+| | | double16 | seconds from first add to export |
+| | | double17 | walkthrough step reached (`tour`) |
+
+`ratio` on `export` and `vexport` is the ratio the crops actually had: one
+preset id, or `mixed` when crops in the run carry different ones (the
+*selected crop* scope). Switching that scope on also sends `use` with
+`scope`.
 
 `skip` exists because a rejected file is otherwise invisible: the visitor
 sees a message and leaves, and nothing is recorded. If the size limits are
@@ -337,21 +366,51 @@ curl "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/analytics_engine
       GROUP BY event"
 ```
 
-**Who is actually using this.** Image shape and batch size separate an
-e-commerce seller from someone selling art prints:
+**Who is actually using this.** Ask the answers first — each `why` row
+carries the export it followed:
 
 ```sql
-SELECT blob5 AS ratio, blob6 AS format,
-       round(avg(double3)) AS avg_px_w,
-       round(avg(double4)) AS avg_px_h,
-       round(avg(double2), 1) AS avg_images,
-       count() AS exports
+SELECT blob10 AS purpose, count(DISTINCT blob8) AS people,
+       sum(double6) AS crops, sum(double2) AS images,
+       countIf(double11 > 0) AS grid_runs
+FROM detailcrop_events
+WHERE blob1 = 'why' AND timestamp > NOW() - INTERVAL '30' DAY
+GROUP BY purpose
+ORDER BY people DESC
+```
+
+Who comes back to do it again — the same id on different days, several
+crops per image, not the sample:
+
+```sql
+SELECT blob8 AS id, toStartOfDay(timestamp) AS day,
+       count() AS exports, sum(double2) AS images, sum(double6) AS crops,
+       max(double11) AS grid
 FROM detailcrop_events
 WHERE blob1 = 'export' AND double10 = 0
-  AND timestamp > NOW() - INTERVAL '30' DAY
-GROUP BY ratio, format
-ORDER BY exports DESC
+  AND timestamp > NOW() - INTERVAL '42' DAY
+GROUP BY id, day
+ORDER BY id, day
+LIMIT 1000
 ```
+
+Image size is sent with `add`, not with `export`, so read it from `add` rows
+and match by id by eye (Analytics Engine has no JOIN):
+
+```sql
+SELECT blob8 AS id, sum(double2) AS images_added,
+       round(avg(double3)) AS w, round(avg(double4)) AS h,
+       round(avg(double5), 1) AS mb
+FROM detailcrop_events
+WHERE blob1 = 'add' AND timestamp > NOW() - INTERVAL '30' DAY
+GROUP BY id
+ORDER BY images_added DESC
+LIMIT 200
+```
+
+To leave your own browser out, add `AND blob8 != '<id>'`; the id is
+`JSON.parse(localStorage.getItem("dc.stats")).id` in that browser's console.
+Analytics Engine keeps three months of data, so save what a decision rests on.
 
 **Are the limits costing anyone.**
 
