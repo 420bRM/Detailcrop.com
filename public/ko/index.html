@@ -178,6 +178,8 @@ a.hbtn{text-decoration:none; display:inline-block}
 .split{display:grid; grid-template-columns:minmax(0,1fr) 316px; gap:18px; align-items:start}
 .center{display:flex; flex-direction:column; gap:18px; min-width:0}
 .underStage{display:grid; grid-template-columns:repeat(auto-fit,minmax(258px,1fr)); gap:18px; align-items:start}
+/* export, then the shortcuts under it, in the second column under the stage */
+.stackCol{display:flex; flex-direction:column; gap:18px; min-width:0}
 @media (max-width:960px){ .split{grid-template-columns:minmax(0,1fr)} }
 
 .stagewrap{
@@ -649,6 +651,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
           </div>
         </section>
 
+        <div class="stackCol">
         <section class="card">
           <div class="hd" data-i="exportHd">내보내기</div>
           <div class="bd">
@@ -684,6 +687,14 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
             </div>
           </div>
         </section>
+
+        <section class="card">
+          <div class="hd" data-i="shortcuts">단축키</div>
+          <div class="bd">
+            <p class="hint" id="hintBody"></p>
+          </div>
+        </section>
+        </div>
       </div>
     </div>
 
@@ -761,13 +772,6 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
           <div style="margin-top:8px">
             <button class="btn primary" type="button" id="nextBtn" data-i="confirmNext">확정하고 다음 →</button>
           </div>
-        </div>
-      </section>
-
-      <section class="card">
-        <div class="hd" data-i="shortcuts">단축키</div>
-        <div class="bd">
-          <p class="hint" id="hintBody"></p>
         </div>
       </section>
 
