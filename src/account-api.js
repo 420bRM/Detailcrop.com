@@ -20,6 +20,7 @@
  */
 import { verifyGoogleToken } from "./google.js";
 import { SESSION_DAYS } from "./accounts.js";
+import { archive, strayPreset } from "./archive.js";
 
 const MAX_BODY = 64 * 1024;
 
@@ -145,6 +146,13 @@ async function deleteMe(request, env) {
   const s = await sessionUser(request, env);
   const body = await readJson(request);
   if (body.confirm !== true) throw new HttpError(400, "need_confirm");
+  /* The settings stay, as anonymous stats: name, pattern and account taken
+     off first. The email and the account itself go, as the law requires. */
+  const left = ((s.user.presets && s.user.presets.list) || []).map(strayPreset).filter(Boolean);
+  if (left.length) {
+    const month = new Date(); month.setUTCDate(1); month.setUTCHours(0, 0, 0, 0);
+    await archive(env, "gonePresets", { ts: month.getTime(), presets: left }).catch(e => console.error("archive", e));
+  }
   await accounts(env, "userDelete", { sub: s.sub });
   return json({ ok: true });
 }
