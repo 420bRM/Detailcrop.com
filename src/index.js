@@ -8,11 +8,14 @@
  */
 
 import { statsPage, todayJSON } from "./stats.js";
+import { accountRoute } from "./account-api.js";
+export { Accounts } from "./accounts.js";
 
 // visit … tour come from the stills page; why is its one question after an
-// export; vvisit and vexport are the video page.
+// export; preset is a saved or loaded preset (never its name or contents);
+// vvisit and vexport are the video page.
 const ALLOWED_EVENTS = new Set(["visit", "add", "export", "skip", "use", "tour",
-                                "why", "vvisit", "vexport"]);
+                                "why", "preset", "vvisit", "vexport"]);
 const MAX_BODY = 1024;
 const BOT_UA = /bot|crawler|spider|crawl|slurp|headless|phantom|puppeteer|playwright|python-requests|curl\/|wget|scrapy|monitor|preview|fetch|http-client|axios|okhttp/;
 
@@ -25,6 +28,10 @@ export default {
         return new Response("Method not allowed", { status: 405 });
       }
       return recordEvent(request, env);
+    }
+
+    if (url.pathname.startsWith("/api/") && url.pathname !== "/api/today") {
+      return accountRoute(request, env, url);
     }
 
     if (url.pathname === "/stats") return statsPage(request, env);
@@ -84,11 +91,11 @@ async function recordEvent(request, env) {
       str(d.out, 8),                             // blob7  native | fixed
       str(d.id, 24),                             // blob8  anonymous id
       vw > 0 && vw < 820 ? "mobile" : "desktop", // blob9  device class
-      str(d.feat, 24)                            // blob10 feature key ('use') / purpose ('why')
+      str(d.feat, 24)                            // blob10 feature key ('use') / purpose ('why') / save|load ('preset')
     ],
     doubles: [
       num(d.v),      // double1  visit number for this browser
-      num(d.n),      // double2  images in the batch (video: clips)
+      num(d.n),      // double2  images in the batch (video: clips; preset: presets in the account)
       num(d.iw),     // double3  median image width ('add', 'vexport')
       num(d.ih),     // double4  median image height ('add', 'vexport')
       num(d.mb),     // double5  median file size, MB

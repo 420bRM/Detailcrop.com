@@ -197,8 +197,20 @@ def foot_hrefs(s, code):
         s = s.replace('<a id="%s" href="/%s/"' % (id_, slug), '<a id="%s" href="%s%s/"' % (id_, sfx, slug), 1)
     return s
 
+# The preset format lives in src/preset.js, where the Worker imports it. The
+# stills page gets the same file pasted in at its marker, minus `export`, so
+# the page and the server clean presets by one set of rules.
+PRESET_JS = os.path.join(ROOT, "src", "preset.js")
+PRESET_MARK = "/* PRESET_FORMAT */"
+
+def preset_format():
+    js = io.open(PRESET_JS, encoding="utf-8").read()
+    return re.sub(r"^export ", "", js, flags=re.M).strip()
+
 def main():
     tpl = io.open(TPL, encoding="utf-8").read()
+    assert tpl.count(PRESET_MARK) == 1, "template.html needs the PRESET_FORMAT marker once"
+    tpl = tpl.replace(PRESET_MARK, preset_format(), 1)
     strings = i18n_strings(tpl)
     for code, cfg in LANGS.items():
         s = tpl

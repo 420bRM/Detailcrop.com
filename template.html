@@ -225,6 +225,45 @@ a.hbtn{text-decoration:none; display:inline-block}
 .disc[aria-expanded="true"] .disc-sum{display:none}
 @media (prefers-reduced-motion:reduce){ .disc, .disc-ic{transition:none} }
 
+/* ---------- presets ----------
+   The same fold as the alignment panel, at the foot of Settings: one grey
+   line until it is opened, so a first visit sees almost nothing new. The
+   folded line names the preset used last, which is all a returning visitor
+   needs to know before opening it. */
+.presets{margin-top:14px; border-top:1px solid var(--line-soft); padding-top:9px}
+.presets .disc-sum{color:var(--ink-2)}
+.psave{display:flex; gap:6px; margin-top:8px}
+.psave input{flex:1 1 auto}
+.psave .btn{width:auto; flex:0 0 auto; padding:6px 12px}
+.plist{list-style:none; margin:8px 0 0; padding:0}
+.plist li{display:flex; align-items:center; gap:10px; padding:6px 0; border-bottom:1px solid var(--line-soft); font-size:13px}
+.plist .pname{flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--ink-2)}
+.plist .plast{font-size:10px; letter-spacing:.06em; color:var(--amber); margin-left:6px}
+.plist .linkbtn{flex:0 0 auto}
+.acctLine{display:flex; flex-wrap:wrap; align-items:center; gap:4px 14px; margin:12px 0 0; font-size:12px; color:var(--muted)}
+.acctLine #acctWho{flex:1 1 100%; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+/* a padlock, drawn as a mask so it takes the colour of the text around it —
+   the same mark lottodraw.kr puts on its members-only buttons */
+.lock-tag{display:inline-block; flex:0 0 auto; width:10px; height:10px; margin-left:2px; vertical-align:-1px; background:currentColor;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 7V5a4 4 0 1 1 8 0v2h1a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1zm2 0h4V5a2 2 0 1 0-4 0v2z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 7V5a4 4 0 1 1 8 0v2h1a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1zm2 0h4V5a2 2 0 1 0-4 0v2z'/%3E%3C/svg%3E") center / contain no-repeat}
+.lock-tag[hidden]{display:none}
+
+/* ---------- sign-in box ----------
+   Only ever opened by a members-only control. Google's button is loaded into
+   it on demand, so the page itself carries no third-party script. */
+.signin{position:fixed; inset:0; z-index:70; display:grid; place-items:center; padding:16px; background:rgba(4,8,11,.72)}
+.signin[hidden]{display:none}
+.signinBox{position:relative; width:100%; max-width:360px; background:var(--panel); border:1px solid var(--line); border-radius:6px; box-shadow:var(--shadow); padding:20px 18px 16px}
+.signinBox h2{margin:0 0 8px; font-size:16px; font-weight:600; color:var(--ink)}
+.signinX{position:absolute; top:8px; right:10px; background:none; border:0; font-size:20px; line-height:1; color:var(--muted); padding:4px}
+.signinX:hover{color:var(--ink)}
+.signinWhy{margin:0 0 8px; font-size:13px; color:var(--amber)}
+.signinWhy:empty{display:none}
+.signinLead{margin:0 0 14px; font-size:13px; line-height:1.6; color:var(--ink-2)}
+.signinBtn{min-height:44px; display:flex; justify-content:center; align-items:center; font-size:12px; color:var(--muted); text-align:center}
+.signinFine{margin:14px 0 0; font-size:11.5px; line-height:1.6; color:var(--muted)}
+
 /* ---------- alignment gauges ----------
    These three read from the centre, not from the left, so they are built
    like a levelling instrument: a scale with a centre detent and quarter
@@ -572,6 +611,30 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
             <p class="sub" data-i="naming"></p>
             <input type="text" id="pattern" spellcheck="false" aria-label="Filename pattern">
             <p class="hint" style="margin-top:6px" data-i="namingNote"></p>
+
+            <div class="presets" id="presetPanel" hidden>
+              <button type="button" class="disc" id="presetToggle" aria-expanded="false" aria-controls="presetBody">
+                <span class="disc-ic" aria-hidden="true"></span>
+                <span data-i="presetHd"></span>
+                <span class="lock-tag" id="presetLock" aria-hidden="true"></span>
+                <span class="disc-sum" id="presetSum"></span>
+              </button>
+              <div id="presetBody" hidden>
+                <p class="hint" style="margin-top:6px" data-i="presetNote"></p>
+                <div class="psave">
+                  <input type="text" id="presetName" maxlength="60" spellcheck="false" autocomplete="off" aria-label="Preset name">
+                  <button class="btn" type="button" id="presetSaveBtn"><span data-i="presetSave"></span><span class="lock-tag" hidden></span></button>
+                </div>
+                <ul class="plist" id="presetList"></ul>
+                <p class="hint" id="presetEmpty" style="margin-top:8px"></p>
+                <p class="hint" id="presetMsg" style="margin-top:8px" hidden></p>
+                <p class="acctLine" id="acctLine" hidden>
+                  <span id="acctWho"></span>
+                  <button type="button" class="linkbtn" id="acctOut" data-i="acctLogout"></button>
+                  <button type="button" class="linkbtn" id="acctDel" data-i="acctDelete"></button>
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -702,6 +765,17 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
 </div>
 </div>
 <input type="file" id="fileInput" accept="image/*" multiple hidden>
+<div class="signin" id="signin" hidden>
+  <div class="signinBox" role="dialog" aria-modal="true" aria-labelledby="signinTitle">
+    <button type="button" class="signinX" id="signinX">×</button>
+    <h2 id="signinTitle" data-i="loginTitle"></h2>
+    <p class="signinWhy" id="signinWhy"></p>
+    <p class="signinLead" data-i="loginLead"></p>
+    <div class="signinBtn" id="signinBtn"></div>
+    <p class="warn" id="signinErr" role="alert" hidden></p>
+    <p class="signinFine" data-i="loginFine"></p>
+  </div>
+</div>
 
 <footer>
   <div>
@@ -829,6 +903,36 @@ const I18N = {
     whyTry:"Just trying it out", whyOther:"Something else",
     whySend:"Send", whySkip:"Skip",
     whyThanks:"Thanks — that helps.",
+    presetHd:"Presets",
+    presetNote:"A preset keeps the ratio, output size, format, quality, file names, feed split and where the boxes sit — never the images, and not the straighten values. Loading one sets the batch to it and lays its boxes on this image, on images you have not opened yet and on images you add next. Images you have already worked on keep their boxes.",
+    presetSave:"Save",
+    presetEmpty:"Nothing saved yet. Set things up the way you like, name it, and save.",
+    presetLocked:"Sign in to save setups like this one to your account and load them on any device.",
+    presetLoad:"Load", presetRename:"Rename", presetDelete:"Delete", presetLastTag:"last used",
+    presetPh:"Name, e.g. Weekly product shots",
+    presetDefault:(n)=>`Preset ${n}`,
+    presetLast:(n)=>`last: ${n}`,
+    presetSaved:(n)=>`Saved “${n}”.`,
+    presetLoaded:(n)=>`Loaded “${n}”.`,
+    presetAsk:"New name",
+    presetDelAsk:(n)=>`Delete the preset “${n}”?`,
+    presetReplace:(n)=>`Replace the saved preset “${n}” with the current setup?`,
+    presetFull:(m)=>`That is ${m} presets, the most an account keeps. Delete one first.`,
+    presetFail:"That did not go through. Check your connection and try again.",
+    presetMember:"Members only: saving and loading presets",
+    loginTitle:"Sign in",
+    loginLead:"Sign in with Google and your presets are kept in your account, ready on any device you sign in on.",
+    loginFine:"Google passes on your email address and nothing else. We keep that address and your presets — your images still never leave this browser. Deleting your account erases both. Ages 14 and up.",
+    loginLoading:"Loading Google sign-in…",
+    loginGisFail:"Google sign-in could not load. An ad or tracker blocker may be stopping it — allow it for this site, or try again later.",
+    loginFail:"Sign-in did not go through. Please try again.",
+    loginTooMany:"Too many tries. Wait a minute and try again.",
+    loginExpired:"Your sign-in has ended. Please sign in again.",
+    loginClose:"Close",
+    acctWho:(e)=>`Signed in as ${e}`,
+    acctLogout:"Sign out", acctDelete:"Delete account",
+    acctDelAsk:"Delete your account and every preset saved in it? This cannot be undone.",
+    acctDeleted:"Your account and its presets have been deleted.",
   },
   ko:{
     tagline:"디테일크롭의 멀티크롭 — 이미지 위에 상자를 끌어 원하는 확대컷 구역을 잡습니다. 한 장에 여러 컷, 여러 이미지를 한번에 자르고, 결과는 zip 하나로. 모든 처리가 브라우저 안에서 끝나며 업로드도 가입도 없습니다.",
@@ -911,6 +1015,36 @@ const I18N = {
     whyTry:"그냥 써 보는 중", whyOther:"기타",
     whySend:"보내기", whySkip:"건너뛰기",
     whyThanks:"고맙습니다. 큰 도움이 됩니다.",
+    presetHd:"프리셋",
+    presetNote:"비율, 출력 크기, 포맷, 품질, 파일명, 피드 분할, 상자 위치를 저장합니다. 이미지와 수평·원근 값은 담지 않습니다. 불러오면 설정이 작업 전체에 걸리고, 상자는 지금 이미지와 아직 열지 않은 이미지, 앞으로 추가하는 이미지에 놓입니다. 이미 작업한 이미지의 상자는 그대로입니다.",
+    presetSave:"저장",
+    presetEmpty:"저장한 프리셋이 없습니다. 원하는 대로 설정한 뒤 이름을 붙여 저장하세요.",
+    presetLocked:"로그인하면 지금 같은 설정을 계정에 저장해 두고 어느 기기에서든 불러올 수 있습니다.",
+    presetLoad:"불러오기", presetRename:"이름 변경", presetDelete:"삭제", presetLastTag:"마지막 사용",
+    presetPh:"이름 예: 주간 상품컷",
+    presetDefault:(n)=>`프리셋 ${n}`,
+    presetLast:(n)=>`마지막: ${n}`,
+    presetSaved:(n)=>`“${n}” 저장했습니다.`,
+    presetLoaded:(n)=>`“${n}” 불러왔습니다.`,
+    presetAsk:"새 이름",
+    presetDelAsk:(n)=>`“${n}” 프리셋을 삭제할까요?`,
+    presetReplace:(n)=>`저장된 “${n}”을(를) 지금 설정으로 바꿀까요?`,
+    presetFull:(m)=>`프리셋은 계정당 ${m}개까지 저장됩니다. 하나를 먼저 삭제하세요.`,
+    presetFail:"처리하지 못했습니다. 인터넷 연결을 확인하고 다시 시도하세요.",
+    presetMember:"프리셋 저장 · 불러오기, 로그인 전용",
+    loginTitle:"로그인",
+    loginLead:"구글 계정으로 로그인하면 프리셋이 계정에 저장되어, 로그인한 어느 기기에서든 불러올 수 있습니다.",
+    loginFine:"구글에서는 이메일 주소만 받습니다. 저장하는 것은 이메일과 프리셋뿐이고, 이미지는 지금처럼 브라우저 밖으로 나가지 않습니다. 탈퇴하면 둘 다 지웁니다. 만 14세 이상만 가입할 수 있습니다.",
+    loginLoading:"구글 로그인을 불러오는 중…",
+    loginGisFail:"구글 로그인을 불러오지 못했습니다. 광고·추적 차단 확장 프로그램이 막고 있을 수 있습니다 — 이 사이트에서 허용하거나 잠시 뒤 다시 시도하세요.",
+    loginFail:"로그인하지 못했습니다. 다시 시도해 주세요.",
+    loginTooMany:"시도가 너무 잦습니다. 1분 뒤 다시 시도해 주세요.",
+    loginExpired:"로그인이 끝났습니다. 다시 로그인해 주세요.",
+    loginClose:"닫기",
+    acctWho:(e)=>`${e} 로그인 중`,
+    acctLogout:"로그아웃", acctDelete:"회원 탈퇴",
+    acctDelAsk:"계정과 저장한 프리셋을 모두 지울까요? 되돌릴 수 없습니다.",
+    acctDeleted:"계정과 프리셋을 지웠습니다.",
   },
   ja:{
     tagline:"ディテールクロップのマルチクロップ — 画像の上でボックスをドラッグし、切り出したい部分を指定します。1枚に複数カット、複数の画像をまとめてトリミング、結果はzipひとつ。処理はすべてブラウザ内で完結し、アップロードも登録も不要です。",
@@ -993,6 +1127,36 @@ const I18N = {
     whyTry:"試しに使っている", whyOther:"その他",
     whySend:"送信", whySkip:"スキップ",
     whyThanks:"ありがとうございます。とても参考になります。",
+    presetHd:"プリセット",
+    presetNote:"比率、出力サイズ、形式、画質、ファイル名、フィード分割、ボックスの位置を保存します。画像と傾き補正の値は含みません。読み込むと設定が作業全体にかかり、ボックスはこの画像・まだ開いていない画像・これから追加する画像に置かれます。作業済みの画像のボックスはそのままです。",
+    presetSave:"保存",
+    presetEmpty:"保存したプリセットはありません。好みの設定にしてから名前を付けて保存してください。",
+    presetLocked:"ログインすると、今のような設定をアカウントに保存して、どの端末からでも読み込めます。",
+    presetLoad:"読み込む", presetRename:"名前変更", presetDelete:"削除", presetLastTag:"前回使用",
+    presetPh:"名前の例：毎週の商品写真",
+    presetDefault:(n)=>`プリセット ${n}`,
+    presetLast:(n)=>`前回: ${n}`,
+    presetSaved:(n)=>`「${n}」を保存しました。`,
+    presetLoaded:(n)=>`「${n}」を読み込みました。`,
+    presetAsk:"新しい名前",
+    presetDelAsk:(n)=>`プリセット「${n}」を削除しますか？`,
+    presetReplace:(n)=>`保存済みの「${n}」を今の設定で置き換えますか？`,
+    presetFull:(m)=>`プリセットは1アカウント${m}件までです。先にひとつ削除してください。`,
+    presetFail:"処理できませんでした。接続を確認してもう一度お試しください。",
+    presetMember:"プリセットの保存・読み込み、ログイン専用",
+    loginTitle:"ログイン",
+    loginLead:"Googleアカウントでログインすると、プリセットがアカウントに保存され、ログインしたどの端末からでも読み込めます。",
+    loginFine:"Googleから受け取るのはメールアドレスだけです。保存するのはメールアドレスとプリセットのみで、画像はこれまでどおりブラウザの外に出ません。退会すると両方とも削除します。14歳以上の方のみ登録できます。",
+    loginLoading:"Googleログインを読み込み中…",
+    loginGisFail:"Googleログインを読み込めませんでした。広告・トラッカーのブロック機能が止めている可能性があります — このサイトで許可するか、しばらくしてからお試しください。",
+    loginFail:"ログインできませんでした。もう一度お試しください。",
+    loginTooMany:"試行が多すぎます。1分後にもう一度お試しください。",
+    loginExpired:"ログインの期限が切れました。もう一度ログインしてください。",
+    loginClose:"閉じる",
+    acctWho:(e)=>`${e} でログイン中`,
+    acctLogout:"ログアウト", acctDelete:"退会",
+    acctDelAsk:"アカウントと保存したプリセットをすべて削除しますか？元に戻せません。",
+    acctDeleted:"アカウントとプリセットを削除しました。",
   }
 };
 
@@ -1125,6 +1289,7 @@ const S = {
   fmt: "image/webp",
   quality: 86,
   pattern: "{name}-d{n}",
+  layout: null,               // boxes of the preset loaded last; new images start from it
   busy: false
 };
 
@@ -1154,6 +1319,7 @@ function applyLang(){
   if (msg) msg.hidden = true;              // stale text would stay in the old language
   if (typeof tourIdx === "number" && tourIdx >= 0) paintTourStep();
   if (typeof paintStatsToggle === "function") paintStatsToggle();
+  if (typeof paintPresets === "function") paintPresets();
   $$(".langs button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === S.lang)));
   const sfx = S.lang === "en" ? "/" : "/" + S.lang + "/";
   $("#brandLink").href = sfx;
@@ -1726,6 +1892,7 @@ async function addFiles(fileList, isSample){
       isSample: !!isSample
     };
     item.boxes = layoutBoxes(item, 1, false);
+    if (!isSample) startLayout(item);
     S.items.push(item);
   }
 
@@ -2285,7 +2452,7 @@ $$("[data-nudge]").forEach(btn => {
    Keyboard
    ===================================================================== */
 document.addEventListener("keydown", e => {
-  if (!S.items.length || S.busy) return;
+  if (!S.items.length || S.busy || signinOpen()) return;
   const tag = (e.target.tagName || "").toLowerCase();
   if (tag === "input" || tag === "select" || tag === "textarea") return;
 
@@ -2951,6 +3118,339 @@ function wireMail(){
 }
 
 /* =====================================================================
+   Presets — a member's saved setups, kept in their account.
+   The format and its cleaning rules live in src/preset.js, which build.py
+   pastes in right here, so the page and the server read presets alike.
+   Sign-in is lottodraw.kr's: Google's button hands over an ID token, the
+   Worker checks it and answers with a session. Until the Worker has a
+   Google client ID the whole panel stays hidden.
+   ===================================================================== */
+/* PRESET_FORMAT */
+
+const ACCT_STORE = "dc.account";
+const A = {
+  on: false, client: "",          // the Worker has sign-in turned on, and its client ID
+  session: "", user: null,        // this browser's sign-in
+  book: {list: [], last: ""},     // the account's presets
+  busy: false,
+  after: null                     // what to finish once sign-in succeeds
+};
+
+function newPresetId(){
+  return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+}
+
+/* The setup on screen as a preset. Box positions come from the current
+   image, as fractions of its working area. */
+function presetFrom(name, id){
+  const it = cur();
+  const layout = {grid: null, boxes: []};
+  if (it && it.grid){
+    layout.grid = {cols: it.grid.cols, rows: it.grid.rows,
+                   x: it.gridRect.x, y: it.gridRect.y, w: it.gridRect.w};
+  } else if (it){
+    layout.boxes = it.boxes.map(b => ({x: b.x, y: b.y, w: b.w, h: b.h,
+      r: b.rid ? {id: b.rid, w: b.rw, h: b.rh} : null}));
+  }
+  return cleanPreset({
+    id: id || newPresetId(), name, at: Date.now(),
+    ratio: {id: S.ratioId, w: S.rw, h: S.rh, scope: S.ratioScope},
+    out: {mode: S.outMode, w: S.ow, h: S.oh},
+    fmt: S.fmt, quality: S.quality, pattern: S.pattern, layout
+  });
+}
+
+/* A preset's layout in the shape copyBoxes() takes from an image */
+function presetSource(p){
+  const L = p.layout;
+  if (L.grid) return {grid: {cols: L.grid.cols, rows: L.grid.rows},
+                      gridRect: {x: L.grid.x, y: L.grid.y, w: L.grid.w}, boxes: []};
+  return {grid: null, gridRect: null, boxes: L.boxes.map(b => ({
+    x: b.x, y: b.y, w: b.w, h: b.h,
+    rid: b.r ? b.r.id : null, rw: b.r ? b.r.w : undefined, rh: b.r ? b.r.h : undefined
+  }))};
+}
+
+/* Settings belong to the batch, so they reach every image the way the
+   buttons do: boxes keep their centre and take the new ratio. The box layout
+   reaches only this image, images not opened yet and images added from now
+   on — the line Confirm & next already draws. An image someone has opened
+   may hold work, so it keeps its boxes. */
+function applyPreset(p){
+  S.ratioId = p.ratio.id; S.rw = p.ratio.w; S.rh = p.ratio.h;
+  S.ratioScope = p.ratio.scope;
+  S.outMode = p.out.mode; S.ow = p.out.w; S.oh = p.out.h;
+  S.fmt = p.fmt; S.quality = p.quality; S.pattern = p.pattern;
+  const it = cur();
+  const fresh = i => i === it || !i.seen;
+  S.items.forEach(i => {
+    if (fresh(i)) return;
+    if (S.ratioScope === "all") i.boxes.forEach(b => { b.rid = null; });
+    if (i.grid && S.ratioId === "free"){ i.grid = null; i.gridRect = null; }
+    if (i.grid) clampGrid(i); else refitBoxes(i);
+  });
+  S.layout = presetSource(p);
+  S.items.forEach(i => { if (fresh(i)) copyBoxes(S.layout, i); });
+  S.sel = 0;
+  render();
+  savePrefs();
+}
+/* a new image starts from the loaded preset, as long as it still fits */
+function startLayout(item){
+  if (!S.layout || (S.layout.grid && !ratioLocked())) return;
+  copyBoxes(S.layout, item);
+}
+
+/* ---- account ---- */
+function acctRead(){
+  try { const v = JSON.parse(localStorage.getItem(ACCT_STORE) || "null"); return (v && v.session) || ""; }
+  catch { return ""; }
+}
+/* Private windows may refuse storage; the sign-in then lasts for this tab. */
+function acctWrite(token){
+  A.session = token || "";
+  try {
+    if (token) localStorage.setItem(ACCT_STORE, JSON.stringify({session: token}));
+    else localStorage.removeItem(ACCT_STORE);
+  } catch {}
+}
+function setUser(u){
+  A.user = u || null;
+  A.book = cleanPresetBook(u && u.presets);
+}
+function signOutLocal(){
+  acctWrite("");
+  setUser(null);
+}
+async function api(path, body){
+  const o = {method: body === undefined ? "GET" : "POST", headers: {}};
+  if (A.session) o.headers.Authorization = "Bearer " + A.session;
+  if (body !== undefined){ o.headers["Content-Type"] = "application/json"; o.body = JSON.stringify(body); }
+  const r = await fetch(path, o);
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok){ const e = new Error(d.error || String(r.status)); e.status = r.status; e.code = d.error; throw e; }
+  return d;
+}
+async function acctBoot(){
+  try {
+    const c = await api("/api/config");
+    A.on = !!(c.login && c.login.google);
+    A.client = A.on ? c.login.google : "";
+  } catch { A.on = false; }
+  A.session = acctRead();
+  if (A.on && A.session){
+    try { setUser((await api("/api/me")).user); }
+    catch (e){ if (e.status === 401) signOutLocal(); }
+  }
+  paintPresets();
+}
+
+/* ---- panel ---- */
+let presetMsgTimer = null;
+function presetMsg(text){
+  const el = $("#presetMsg");
+  el.textContent = text;
+  el.hidden = !text;
+  clearTimeout(presetMsgTimer);
+  if (text) presetMsgTimer = setTimeout(() => { el.hidden = true; }, 6000);
+}
+function paintPresets(){
+  const t = T();
+  $("#presetPanel").hidden = !A.on;
+  if (!A.on) return;
+  const signed = !!A.user;
+  $("#presetLock").hidden = signed;
+  $("#presetSaveBtn .lock-tag").hidden = signed;
+  $("#presetSaveBtn").disabled = A.busy;
+  $("#presetName").placeholder = t.presetPh;
+  const last = signed && A.book.list.find(p => p.id === A.book.last);
+  $("#presetSum").textContent = last ? t.presetLast(last.name) : "";
+
+  const ul = $("#presetList");
+  ul.innerHTML = "";
+  if (signed) A.book.list.forEach(p => {
+    const li = document.createElement("li");
+    const nm = document.createElement("span");
+    nm.className = "pname";
+    nm.textContent = p.name;
+    nm.title = p.name;
+    if (p.id === A.book.last){
+      const tag = document.createElement("span");
+      tag.className = "plast";
+      tag.textContent = t.presetLastTag;
+      nm.appendChild(tag);
+    }
+    li.appendChild(nm);
+    [["presetLoad", () => loadPreset(p.id)],
+     ["presetRename", () => renamePreset(p.id)],
+     ["presetDelete", () => deletePreset(p.id)]].forEach(([k, fn]) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "linkbtn"; b.textContent = t[k];
+      b.disabled = A.busy;
+      b.addEventListener("click", fn);
+      li.appendChild(b);
+    });
+    ul.appendChild(li);
+  });
+  const empty = $("#presetEmpty");
+  empty.hidden = signed && A.book.list.length > 0;
+  empty.textContent = signed ? t.presetEmpty : t.presetLocked;
+  $("#acctLine").hidden = !signed;
+  if (signed) $("#acctWho").textContent = t.acctWho(A.user.email);
+}
+
+/* members only: open the sign-in box and finish the job once it succeeds */
+function member(then){
+  if (A.user) return true;
+  openSignin(T().presetMember, then);
+  return false;
+}
+async function presetChange(change, quiet){
+  A.busy = true; paintPresets();
+  try {
+    setUser((await api("/api/me/presets", {change})).user);
+    return true;
+  } catch (e){
+    if (e.status === 401){ signOutLocal(); presetMsg(T().loginExpired); }
+    else if (!quiet) presetMsg(e.code === "full" ? T().presetFull(PRESET_MAX) : T().presetFail);
+    return false;
+  } finally {
+    A.busy = false; paintPresets();
+  }
+}
+async function savePreset(){
+  if (!member(savePreset) || A.busy) return;
+  const t = T();
+  let name = presetText($("#presetName").value, PRESET_NAME_MAX);
+  for (let n = A.book.list.length + 1; !name; n++){        // left blank: the next free "Preset n"
+    if (!A.book.list.some(p => p.name === t.presetDefault(n))) name = t.presetDefault(n);
+  }
+  const same = A.book.list.find(p => p.name === name);
+  if (same && !confirm(t.presetReplace(name))) return;
+  if (!same && A.book.list.length >= PRESET_MAX){ presetMsg(t.presetFull(PRESET_MAX)); return; }
+  const p = presetFrom(name, same && same.id);
+  if (!p) return;
+  if (await presetChange({kind: "put", preset: p})){
+    $("#presetName").value = "";
+    presetMsg(t.presetSaved(name));
+    track("preset", {feat: "save", n: A.book.list.length});
+  }
+}
+function loadPreset(id){
+  const p = A.book.list.find(x => x.id === id);
+  if (!p) return;
+  applyPreset(p);
+  A.book.last = id;
+  paintPresets();
+  presetMsg(T().presetLoaded(p.name));
+  track("preset", {feat: "load", n: A.book.list.length});
+  presetChange({kind: "last", id}, true);   // remembered for next time; failing costs nothing now
+}
+async function renamePreset(id){
+  const p = A.book.list.find(x => x.id === id);
+  if (!p) return;
+  const v = prompt(T().presetAsk, p.name);
+  const name = presetText(v, PRESET_NAME_MAX);
+  if (v === null || !name || name === p.name) return;
+  await presetChange({kind: "put", preset: Object.assign({}, p, {name})});
+}
+async function deletePreset(id){
+  const p = A.book.list.find(x => x.id === id);
+  if (!p || !confirm(T().presetDelAsk(p.name))) return;
+  await presetChange({kind: "del", id});
+}
+
+/* ---- sign-in box ---- */
+let gisLoad = null;
+function loadGis(){
+  if (!gisLoad) gisLoad = new Promise((res, rej) => {
+    if (window.google && google.accounts && google.accounts.id) return res();
+    const s = document.createElement("script");
+    s.src = "https://accounts.google.com/gsi/client";
+    s.async = true;
+    s.onload = res;
+    s.onerror = () => { gisLoad = null; rej(new Error("gis")); };
+    document.head.appendChild(s);
+  });
+  return gisLoad;
+}
+function signinOpen(){ return !$("#signin").hidden; }
+async function openSignin(why, then){
+  const t = T();
+  A.after = then || null;
+  $("#signinWhy").textContent = why || "";
+  $("#signinErr").hidden = true;
+  $("#signinX").setAttribute("aria-label", t.loginClose);
+  const slot = $("#signinBtn");
+  slot.textContent = t.loginLoading;
+  $("#signin").hidden = false;
+  $("#signinX").focus();
+  try {
+    await loadGis();
+    google.accounts.id.initialize({
+      client_id: A.client, callback: onCredential,
+      auto_select: false, cancel_on_tap_outside: true, use_fedcm_for_button: true
+    });
+    slot.textContent = "";
+    google.accounts.id.renderButton(slot, {type: "standard", theme: "outline", size: "large",
+      text: "continue_with", shape: "pill", locale: S.lang, width: 260});
+  } catch {
+    slot.textContent = t.loginGisFail;
+  }
+}
+function closeSignin(){
+  $("#signin").hidden = true;
+  A.after = null;
+}
+async function onCredential(resp){
+  const err = $("#signinErr");
+  try {
+    const got = await api("/api/auth/google", {credential: resp && resp.credential});
+    acctWrite(got.session);
+    setUser(got.user);
+    const then = A.after;
+    closeSignin();
+    paintPresets();
+    if (then) then();
+  } catch (e){
+    err.textContent = e.code === "too_many" ? T().loginTooMany : T().loginFail;
+    err.hidden = false;
+  }
+}
+async function logout(){
+  try { await api("/api/auth/logout", {}); } catch {}
+  try { google.accounts.id.disableAutoSelect(); } catch {}
+  signOutLocal();
+  paintPresets();
+}
+async function deleteAccount(){
+  if (!confirm(T().acctDelAsk)) return;
+  try { await api("/api/me/delete", {confirm: true}); }
+  catch (e){ if (e.status !== 401){ presetMsg(T().presetFail); return; } }
+  signOutLocal();
+  paintPresets();
+  presetMsg(T().acctDeleted);
+}
+
+$("#presetToggle").addEventListener("click", e => {
+  const btn = e.currentTarget;
+  const open = btn.getAttribute("aria-expanded") !== "true";
+  btn.setAttribute("aria-expanded", String(open));
+  $("#presetBody").hidden = !open;
+});
+$("#presetSaveBtn").addEventListener("click", savePreset);
+$("#presetName").addEventListener("keydown", e => {
+  if (e.key === "Enter"){ e.preventDefault(); savePreset(); }
+});
+$("#acctOut").addEventListener("click", logout);
+$("#acctDel").addEventListener("click", deleteAccount);
+$("#signinX").addEventListener("click", closeSignin);
+$("#signin").addEventListener("click", e => { if (e.target === e.currentTarget) closeSignin(); });
+document.addEventListener("keydown", e => {
+  if (signinOpen() && e.key === "Escape"){ closeSignin(); e.preventDefault(); }
+}, true);
+
+/* =====================================================================
    First-run walkthrough
    ===================================================================== */
 const TOUR = [
@@ -3046,6 +3546,7 @@ document.addEventListener("keydown", e => {
   renderSettings();
   wireMail();
   paintToday();
+  acctBoot();
   STATS.visits = (STATS.visits || 0) + 1;
   statsSave();
   paintStatsToggle();

@@ -28,8 +28,13 @@ public/
   about/ how-to/ uses/  reading pages; also under ko/ and ja/
   robots.txt  sitemap.xml   (sitemap is generated)
 src/
-  index.js              Worker: serves assets, POST /e, routes /stats
+  index.js              Worker: serves assets, POST /e, routes /stats and /api
   stats.js              the /stats dashboard and /api/today
+  account-api.js        /api/*: Google sign-in and the presets in an account
+  accounts.js           the Durable Object that holds members and their presets
+  google.js             checks Google's ID token
+  preset.js             the preset format — also pasted into the stills page
+test/accounts.test.mjs  sign-in and presets end to end: node --test test/*.mjs
 wrangler.jsonc
 ```
 
@@ -164,6 +169,38 @@ image of another shape each box keeps its centre and its share of the picture
 while its ratio holds. A feed grid carries over as a grid. Straighten values
 are per photo and do not carry.
 
+**Presets, for members.** A preset is a named setup: ratio and its scope,
+output size, format, quality, file-name pattern, feed split and where the
+boxes sit. Never an image or a file name, and not straighten or perspective,
+which belong to one photo. Saving one takes the boxes from the image on
+screen. Loading one sets the batch to it (the settings reach every image, as
+the buttons do) and lays its boxes on the current image, on images not yet
+opened and on images added afterwards; an image already opened keeps its
+boxes — the line *Confirm & next* draws. Boxes travel by the same rule as
+*Same boxes as previous image*.
+
+Presets live in the member's account, so they follow a person to any browser
+they sign in on — the point is a reason to come back. Sign-in is lottodraw.kr's:
+Google's button hands the page an ID token, `src/google.js` checks it against
+Google's keys, and the Worker answers with a 30-day session the page keeps in
+`dc.account`. Members, sessions and presets sit in one Durable Object
+(`src/accounts.js`); only the email address comes from Google. Signed out, the
+panel shows a padlock and *Save* opens the sign-in box; once signed in the save
+finishes by itself. Google's script is loaded only when that box opens.
+
+**Sign-in is off until `GOOGLE_CLIENT_ID` is set** in `wrangler.jsonc`. Off,
+`/api/config` says so and the panel stays hidden — the page looks as it did.
+To turn it on: Google Cloud console → new project → *OAuth consent screen*
+(External, default scopes only, publish to production) → *Credentials →
+OAuth client ID → Web application*, authorised JavaScript origins
+`https://detailcrop.com` (no redirect URI) → paste the client ID (a public
+value; the client secret is not used anywhere) into `wrangler.jsonc` and push.
+
+The format is defined once, in `src/preset.js`: the Worker cleans every preset
+with it before storing, and `build.py` pastes the same file into the stills page
+at `/* PRESET_FORMAT */`, so the two cannot drift. A `?preset=` link or a list of
+shop specs only needs to produce an object `cleanPreset()` accepts.
+
 **Numbers are posting order, not reading order.** A profile grid stacks
 newest first, so the bottom-right tile must be posted before the top-left
 one. On-canvas tags and filenames both count in posting order, and grid
@@ -294,8 +331,8 @@ certificate transparency logs within minutes and get swept.
 ## Usage stats
 
 `POST /e` records one row per event. The stills page sends `visit`, `add`,
-`export`, `skip`, `use` (one per feature per load), `tour` and `why`; the
-video page sends `vvisit` and `vexport`. Anything else is dropped
+`export`, `skip`, `use` (one per feature per load), `tour`, `why` and
+`preset`; the video page sends `vvisit` and `vexport`. Anything else is dropped
 (`ALLOWED_EVENTS` in `src/index.js`). Payloads run ~170–250 bytes and the
 Worker drops anything over 1 KB, so it could not receive an image even by
 accident.
@@ -319,6 +356,11 @@ JOIN. Because one person can pick several, count respondents with
 `count(DISTINCT blob8)`, not by adding up the purposes. The /stats page shows
 it as *무엇에 쓰는가*.
 
+**`preset`** — a member saved (`blob10` = `save`) or loaded (`load`) a preset;
+`double2` is how many presets the account holds. Never the preset's name or
+contents. Counting `load` per `blob8` over weeks is the return-visit signal
+presets exist for.
+
 **Never collected:** the images, any pixel data, file names, IP addresses, or
 anything identifying a person. `blob8` is a random string the browser
 generates for itself; the footer has an off switch and `navigator.doNotTrack`
@@ -327,7 +369,7 @@ is honoured.
 | column | meaning | column | meaning |
 |---|---|---|---|
 | blob1 | event | double1 | visit number for this browser (per page) |
-| blob2 | ui language | double2 | images (video: clips) in batch / files rejected |
+| blob2 | ui language | double2 | images (video: clips) in batch / files rejected / presets held (`preset`) |
 | blob3 | country | double3 | median image width (`add`, `vexport`) |
 | blob4 | referrer host | double4 | median image height (`add`, `vexport`) |
 | blob5 | crop ratio, or `mixed` | double5 | median file size, MB |
@@ -335,7 +377,7 @@ is honoured.
 | blob7 | native / fixed | double7 | output width (fixed only) |
 | blob8 | anonymous id | double8 | output height (fixed only) |
 | blob9 | desktop / mobile | double9 | quality |
-| blob10 | feature key (`use`) / purpose (`why`) | double10 | 1 = demo plate (or sample clip) only |
+| blob10 | feature key (`use`) / purpose (`why`) / `save`·`load` (`preset`) | double10 | 1 = demo plate (or sample clip) only |
 | | | double11 | feed-grid tiles (0 = free crops) |
 | | | double12 | files rejected as not images |
 | | | double13 | files rejected past the side limit |
@@ -445,3 +487,8 @@ by `_sample_interval`
 - The footer contact is a personal Gmail rather than a domain address.
 - No content pages yet, so the long-tail search terms the tool could rank
   for are unclaimed.
+- **No privacy policy page.** Sign-in collects an email address, so one is
+  needed before `GOOGLE_CLIENT_ID` goes in (lottodraw.kr's `privacy.html` is the
+  model). The sign-in box says what is kept, but that is not a policy.
+- Presets are on the stills page only. The video page has no "unopened clip"
+  rule or box hand-over to build on yet; it is the next piece.
