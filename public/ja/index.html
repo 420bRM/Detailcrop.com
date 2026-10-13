@@ -523,7 +523,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
 
 <header class="bar">
   <h1 class="brand"><a href="/ja/" id="brandLink">Detail<em>Crop</em></a><span class="sr" data-i="h1sr"> — マルチクロップ：複数の画像を一括トリミング、1枚から複数カットをzipで書き出し</span></h1>
-  <p class="tagline" data-i="tagline">ディテールクロップのマルチクロップ — 画像の上でボックスをドラッグし、切り出したい部分を指定します。1枚に複数カット、複数の画像をまとめてトリミング、結果はzipひとつ。処理はすべてブラウザ内で完結し、アップロードも登録も不要です。</p>
+  <p class="tagline"><span data-i="tagline">ディテールクロップのマルチクロップ — 画像の上でボックスをドラッグし、切り出したい部分を指定します。1枚に複数カット、複数の画像をまとめてトリミング、結果はzipひとつ。処理はすべてブラウザ内で完結し、アップロードも登録も不要です。</span><span id="memberLine" hidden> <span data-i="memberLine">ログインすると、自分好みの設定を保存して使えます。</span></span></p>
   <span class="spacer"></span>
   <div class="headBtns">
     <button type="button" class="hbtn" id="tourBtn" data-i="tourBtn">使い方を見る</button>
@@ -779,7 +779,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
     <p class="signinLead" data-i="loginLead">Googleアカウントでログインすると、プリセットがアカウントに保存され、ログインしたどの端末からでも読み込めます。</p>
     <div class="signinBtn" id="signinBtn"></div>
     <p class="warn" id="signinErr" role="alert" hidden></p>
-    <p class="signinFine" data-i="loginFine">Googleから受け取るのはメールアドレスだけです。保存するのはメールアドレスとプリセットのみで、画像はこれまでどおりブラウザの外に出ません。退会すると両方とも削除します。14歳以上の方のみ登録できます。</p>
+    <p class="signinFine"><span data-i="loginFine">Googleから受け取るのはメールアドレスだけです。保存するのはメールアドレスとプリセットのみで、画像はこれまでどおりブラウザの外に出ません。退会すると両方とも削除します。14歳以上の方のみ登録できます。</span> <a id="signinPolicy" href="/privacy/" data-i="footPolicy">プライバシーポリシー</a></p>
   </div>
 </div>
 
@@ -789,7 +789,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
     <p class="footBody" data-i="footBody">ディテールカットは、1枚をうまく切る作業ではなく、複数枚を同じ規則で切る作業です。同じ種類の寄りが、すべての写真から同じ比率・同じ出力サイズ・同じ命名規則で出てこなければなりません。ところが一般的な画像編集ソフトはその規則を覚えていないため、ファイルごとに条件を立て直すことになり、枚数が増えるほど仕上がりは少しずつずれていきます。このツールはその規則を作業全体に固定します。手元に残るのは個別に切った寄せ集めではなく、ひとつのセットです。</p>
   </div>
   <div class="footSide">
-    <p class="footLinks"><a id="aboutLink" href="/ja/about/" data-i="footAbout">DetailCropについて</a><a id="howLink" href="/ja/how-to/" data-i="footHow">複数の画像をまとめて切り抜く方法</a><a id="usesLink" href="/ja/uses/" data-i="footUses">こんな使い方</a></p>
+    <p class="footLinks"><a id="aboutLink" href="/ja/about/" data-i="footAbout">DetailCropについて</a><a id="howLink" href="/ja/how-to/" data-i="footHow">複数の画像をまとめて切り抜く方法</a><a id="usesLink" href="/ja/uses/" data-i="footUses">こんな使い方</a><a id="policyLink" href="/ja/privacy/" data-i="footPolicy">プライバシーポリシー</a></p>
     <p data-i="footPrivacy">処理はすべてブラウザ内で行われます。画像がアップロードされることはありません。</p>
     <p data-i="footFree">無料で使えます。</p>
     <p><span data-i="footContact">広告・提携のお問い合わせ:</span> <a id="mailLink" href="#">&#8230;</a></p>
@@ -829,7 +829,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
    ===================================================================== */
 const I18N = {
   en:{
-    tagline:"Multi Crop by DetailCrop — drag boxes over each image to mark the detail crops you want. Several per image, multiple images cropped at once, out as a single zip. Everything happens in your browser — no upload, no account.",
+    tagline:"Multi Crop by DetailCrop — drag boxes over each image to mark the detail crops you want. Several per image, multiple images cropped at once, out as a single zip. Everything happens in your browser — no upload, no account needed.",
     dropTitle:"Drop your images here",
     dropBody:"JPEG, PNG, WebP, AVIF or GIF. Up to 200 files, 200 MB each. Your files never leave this computer.",
     pick:"Choose images",
@@ -909,6 +909,8 @@ const I18N = {
     whyTry:"Just trying it out", whyOther:"Something else",
     whySend:"Send", whySkip:"Skip",
     whyThanks:"Thanks — that helps.",
+    memberLine:"Sign in to keep your own settings as presets.",
+    footPolicy:"Privacy",
     presetHd:"Presets",
     presetNote:"A preset keeps the ratio, output size, format, quality, file names, feed split and where the boxes sit — never the images, and not the straighten values. Loading one sets the batch to it and lays its boxes on this image, on images you have not opened yet and on images you add next. Images you have already worked on keep their boxes.",
     presetSave:"Save",
@@ -941,7 +943,7 @@ const I18N = {
     acctDeleted:"Your account and its presets have been deleted.",
   },
   ko:{
-    tagline:"디테일크롭의 멀티크롭 — 이미지 위에 상자를 끌어 원하는 확대컷 구역을 잡습니다. 한 장에 여러 컷, 여러 이미지를 한번에 자르고, 결과는 zip 하나로. 모든 처리가 브라우저 안에서 끝나며 업로드도 가입도 없습니다.",
+    tagline:"디테일크롭의 멀티크롭 — 이미지 위에 상자를 끌어 원하는 확대컷 구역을 잡습니다. 한 장에 여러 컷, 여러 이미지를 한번에 자르고, 결과는 zip 하나로. 모든 처리가 브라우저 안에서 끝나며 업로드도 가입도 필요 없습니다.",
     dropTitle:"여기에 이미지를 놓으세요",
     dropBody:"JPEG, PNG, WebP, AVIF, GIF. 최대 200장, 장당 200MB. 파일은 이 컴퓨터를 벗어나지 않습니다.",
     pick:"이미지 선택",
@@ -1021,6 +1023,8 @@ const I18N = {
     whyTry:"그냥 써 보는 중", whyOther:"기타",
     whySend:"보내기", whySkip:"건너뛰기",
     whyThanks:"고맙습니다. 큰 도움이 됩니다.",
+    memberLine:"로그인하면 개인 맞춤 설정을 저장해 쓸 수 있습니다.",
+    footPolicy:"개인정보 처리방침",
     presetHd:"프리셋",
     presetNote:"비율, 출력 크기, 포맷, 품질, 파일명, 피드 분할, 상자 위치를 저장합니다. 이미지와 수평·원근 값은 담지 않습니다. 불러오면 설정이 작업 전체에 걸리고, 상자는 지금 이미지와 아직 열지 않은 이미지, 앞으로 추가하는 이미지에 놓입니다. 이미 작업한 이미지의 상자는 그대로입니다.",
     presetSave:"저장",
@@ -1133,6 +1137,8 @@ const I18N = {
     whyTry:"試しに使っている", whyOther:"その他",
     whySend:"送信", whySkip:"スキップ",
     whyThanks:"ありがとうございます。とても参考になります。",
+    memberLine:"ログインすると、自分好みの設定を保存して使えます。",
+    footPolicy:"プライバシーポリシー",
     presetHd:"プリセット",
     presetNote:"比率、出力サイズ、形式、画質、ファイル名、フィード分割、ボックスの位置を保存します。画像と傾き補正の値は含みません。読み込むと設定が作業全体にかかり、ボックスはこの画像・まだ開いていない画像・これから追加する画像に置かれます。作業済みの画像のボックスはそのままです。",
     presetSave:"保存",
@@ -1333,6 +1339,7 @@ function applyLang(){
   $("#aboutLink").href = sfx + "about/";
   $("#howLink").href   = sfx + "how-to/";
   $("#usesLink").href  = sfx + "uses/";
+  $("#policyLink").href = $("#signinPolicy").href = sfx + "privacy/";
   // ratio labels that are words
   $$("#ratioseg button").forEach(b => {
     if (b.dataset.r === "free") b.textContent = t.free;
@@ -3379,6 +3386,7 @@ function presetMsg(text){
 function paintPresets(){
   const t = T();
   $("#presetPanel").hidden = !A.on;
+  $("#memberLine").hidden = !A.on;
   if (!A.on) return;
   const signed = !!A.user;
   $("#presetLock").hidden = signed;

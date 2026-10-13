@@ -25,7 +25,7 @@ public/
   favicon.ico           16/32/48/64/128/256, each drawn at its own size
   apple-touch-icon.png  180
   icon-512.png
-  about/ how-to/ uses/  reading pages; also under ko/ and ja/
+  about/ how-to/ uses/ privacy/  reading pages; also under ko/ and ja/
   robots.txt  sitemap.xml   (sitemap is generated)
 src/
   index.js              Worker: serves assets, POST /e, routes /stats and /api
@@ -187,6 +187,12 @@ Google's keys, and the Worker answers with a 30-day session the page keeps in
 (`src/accounts.js`); only the email address comes from Google. Signed out, the
 panel shows a padlock and *Save* opens the sign-in box; once signed in the save
 finishes by itself. Google's script is loaded only when that box opens.
+
+**The privacy policy (`pages/<lang>/privacy.html`) describes exactly this**
+— the anonymous stats, the member's email and presets, Cloudflare and Google
+as the two services involved. Change what is collected, change that page too.
+The tools link it from the footer and the sign-in box. While sign-in is on, the
+header line adds "sign in to keep your own settings" (`#memberLine`).
 
 **Sign-in is off until `GOOGLE_CLIENT_ID` is set** in `wrangler.jsonc`. Off,
 `/api/config` says so and the panel stays hidden — the page looks as it did.
@@ -487,8 +493,5 @@ by `_sample_interval`
 - The footer contact is a personal Gmail rather than a domain address.
 - No content pages yet, so the long-tail search terms the tool could rank
   for are unclaimed.
-- **No privacy policy page.** Sign-in collects an email address, so one is
-  needed before `GOOGLE_CLIENT_ID` goes in (lottodraw.kr's `privacy.html` is the
-  model). The sign-in box says what is kept, but that is not a policy.
 - Presets are on the stills page only. The video page has no "unopened clip"
   rule or box hand-over to build on yet; it is the next piece.

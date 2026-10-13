@@ -523,7 +523,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
 
 <header class="bar">
   <h1 class="brand"><a href="/" id="brandLink">Detail<em>Crop</em></a><span class="sr" data-i="h1sr"> — Multi Crop: batch crop multiple images at once, several detail crops per image, exported as one zip</span></h1>
-  <p class="tagline" data-i="tagline">Multi Crop by DetailCrop — drag boxes over each image to mark the detail crops you want. Several per image, multiple images cropped at once, out as a single zip. Everything happens in your browser — no upload, no account.</p>
+  <p class="tagline"><span data-i="tagline">Multi Crop by DetailCrop — drag boxes over each image to mark the detail crops you want. Several per image, multiple images cropped at once, out as a single zip. Everything happens in your browser — no upload, no account needed.</span><span id="memberLine" hidden> <span data-i="memberLine">Sign in to keep your own settings as presets.</span></span></p>
   <span class="spacer"></span>
   <div class="headBtns">
     <button type="button" class="hbtn" id="tourBtn" data-i="tourBtn">How it works</button>
@@ -779,7 +779,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
     <p class="signinLead" data-i="loginLead">Sign in with Google and your presets are kept in your account, ready on any device you sign in on.</p>
     <div class="signinBtn" id="signinBtn"></div>
     <p class="warn" id="signinErr" role="alert" hidden></p>
-    <p class="signinFine" data-i="loginFine">Google passes on your email address and nothing else. We keep that address and your presets — your images still never leave this browser. Deleting your account erases both. Ages 14 and up.</p>
+    <p class="signinFine"><span data-i="loginFine">Google passes on your email address and nothing else. We keep that address and your presets — your images still never leave this browser. Deleting your account erases both. Ages 14 and up.</span> <a id="signinPolicy" href="/privacy/" data-i="footPolicy">Privacy</a></p>
   </div>
 </div>
 
@@ -789,7 +789,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
     <p class="footBody" data-i="footBody">A detail crop is rarely a one-off. The same kind of close-up has to come out of every picture in a lineup — same ratio, same output size, same naming rule. A general image editor has no memory of any of that, so those constraints get rebuilt by hand for every file and quietly drift apart over a long batch. DetailCrop holds them for the whole run instead. What you get back is a set, not a pile of separately cropped files.</p>
   </div>
   <div class="footSide">
-    <p class="footLinks"><a id="aboutLink" href="/about/" data-i="footAbout">About DetailCrop</a><a id="howLink" href="/how-to/" data-i="footHow">How to crop many images at once</a><a id="usesLink" href="/uses/" data-i="footUses">What people use it for</a></p>
+    <p class="footLinks"><a id="aboutLink" href="/about/" data-i="footAbout">About DetailCrop</a><a id="howLink" href="/how-to/" data-i="footHow">How to crop many images at once</a><a id="usesLink" href="/uses/" data-i="footUses">What people use it for</a><a id="policyLink" href="/privacy/" data-i="footPolicy">Privacy</a></p>
     <p data-i="footPrivacy">Runs entirely in your browser. Your images are never uploaded.</p>
     <p data-i="footFree">Free to use.</p>
     <p><span data-i="footContact">Advertising &amp; partnerships:</span> <a id="mailLink" href="#">&#8230;</a></p>
@@ -829,7 +829,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
    ===================================================================== */
 const I18N = {
   en:{
-    tagline:"Multi Crop by DetailCrop — drag boxes over each image to mark the detail crops you want. Several per image, multiple images cropped at once, out as a single zip. Everything happens in your browser — no upload, no account.",
+    tagline:"Multi Crop by DetailCrop — drag boxes over each image to mark the detail crops you want. Several per image, multiple images cropped at once, out as a single zip. Everything happens in your browser — no upload, no account needed.",
     dropTitle:"Drop your images here",
     dropBody:"JPEG, PNG, WebP, AVIF or GIF. Up to 200 files, 200 MB each. Your files never leave this computer.",
     pick:"Choose images",
@@ -909,6 +909,8 @@ const I18N = {
     whyTry:"Just trying it out", whyOther:"Something else",
     whySend:"Send", whySkip:"Skip",
     whyThanks:"Thanks — that helps.",
+    memberLine:"Sign in to keep your own settings as presets.",
+    footPolicy:"Privacy",
     presetHd:"Presets",
     presetNote:"A preset keeps the ratio, output size, format, quality, file names, feed split and where the boxes sit — never the images, and not the straighten values. Loading one sets the batch to it and lays its boxes on this image, on images you have not opened yet and on images you add next. Images you have already worked on keep their boxes.",
     presetSave:"Save",
@@ -941,7 +943,7 @@ const I18N = {
     acctDeleted:"Your account and its presets have been deleted.",
   },
   ko:{
-    tagline:"디테일크롭의 멀티크롭 — 이미지 위에 상자를 끌어 원하는 확대컷 구역을 잡습니다. 한 장에 여러 컷, 여러 이미지를 한번에 자르고, 결과는 zip 하나로. 모든 처리가 브라우저 안에서 끝나며 업로드도 가입도 없습니다.",
+    tagline:"디테일크롭의 멀티크롭 — 이미지 위에 상자를 끌어 원하는 확대컷 구역을 잡습니다. 한 장에 여러 컷, 여러 이미지를 한번에 자르고, 결과는 zip 하나로. 모든 처리가 브라우저 안에서 끝나며 업로드도 가입도 필요 없습니다.",
     dropTitle:"여기에 이미지를 놓으세요",
     dropBody:"JPEG, PNG, WebP, AVIF, GIF. 최대 200장, 장당 200MB. 파일은 이 컴퓨터를 벗어나지 않습니다.",
     pick:"이미지 선택",
@@ -1021,6 +1023,8 @@ const I18N = {
     whyTry:"그냥 써 보는 중", whyOther:"기타",
     whySend:"보내기", whySkip:"건너뛰기",
     whyThanks:"고맙습니다. 큰 도움이 됩니다.",
+    memberLine:"로그인하면 개인 맞춤 설정을 저장해 쓸 수 있습니다.",
+    footPolicy:"개인정보 처리방침",
     presetHd:"프리셋",
     presetNote:"비율, 출력 크기, 포맷, 품질, 파일명, 피드 분할, 상자 위치를 저장합니다. 이미지와 수평·원근 값은 담지 않습니다. 불러오면 설정이 작업 전체에 걸리고, 상자는 지금 이미지와 아직 열지 않은 이미지, 앞으로 추가하는 이미지에 놓입니다. 이미 작업한 이미지의 상자는 그대로입니다.",
     presetSave:"저장",
@@ -1133,6 +1137,8 @@ const I18N = {
     whyTry:"試しに使っている", whyOther:"その他",
     whySend:"送信", whySkip:"スキップ",
     whyThanks:"ありがとうございます。とても参考になります。",
+    memberLine:"ログインすると、自分好みの設定を保存して使えます。",
+    footPolicy:"プライバシーポリシー",
     presetHd:"プリセット",
     presetNote:"比率、出力サイズ、形式、画質、ファイル名、フィード分割、ボックスの位置を保存します。画像と傾き補正の値は含みません。読み込むと設定が作業全体にかかり、ボックスはこの画像・まだ開いていない画像・これから追加する画像に置かれます。作業済みの画像のボックスはそのままです。",
     presetSave:"保存",
@@ -1333,6 +1339,7 @@ function applyLang(){
   $("#aboutLink").href = sfx + "about/";
   $("#howLink").href   = sfx + "how-to/";
   $("#usesLink").href  = sfx + "uses/";
+  $("#policyLink").href = $("#signinPolicy").href = sfx + "privacy/";
   // ratio labels that are words
   $$("#ratioseg button").forEach(b => {
     if (b.dataset.r === "free") b.textContent = t.free;
@@ -3379,6 +3386,7 @@ function presetMsg(text){
 function paintPresets(){
   const t = T();
   $("#presetPanel").hidden = !A.on;
+  $("#memberLine").hidden = !A.on;
   if (!A.on) return;
   const signed = !!A.user;
   $("#presetLock").hidden = signed;
