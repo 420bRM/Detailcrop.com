@@ -9,7 +9,10 @@
 
 import { statsPage, todayJSON } from "./stats.js";
 import { accountRoute } from "./account-api.js";
+import { archive } from "./archive.js";
+import { archiveRoute } from "./stats-archive.js";
 export { Accounts } from "./accounts.js";
+export { Archive } from "./archive.js";
 
 // visit … tour come from the stills page; why is its one question after an
 // export; preset is a saved or loaded preset (never its name or contents);
@@ -20,14 +23,14 @@ const MAX_BODY = 1024;
 const BOT_UA = /bot|crawler|spider|crawl|slurp|headless|phantom|puppeteer|playwright|python-requests|curl\/|wget|scrapy|monitor|preview|fetch|http-client|axios|okhttp/;
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     if (url.pathname === "/e") {
       if (request.method !== "POST") {
         return new Response("Method not allowed", { status: 405 });
       }
-      return recordEvent(request, env);
+      return recordEvent(request, env, ctx);
     }
 
     if (url.pathname.startsWith("/api/") && url.pathname !== "/api/today") {
@@ -35,6 +38,7 @@ export default {
     }
 
     if (url.pathname === "/stats") return statsPage(request, env);
+    if (url.pathname.startsWith("/stats/")) return archiveRoute(request, env, url);
     if (url.pathname === "/api/today") return todayJSON(request, env);
 
     // The site answers on *.workers.dev too. Every page canonicals to the real
@@ -49,7 +53,7 @@ export default {
   }
 };
 
-async function recordEvent(request, env) {
+async function recordEvent(request, env, ctx) {
   // Beacons are fire-and-forget: always answer 204, never make the page wait
   // or retry. A malformed or unwanted body is dropped silently.
   if (!env.EVENTS) return noContent();
@@ -79,8 +83,7 @@ async function recordEvent(request, env) {
   const cf = request.cf || {};
   const vw = num(d.w);
 
-  env.EVENTS.writeDataPoint({
-    indexes: [str(d.e, 32)],
+  const row = {
     blobs: [
       str(d.e, 32),                              // blob1  event (ALLOWED_EVENTS above)
       str(d.lang, 8),                            // blob2  ui language
@@ -112,7 +115,13 @@ async function recordEvent(request, env) {
       num(d.secs),   // double16 seconds from first add to export ('export' events)
       num(d.step)    // double17 walkthrough step reached ('tour' events)
     ]
-  });
+  };
+  env.EVENTS.writeDataPoint({ indexes: [str(d.e, 32)], blobs: row.blobs, doubles: row.doubles });
+  // Analytics Engine forgets after ~3 months; our own copy does not (src/archive.js)
+  if (env.ARCHIVE && ctx) {
+    ctx.waitUntil(archive(env, "event", { ts: Date.now(), blobs: row.blobs, doubles: row.doubles })
+      .catch(e => console.error("archive", e)));
+  }
 
   return noContent();
 }

@@ -362,6 +362,21 @@ JOIN. Because one person can pick several, count respondents with
 `count(DISTINCT blob8)`, not by adding up the purposes. The /stats page shows
 it as *무엇에 쓰는가*.
 
+**Kept for good, in our own store.** Analytics Engine drops rows after about
+three months, so `/e` also writes every row into `src/archive.js`, a Durable
+Object's SQLite, with no end date. Owner-only, behind `?k=<STATS_KEY>`:
+
+- `/stats/export` — the whole archive as CSV (`&from=` / `&to=` as
+  `YYYY-MM-DD`, `&t=presets` for the settings deleted accounts left behind).
+  Download it now and then and keep a copy away from Cloudflare.
+- `/stats/backfill` — run once: copies what Analytics Engine still holds from
+  before the archive existed. Uses `CF_API_TOKEN`; refuses a second clean run.
+- `/stats/archive` — row counts and the first and last dates.
+
+When a member deletes their account, the email and account ID go (the law
+says so), and their presets stay as anonymous settings: name, file-name
+pattern and account removed (`strayPreset`).
+
 **`preset`** — a member saved (`blob10` = `save`) or loaded (`load`) a preset;
 `double2` is how many presets the account holds. Never the preset's name or
 contents. Counting `load` per `blob8` over weeks is the return-visit signal

@@ -24,11 +24,14 @@
   // The free plan only takes the SQLite storage backend.
   "durable_objects": {
     "bindings": [
-      { "name": "ACCOUNTS", "class_name": "Accounts" }
+      { "name": "ACCOUNTS", "class_name": "Accounts" },
+      // our permanent copy of the usage stats (src/archive.js)
+      { "name": "ARCHIVE", "class_name": "Archive" }
     ]
   },
   "migrations": [
-    { "tag": "v1", "new_sqlite_classes": ["Accounts"] }
+    { "tag": "v1", "new_sqlite_classes": ["Accounts"] },
+    { "tag": "v2", "new_sqlite_classes": ["Archive"] }
   ],
   // Sign-in: 10 a minute per IP. Preset changes: 30 a minute per session.
   "ratelimits": [
