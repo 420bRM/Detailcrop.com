@@ -9,9 +9,30 @@
   "vars": {
     // Not a credential — it appears in your dashboard URL. Move it to a
     // secret instead if you would rather not publish it.
-    "CF_ACCOUNT_ID": "363e5870b7991d528c70f4ae3dd23c53"
+    "CF_ACCOUNT_ID": "363e5870b7991d528c70f4ae3dd23c53",
+    // Google sign-in for presets. Empty = off: the presets panel stays
+    // hidden and the site looks exactly as before. Paste the OAuth client ID
+    // (…apps.googleusercontent.com) here to turn it on — it is a public value,
+    // not a secret. Kept here rather than in the dashboard because a plain
+    // dashboard variable is overwritten by this block on the next deploy.
+    "GOOGLE_CLIENT_ID": ""
   },
   "analytics_engine_datasets": [
     { "binding": "EVENTS", "dataset": "detailcrop_events" }
+  ],
+  // Members, sign-in sessions and their presets (src/accounts.js).
+  // The free plan only takes the SQLite storage backend.
+  "durable_objects": {
+    "bindings": [
+      { "name": "ACCOUNTS", "class_name": "Accounts" }
+    ]
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["Accounts"] }
+  ],
+  // Sign-in: 10 a minute per IP. Preset changes: 30 a minute per session.
+  "ratelimits": [
+    { "name": "LOGIN_LIMIT", "namespace_id": "2001", "simple": { "limit": 10, "period": 60 } },
+    { "name": "PRESET_LIMIT", "namespace_id": "2002", "simple": { "limit": 30, "period": 60 } }
   ]
 }

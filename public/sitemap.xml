@@ -106,4 +106,25 @@
     <xhtml:link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/uses/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://detailcrop.com/uses/"/>
   </url>
+  <url>
+    <loc>https://detailcrop.com/privacy/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://detailcrop.com/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://detailcrop.com/privacy/"/>
+  </url>
+  <url>
+    <loc>https://detailcrop.com/ko/privacy/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://detailcrop.com/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://detailcrop.com/privacy/"/>
+  </url>
+  <url>
+    <loc>https://detailcrop.com/ja/privacy/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://detailcrop.com/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://detailcrop.com/privacy/"/>
+  </url>
 </urlset>
