@@ -15,7 +15,7 @@
     // (…apps.googleusercontent.com) here to turn it on — it is a public value,
     // not a secret. Kept here rather than in the dashboard because a plain
     // dashboard variable is overwritten by this block on the next deploy.
-    "GOOGLE_CLIENT_ID": ""
+    "GOOGLE_CLIENT_ID": "97239593227-ojn83srk7kj7fsg94mha90c00143h3a8.apps.googleusercontent.com"
   },
   "analytics_engine_datasets": [
     { "binding": "EVENTS", "dataset": "detailcrop_events" }
