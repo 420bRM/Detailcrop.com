@@ -178,6 +178,8 @@ a.hbtn{text-decoration:none; display:inline-block}
 .split{display:grid; grid-template-columns:minmax(0,1fr) 316px; gap:18px; align-items:start}
 .center{display:flex; flex-direction:column; gap:18px; min-width:0}
 .underStage{display:grid; grid-template-columns:repeat(auto-fit,minmax(258px,1fr)); gap:18px; align-items:start}
+/* export, then the shortcuts under it, in the second column under the stage */
+.stackCol{display:flex; flex-direction:column; gap:18px; min-width:0}
 @media (max-width:960px){ .split{grid-template-columns:minmax(0,1fr)} }
 
 .stagewrap{
@@ -254,6 +256,8 @@ a.hbtn{text-decoration:none; display:inline-block}
   -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 7V5a4 4 0 1 1 8 0v2h1a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1zm2 0h4V5a2 2 0 1 0-4 0v2z'/%3E%3C/svg%3E") center / contain no-repeat;
   mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 7V5a4 4 0 1 1 8 0v2h1a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1zm2 0h4V5a2 2 0 1 0-4 0v2z'/%3E%3C/svg%3E") center / contain no-repeat}
 .lock-tag[hidden]{display:none}
+.lockNote{display:inline-flex; align-items:center; gap:4px; letter-spacing:.04em}
+.lockNote[hidden]{display:none}
 
 /* ---------- sign-in box ----------
    Only ever opened by a members-only control. Google's button is loaded into
@@ -267,7 +271,10 @@ a.hbtn{text-decoration:none; display:inline-block}
 .signinWhy{margin:0 0 8px; font-size:13px; color:var(--amber)}
 .signinWhy:empty{display:none}
 .signinLead{margin:0 0 14px; font-size:13px; line-height:1.6; color:var(--ink-2)}
-.signinBtn{min-height:44px; display:flex; justify-content:center; align-items:center; font-size:12px; color:var(--muted); text-align:center}
+/* Google draws its button in an iframe that declares a light colour scheme.
+   On a page that declares dark, the browser backs such an iframe with an
+   opaque white box — so this one spot says light too, and the box goes. */
+.signinBtn{min-height:44px; display:flex; justify-content:center; align-items:center; font-size:12px; color:var(--muted); text-align:center; color-scheme:light}
 .signinFine{margin:14px 0 0; font-size:11.5px; line-height:1.6; color:var(--muted)}
 
 /* ---------- alignment gauges ----------
@@ -347,6 +354,13 @@ a.hbtn{text-decoration:none; display:inline-block}
 
 /* ---------- cards ---------- */
 .rail{display:flex; flex-direction:column; gap:14px; min-width:0}
+/* Beside the stage, the crop controls follow the page down: tuning a setting
+   under the picture should not cost the way back up to "Confirm & next".
+   A screen too short for the whole column scrolls inside it instead of
+   hiding its foot. Stacked (narrow) layouts scroll as one page, as before. */
+@media (min-width:961px){
+  .rail{position:sticky; top:14px; max-height:calc(100vh - 28px); overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin}
+}
 .card{background:var(--panel); border:1px solid var(--line-soft); border-radius:4px; box-shadow:var(--shadow)}
 .card .hd{padding:10px 12px; border-bottom:1px solid var(--line-soft); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); display:flex; align-items:center; justify-content:space-between; gap:8px}
 .card .bd{padding:12px}
@@ -622,7 +636,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
               <button type="button" class="disc" id="presetToggle" aria-expanded="false" aria-controls="presetBody">
                 <span class="disc-ic" aria-hidden="true"></span>
                 <span data-i="presetHd">プリセット</span>
-                <span class="lock-tag" id="presetLock" aria-hidden="true"></span>
+                <span class="lockNote" id="presetLock"><span class="lock-tag" aria-hidden="true"></span><span data-i="presetLoginTag">ログイン</span></span>
                 <span class="disc-sum" id="presetSum"></span>
               </button>
               <div id="presetBody" hidden>
@@ -644,6 +658,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
           </div>
         </section>
 
+        <div class="stackCol">
         <section class="card">
           <div class="hd" data-i="exportHd">書き出し</div>
           <div class="bd">
@@ -679,6 +694,14 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
             </div>
           </div>
         </section>
+
+        <section class="card">
+          <div class="hd" data-i="shortcuts">ショートカット</div>
+          <div class="bd">
+            <p class="hint" id="hintBody"></p>
+          </div>
+        </section>
+        </div>
       </div>
     </div>
 
@@ -756,13 +779,6 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
           <div style="margin-top:8px">
             <button class="btn primary" type="button" id="nextBtn" data-i="confirmNext">確定して次へ →</button>
           </div>
-        </div>
-      </section>
-
-      <section class="card">
-        <div class="hd" data-i="shortcuts">ショートカット</div>
-        <div class="bd">
-          <p class="hint" id="hintBody"></p>
         </div>
       </section>
 
@@ -911,13 +927,13 @@ const I18N = {
     whyThanks:"Thanks — that helps.",
     memberLine:"Sign in to keep your own settings as presets.",
     footPolicy:"Privacy",
-    presetHd:"Presets",
+    presetHd:"Presets", presetLoginTag:"Sign in",
     presetNote:"A preset keeps the ratio, output size, format, quality, file names, feed split and where the boxes sit — never the images, and not the straighten values. Loading one sets the batch to it and lays its boxes on this image, on images you have not opened yet and on images you add next. Images you have already worked on keep their boxes.",
     presetSave:"Save",
     presetEmpty:"Nothing saved yet. Set things up the way you like, name it, and save.",
     presetLocked:"Sign in to save setups like this one to your account and load them on any device.",
     presetLoad:"Load", presetRename:"Rename", presetDelete:"Delete", presetLastTag:"last used",
-    presetPh:"Name, e.g. Weekly product shots",
+    presetPh:"Name this setup",
     presetDefault:(n)=>`Preset ${n}`,
     presetLast:(n)=>`last: ${n}`,
     presetSaved:(n)=>`Saved “${n}”.`,
@@ -1025,13 +1041,13 @@ const I18N = {
     whyThanks:"고맙습니다. 큰 도움이 됩니다.",
     memberLine:"로그인하면 개인 맞춤 설정을 저장해 쓸 수 있습니다.",
     footPolicy:"개인정보 처리방침",
-    presetHd:"프리셋",
+    presetHd:"프리셋", presetLoginTag:"로그인",
     presetNote:"비율, 출력 크기, 포맷, 품질, 파일명, 피드 분할, 상자 위치를 저장합니다. 이미지와 수평·원근 값은 담지 않습니다. 불러오면 설정이 작업 전체에 걸리고, 상자는 지금 이미지와 아직 열지 않은 이미지, 앞으로 추가하는 이미지에 놓입니다. 이미 작업한 이미지의 상자는 그대로입니다.",
     presetSave:"저장",
     presetEmpty:"저장한 프리셋이 없습니다. 원하는 대로 설정한 뒤 이름을 붙여 저장하세요.",
     presetLocked:"로그인하면 지금 같은 설정을 계정에 저장해 두고 어느 기기에서든 불러올 수 있습니다.",
     presetLoad:"불러오기", presetRename:"이름 변경", presetDelete:"삭제", presetLastTag:"마지막 사용",
-    presetPh:"이름 예: 주간 상품컷",
+    presetPh:"설정값 입력",
     presetDefault:(n)=>`프리셋 ${n}`,
     presetLast:(n)=>`마지막: ${n}`,
     presetSaved:(n)=>`“${n}” 저장했습니다.`,
@@ -1139,13 +1155,13 @@ const I18N = {
     whyThanks:"ありがとうございます。とても参考になります。",
     memberLine:"ログインすると、自分好みの設定を保存して使えます。",
     footPolicy:"プライバシーポリシー",
-    presetHd:"プリセット",
+    presetHd:"プリセット", presetLoginTag:"ログイン",
     presetNote:"比率、出力サイズ、形式、画質、ファイル名、フィード分割、ボックスの位置を保存します。画像と傾き補正の値は含みません。読み込むと設定が作業全体にかかり、ボックスはこの画像・まだ開いていない画像・これから追加する画像に置かれます。作業済みの画像のボックスはそのままです。",
     presetSave:"保存",
     presetEmpty:"保存したプリセットはありません。好みの設定にしてから名前を付けて保存してください。",
     presetLocked:"ログインすると、今のような設定をアカウントに保存して、どの端末からでも読み込めます。",
     presetLoad:"読み込む", presetRename:"名前変更", presetDelete:"削除", presetLastTag:"前回使用",
-    presetPh:"名前の例：毎週の商品写真",
+    presetPh:"設定名を入力",
     presetDefault:(n)=>`プリセット ${n}`,
     presetLast:(n)=>`前回: ${n}`,
     presetSaved:(n)=>`「${n}」を保存しました。`,
@@ -3522,7 +3538,7 @@ async function openSignin(why, then){
       auto_select: false, cancel_on_tap_outside: true, use_fedcm_for_button: true
     });
     slot.textContent = "";
-    google.accounts.id.renderButton(slot, {type: "standard", theme: "outline", size: "large",
+    google.accounts.id.renderButton(slot, {type: "standard", theme: "filled_black", size: "large",
       text: "continue_with", shape: "pill", locale: S.lang, width: 260});
   } catch {
     slot.textContent = t.loginGisFail;
