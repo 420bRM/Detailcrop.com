@@ -348,6 +348,13 @@ a.hbtn{text-decoration:none; display:inline-block}
 
 /* ---------- cards ---------- */
 .rail{display:flex; flex-direction:column; gap:14px; min-width:0}
+/* Beside the stage, the crop controls follow the page down: tuning a setting
+   under the picture should not cost the way back up to "Confirm & next".
+   A screen too short for the whole column scrolls inside it instead of
+   hiding its foot. Stacked (narrow) layouts scroll as one page, as before. */
+@media (min-width:961px){
+  .rail{position:sticky; top:14px; max-height:calc(100vh - 28px); overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin}
+}
 .card{background:var(--panel); border:1px solid var(--line-soft); border-radius:4px; box-shadow:var(--shadow)}
 .card .hd{padding:10px 12px; border-bottom:1px solid var(--line-soft); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); display:flex; align-items:center; justify-content:space-between; gap:8px}
 .card .bd{padding:12px}
