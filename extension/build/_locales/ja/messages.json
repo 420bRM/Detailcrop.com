@@ -1,0 +1,6 @@
+{
+  "name": { "message": "DetailCrop – 複数の画像を一括トリミング" },
+  "description": { "message": "画像ごとに同じ比率のカットを複数切り出し、zipひとつで保存。写真はどこにもアップロードされません。" },
+  "actionTitle": { "message": "DetailCropを開く" },
+  "openWith": { "message": "DetailCropで開く" }
+}

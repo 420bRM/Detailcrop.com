@@ -5,8 +5,9 @@
 #   template-page.html + pages/<lang>/<slug>.html
 #                        ->  public/{,ko/,ja/}<slug>/index.html  (about, how-to, uses)
 #   public/sitemap.xml
+#   template.html + extension/src/  ->  extension/build/  and  extension/detailcrop-chrome.zip
 # The templates are the source of truth — never hand-edit anything they write.
-import json, io, os, re, sys
+import json, io, os, re, shutil, sys, zipfile
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 TPL  = os.path.join(ROOT, "template.html")
@@ -343,7 +344,68 @@ def build_sitemap():
     io.open(os.path.join(OUT, "sitemap.xml"), "w", encoding="utf-8").write("\n".join(L))
     print("sitemap.xml  %d urls" % sum(len(g) for g in groups))
 
+# ---------- the Chrome extension ----------
+# The extension carries the stills tool itself, made from the same
+# template.html, so the web page and the extension are never two copies to
+# keep in step. What Manifest V3 and "nothing leaves the extension" ask for:
+#   - code between /* WEB-ONLY: <stub> */ and /* /WEB-ONLY */ (stats beacon,
+#     owner's counter, sign-in and presets) is swapped for the stub, and
+#     HTML between <!-- WEB-ONLY --> and <!-- /WEB-ONLY --> is dropped;
+#   - the page's one inline <script> becomes tool.js (no inline scripts);
+#   - Google Fonts become files in the package (no remote anything).
+# extension/src/ holds what only the extension has; it is copied as it is.
+EXT_SRC = os.path.join(ROOT, "extension", "src")
+EXT_OUT = os.path.join(ROOT, "extension", "build")
+EXT_ZIP = os.path.join(ROOT, "extension", "detailcrop-chrome.zip")
+
+def extension_page(tpl):
+    s = tpl
+    s, n = re.subn(r"/\* WEB-ONLY: (.*?) \*/\n.*?/\* /WEB-ONLY \*/\n", lambda m: m.group(1) + "\n", s, flags=re.S)
+    assert n == 4, "expected 4 WEB-ONLY code blocks in template.html, found %d" % n
+    s, n = re.subn(r"[ \t]*<!-- WEB-ONLY -->\n.*?<!-- /WEB-ONLY -->\n", "", s, flags=re.S)
+    assert n == 1, n
+    s = re.sub(r'<link rel="preconnect" href="https://fonts\.g[^"]*"[^>]*>\n', "", s)
+    s, n = re.subn(r'<link rel="stylesheet" href="https://fonts\.googleapis\.com/[^"]*">', '<link rel="stylesheet" href="ext.css">', s)
+    assert n == 1, n
+    s = s.replace("__HEAD_URLS__", "", 1).replace("__JSONLD__", "", 1)
+    s = s.replace('<link rel="icon" href="/favicon.ico" sizes="any">', '<link rel="icon" href="icons/icon-32.png">', 1)
+    s = re.sub(r'<link rel="apple-touch-icon"[^>]*>\n', "", s)
+    s = re.sub(r'<meta (property="og:|name="twitter:)[^>]*>\n', "", s)
+    s = re.sub(r"<title>[^<]*</title>", "<title>DetailCrop</title>", s, count=1)
+    s = s.replace('const PAGE_LANG = "__LANG__";', "const PAGE_LANG = detectLang();", 1)
+    scripts = re.findall(r"<script>\n(.*?)</script>", s, flags=re.S)
+    assert len(scripts) == 1, len(scripts)
+    s = s.replace("<script>\n" + scripts[0] + "</script>",
+                  '<script src="tool.js"></script>\n<script src="ext.js"></script>', 1)
+    js = scripts[0]
+    for bad in ("__LANG__", "accounts.google.com", "sendBeacon", "/api/", '"/e"'):
+        assert bad not in js, "extension tool.js still holds " + bad
+    assert not re.search(r"<script(?![^>]*\bsrc=)(?![^>]*application/ld\+json)", s), "inline script left"
+    assert "https://fonts.g" not in s
+    return s, js
+
+def build_extension():
+    tpl = io.open(TPL, encoding="utf-8").read().replace(PRESET_MARK, preset_format(), 1)
+    page, js = extension_page(tpl)
+    if os.path.isdir(EXT_OUT):
+        shutil.rmtree(EXT_OUT)
+    shutil.copytree(EXT_SRC, EXT_OUT)
+    io.open(os.path.join(EXT_OUT, "tool.html"), "w", encoding="utf-8").write(page)
+    io.open(os.path.join(EXT_OUT, "tool.js"), "w", encoding="utf-8").write(js)
+    # the same bytes from the same sources: fixed dates, fixed order
+    files = sorted(os.path.relpath(os.path.join(d, f), EXT_OUT).replace(os.sep, "/")
+                   for d, _, fs in os.walk(EXT_OUT) for f in fs)
+    with zipfile.ZipFile(EXT_ZIP, "w", zipfile.ZIP_DEFLATED) as z:
+        for f in files:
+            info = zipfile.ZipInfo(f, date_time=(2026, 1, 1, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.external_attr = 0o644 << 16
+            z.writestr(info, io.open(os.path.join(EXT_OUT, f), "rb").read())
+    version = json.load(io.open(os.path.join(EXT_SRC, "manifest.json"), encoding="utf-8"))["version"]
+    print("ext extension/detailcrop-chrome.zip  v%s  %d files  %d bytes" % (version, len(files), os.path.getsize(EXT_ZIP)))
+
 main()
 build_video()
 build_pages()
 build_sitemap()
+build_extension()

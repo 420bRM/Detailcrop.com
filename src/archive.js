@@ -11,11 +11,11 @@
  * the presets of members who deleted their account arrive with the name, the
  * file-name pattern and every account detail already taken off.
  *
- *   events        one row per /e event: ts, then blob1…blob10, double1…double17
+ *   events        one row per /e event: ts, then blob1…blob11, double1…double17
  *   gone_presets  settings from deleted accounts: ts (month saved), json
  *   meta          live_since (first row written here), backfilled (0/1)
  */
-export const BLOBS = 10, DOUBLES = 17;
+export const BLOBS = 11, DOUBLES = 17;
 const COLS = ["ts"].concat(
   Array.from({ length: BLOBS }, (_, i) => "b" + (i + 1)),
   Array.from({ length: DOUBLES }, (_, i) => "d" + (i + 1)));
@@ -25,6 +25,10 @@ export class Archive {
     this.sql = state.storage.sql;
     this.sql.exec(`CREATE TABLE IF NOT EXISTS events (${COLS.map(c => c === "ts" ? "ts INTEGER" : c[0] === "b" ? c + " TEXT" : c + " REAL").join(", ")})`);
     this.sql.exec("CREATE INDEX IF NOT EXISTS events_ts ON events (ts)");
+    // a table made before a column existed gets it added; older rows read ""
+    const have = new Set(this.sql.exec("PRAGMA table_info(events)").toArray().map(c => c.name));
+    COLS.filter(c => !have.has(c)).forEach(c =>
+      this.sql.exec(`ALTER TABLE events ADD COLUMN ${c} ${c[0] === "b" ? "TEXT DEFAULT ''" : "REAL DEFAULT 0"}`));
     this.sql.exec("CREATE TABLE IF NOT EXISTS gone_presets (ts INTEGER, json TEXT)");
     this.sql.exec("CREATE TABLE IF NOT EXISTS meta (k TEXT PRIMARY KEY, v TEXT)");
   }

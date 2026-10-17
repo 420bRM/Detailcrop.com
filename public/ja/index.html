@@ -439,6 +439,9 @@ input[type=range]{width:100%; accent-color:var(--amber)}
 .whyOpts button{background:transparent; border:1px solid var(--line); border-radius:3px; padding:5px 8px; font-size:12px; line-height:1.4; color:var(--ink-2); text-align:left}
 .whyOpts button:hover{border-color:var(--teal); color:var(--ink)}
 .whyOpts button[aria-pressed="true"]{background:var(--amber); border-color:var(--amber); color:#12100b; font-weight:600}
+.whyQ2{margin-top:12px}
+.jobText{display:block; width:100%; margin-top:8px; padding:6px 8px; font:inherit; font-size:12px; color:var(--ink); background:transparent; border:1px solid var(--line); border-radius:3px}
+.jobText:focus{outline:none; border-color:var(--teal)}
 .whyFoot{display:flex; align-items:center; gap:14px; margin-top:10px}
 .btn.whySend{width:auto; padding:6px 16px}
 
@@ -687,6 +690,15 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
                 <button type="button" aria-pressed="false" data-why="try" data-i="whyTry">試しに使っている</button>
                 <button type="button" aria-pressed="false" data-why="other" data-i="whyOther">その他</button>
               </div>
+              <p class="whyQ whyQ2" data-i="jobQ">お仕事は何ですか？（任意）</p>
+              <div class="whyOpts" id="jobOpts">
+                <button type="button" aria-pressed="false" data-job="seller" data-i="jobSeller">ネットショップ運営</button>
+                <button type="button" aria-pressed="false" data-job="photo" data-i="jobPhoto">写真家</button>
+                <button type="button" aria-pressed="false" data-job="creator" data-i="jobCreator">作家・デザイナー</button>
+                <button type="button" aria-pressed="false" data-job="marketer" data-i="jobMarketer">マーケター</button>
+                <button type="button" aria-pressed="false" data-job="other" data-i="jobOther">その他</button>
+              </div>
+              <input type="text" class="jobText" id="jobText" maxlength="30" autocomplete="off" hidden>
               <div class="whyFoot">
                 <button type="button" class="btn primary whySend" id="whySend" data-i="whySend" disabled>送信</button>
                 <button type="button" class="linkbtn" id="whySkip" data-i="whySkip">スキップ</button>
@@ -795,7 +807,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
     <p class="signinLead" data-i="loginLead">Googleアカウントでログインすると、プリセットがアカウントに保存され、ログインしたどの端末からでも読み込めます。</p>
     <div class="signinBtn" id="signinBtn"></div>
     <p class="warn" id="signinErr" role="alert" hidden></p>
-    <p class="signinFine"><span data-i="loginFine">Googleから受け取るのはメールアドレスだけです。保存するのはメールアドレスとプリセットのみで、画像はこれまでどおりブラウザの外に出ません。退会すると両方とも削除します。14歳以上の方のみ登録できます。</span> <a id="signinPolicy" href="/privacy/" data-i="footPolicy">プライバシーポリシー</a></p>
+    <p class="signinFine"><span data-i="loginFine">写真は保存されず、サーバーにも送られません。14歳以上の方のみ登録できます。</span> <a id="signinPolicy" href="/privacy/" data-i="footPolicy">プライバシーポリシー</a></p>
   </div>
 </div>
 
@@ -809,8 +821,10 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
     <p data-i="footPrivacy">処理はすべてブラウザ内で行われます。画像がアップロードされることはありません。</p>
     <p data-i="footFree">無料で使えます。</p>
     <p><span data-i="footContact">広告・提携のお問い合わせ:</span> <a id="mailLink" href="#">&#8230;</a></p>
-    <p style="margin-top:6px"><span data-i="footStats">匿名の利用統計 — 画像サイズ、枚数、選んだ設定、ご回答いただいた用途のみ。画像そのものは記録しません。</span> <button type="button" class="linkbtn" id="statsToggle"></button></p>
+    <!-- WEB-ONLY -->
+    <p style="margin-top:6px"><span data-i="footStats">匿名の利用統計を取っています。写真は記録も送信もしません。</span> <button type="button" class="linkbtn" id="statsToggle"></button></p>
     <p class="todayLine" id="todayLine" hidden></p>
+    <!-- /WEB-ONLY -->
   </div>
 </footer>
 
@@ -891,7 +905,7 @@ const I18N = {
     footAbout:"About DetailCrop", footHow:"How to crop many images at once", footUses:"What people use it for",
     straighten:"Rotate", kHoriz:"Horiz.", kVert:"Vert.", resetZero:"Back to zero", alignTitle:"Alignment",
     footContact:"Advertising & partnerships:",
-    footStats:"Anonymous usage stats — image sizes, batch size, the settings you pick and, if you answer it, what the batch was for. Never the images themselves.",
+    footStats:"Anonymous usage stats. Your photos are never recorded or sent anywhere.",
     statsOn:"turn off",
     statsOff:"stats off · turn back on",
     footLead:"Multi Crop — detail crops for your whole product lineup, in one sitting.",
@@ -925,6 +939,10 @@ const I18N = {
     whyTry:"Just trying it out", whyOther:"Something else",
     whySend:"Send", whySkip:"Skip",
     whyThanks:"Thanks — that helps.",
+    jobQ:"And what do you do? (optional)",
+    jobSeller:"Online seller", jobPhoto:"Photographer", jobCreator:"Artist or designer",
+    jobMarketer:"Marketer", jobOther:"Other",
+    jobPh:"Your line of work, in a few words (no names or contact details)",
     memberLine:"Sign in to keep your own settings as presets.",
     footPolicy:"Privacy",
     presetHd:"Presets", presetLoginTag:"Sign in",
@@ -946,7 +964,7 @@ const I18N = {
     presetMember:"Members only: saving and loading presets",
     loginTitle:"Sign in",
     loginLead:"Sign in with Google and your presets are kept in your account, ready on any device you sign in on.",
-    loginFine:"Google passes on your email address and nothing else. We keep that address and your presets — your images still never leave this browser. Deleting your account erases both. Ages 14 and up.",
+    loginFine:"Your photos are never stored and never reach our server. Ages 14 and up.",
     loginLoading:"Loading Google sign-in…",
     loginGisFail:"Google sign-in could not load. An ad or tracker blocker may be stopping it — allow it for this site, or try again later.",
     loginFail:"Sign-in did not go through. Please try again.",
@@ -1005,7 +1023,7 @@ const I18N = {
     footAbout:"About", footHow:"사용법", footUses:"활용 예시",
     straighten:"회전", kHoriz:"수평", kVert:"수직", resetZero:"0으로 되돌리기", alignTitle:"정렬 보정",
     footContact:"광고·제휴 문의:",
-    footStats:"익명 사용 통계 — 이미지 크기, 장수, 고른 설정, 답해 주신 용도만 기록합니다. 이미지 자체는 기록하지 않습니다.",
+    footStats:"익명 사용 통계를 모읍니다. 사진은 기록하지도, 서버로 보내지도 않습니다.",
     statsOn:"끄기",
     statsOff:"통계 꺼짐 · 다시 켜기",
     footLead:"멀티크롭 — 라인업 전체의 확대컷을, 한자리에서.",
@@ -1039,6 +1057,10 @@ const I18N = {
     whyTry:"그냥 써 보는 중", whyOther:"기타",
     whySend:"보내기", whySkip:"건너뛰기",
     whyThanks:"고맙습니다. 큰 도움이 됩니다.",
+    jobQ:"어떤 일을 하시나요? (선택)",
+    jobSeller:"온라인 셀러", jobPhoto:"사진가", jobCreator:"작가·디자이너",
+    jobMarketer:"마케터", jobOther:"기타",
+    jobPh:"하시는 일을 짧게 (이름·연락처는 적지 마세요)",
     memberLine:"로그인하면 개인 맞춤 설정을 저장해 쓸 수 있습니다.",
     footPolicy:"개인정보 처리방침",
     presetHd:"프리셋", presetLoginTag:"로그인",
@@ -1060,7 +1082,7 @@ const I18N = {
     presetMember:"프리셋 저장 · 불러오기, 로그인 전용",
     loginTitle:"로그인",
     loginLead:"구글 계정으로 로그인하면 프리셋이 계정에 저장되어, 로그인한 어느 기기에서든 불러올 수 있습니다.",
-    loginFine:"구글에서는 이메일 주소만 받습니다. 저장하는 것은 이메일과 프리셋뿐이고, 이미지는 지금처럼 브라우저 밖으로 나가지 않습니다. 탈퇴하면 둘 다 지웁니다. 만 14세 이상만 가입할 수 있습니다.",
+    loginFine:"사진은 저장되지 않고 서버로 가지 않습니다. 만 14세 이상만 가입할 수 있습니다.",
     loginLoading:"구글 로그인을 불러오는 중…",
     loginGisFail:"구글 로그인을 불러오지 못했습니다. 광고·추적 차단 확장 프로그램이 막고 있을 수 있습니다 — 이 사이트에서 허용하거나 잠시 뒤 다시 시도하세요.",
     loginFail:"로그인하지 못했습니다. 다시 시도해 주세요.",
@@ -1119,7 +1141,7 @@ const I18N = {
     footAbout:"DetailCropについて", footHow:"複数の画像をまとめて切り抜く方法", footUses:"こんな使い方",
     straighten:"回転", kHoriz:"水平", kVert:"垂直", resetZero:"0に戻す", alignTitle:"傾き補正",
     footContact:"広告・提携のお問い合わせ:",
-    footStats:"匿名の利用統計 — 画像サイズ、枚数、選んだ設定、ご回答いただいた用途のみ。画像そのものは記録しません。",
+    footStats:"匿名の利用統計を取っています。写真は記録も送信もしません。",
     statsOn:"オフにする",
     statsOff:"統計オフ · 再びオンにする",
     footLead:"マルチクロップ — ラインナップ全体のディテールカットを、一度に。",
@@ -1153,6 +1175,10 @@ const I18N = {
     whyTry:"試しに使っている", whyOther:"その他",
     whySend:"送信", whySkip:"スキップ",
     whyThanks:"ありがとうございます。とても参考になります。",
+    jobQ:"お仕事は何ですか？（任意）",
+    jobSeller:"ネットショップ運営", jobPhoto:"写真家", jobCreator:"作家・デザイナー",
+    jobMarketer:"マーケター", jobOther:"その他",
+    jobPh:"お仕事を短く（名前や連絡先は書かないでください）",
     memberLine:"ログインすると、自分好みの設定を保存して使えます。",
     footPolicy:"プライバシーポリシー",
     presetHd:"プリセット", presetLoginTag:"ログイン",
@@ -1174,7 +1200,7 @@ const I18N = {
     presetMember:"プリセットの保存・読み込み、ログイン専用",
     loginTitle:"ログイン",
     loginLead:"Googleアカウントでログインすると、プリセットがアカウントに保存され、ログインしたどの端末からでも読み込めます。",
-    loginFine:"Googleから受け取るのはメールアドレスだけです。保存するのはメールアドレスとプリセットのみで、画像はこれまでどおりブラウザの外に出ません。退会すると両方とも削除します。14歳以上の方のみ登録できます。",
+    loginFine:"写真は保存されず、サーバーにも送られません。14歳以上の方のみ登録できます。",
     loginLoading:"Googleログインを読み込み中…",
     loginGisFail:"Googleログインを読み込めませんでした。広告・トラッカーのブロック機能が止めている可能性があります — このサイトで許可するか、しばらくしてからお試しください。",
     loginFail:"ログインできませんでした。もう一度お試しください。",
@@ -1302,6 +1328,12 @@ const MAX_SIDE  = 16384;   // canvas ceiling, measured
 const MAX_CROPS = 6;
 
 const PAGE_LANG = "ja";   // this file's default language
+/* The Chrome extension runs this same page from inside the extension
+   (build.py writes it to extension/build/). There the site's own links have
+   to name the site, and a picture sent from the right-click menu stands in
+   for the sample plate. */
+const EXTENSION = location.protocol === "chrome-extension:";
+const SITE = EXTENSION ? "https://detailcrop.com" : "";
 const S = {
   lang: PAGE_LANG,
   wide: false,
@@ -1343,6 +1375,7 @@ function applyLang(){
     if (typeof v === "string") el.textContent = v;
   });
   $("#hintBody").innerHTML = t.hint;
+  $("#jobText").placeholder = t.jobPh;
   const msg = $("#exportMsg");
   if (msg) msg.hidden = true;              // stale text would stay in the old language
   if (typeof tourIdx === "number" && tourIdx >= 0) paintTourStep();
@@ -1350,12 +1383,12 @@ function applyLang(){
   if (typeof paintPresets === "function") paintPresets();
   $$(".langs button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === S.lang)));
   const sfx = S.lang === "en" ? "/" : "/" + S.lang + "/";
-  $("#brandLink").href = sfx;
-  $("#crossBan").href  = "/video" + sfx;
-  $("#aboutLink").href = sfx + "about/";
-  $("#howLink").href   = sfx + "how-to/";
-  $("#usesLink").href  = sfx + "uses/";
-  $("#policyLink").href = $("#signinPolicy").href = sfx + "privacy/";
+  $("#brandLink").href = SITE + sfx;
+  $("#crossBan").href  = SITE + "/video" + sfx;
+  $("#aboutLink").href = SITE + sfx + "about/";
+  $("#howLink").href   = SITE + sfx + "how-to/";
+  $("#usesLink").href  = SITE + sfx + "uses/";
+  $("#policyLink").href = $("#signinPolicy").href = SITE + sfx + "privacy/";
   // ratio labels that are words
   $$("#ratioseg button").forEach(b => {
     if (b.dataset.r === "free") b.textContent = t.free;
@@ -2992,6 +3025,7 @@ function median(list){
   const a = list.slice().sort((x, y) => x - y);
   return a[Math.floor(a.length / 2)];
 }
+/* WEB-ONLY: function track(){} */
 function track(event, extra){
   if (statsMuted()) return;
   let ref = "";
@@ -3008,6 +3042,7 @@ function track(event, extra){
     }
   } catch {}
 }
+/* /WEB-ONLY */
 /* When the first file of a run landed. Reset when the batch is cleared, so a
    second run in the same tab is timed from its own start, not the first one. */
 let addedAt = 0;
@@ -3044,7 +3079,13 @@ function ratioTag(targets){
    carries the shape of the export it followed, so a purpose reads next to
    its crops per image without a JOIN. "Once" is literal: the box stays up for
    the rest of that visit, and a browser that has seen it is not asked again.
-   A skip is recorded too. */
+   A skip is recorded too.
+   Below it, one optional line about the person: what they do for a living.
+   Five fixed choices, one at most, and "Other" opens a short box for their
+   own words. That box is the only typed thing the page ever sends, so it is
+   capped at 30 characters and anything that looks like contact details is
+   dropped, here and again in the Worker (cleanJob in src/index.js). */
+/* WEB-ONLY: function offerWhy(){} function paintStatsToggle(){} */
 const WHY_KEY = "dc.why";
 let whyShape = null;
 function whyDone(){
@@ -3063,22 +3104,49 @@ function offerWhy(shape){
 /* Several answers are fine, so each one goes as its own event: per-purpose
    counts stay plain counts, and a person who picked three shows up under all
    three. */
-function answerWhy(keys){
-  try { localStorage.setItem(WHY_KEY, keys.join("+")); } catch {}
+function answerWhy(keys, job){
+  try { localStorage.setItem(WHY_KEY, keys.concat(job ? ["job:" + job.feat] : []).join("+") || "job"); } catch {}
   $("#whyBox").hidden = true;
   keys.forEach(k => track("why", Object.assign({}, whyShape, {feat: k})));
+  if (job) track("job", job);
   if (keys[0] !== "skip") flash(T().whyThanks, false);
 }
 function whyPicked(){
   return $$("#whyOpts button").filter(b => b.getAttribute("aria-pressed") === "true").map(b => b.dataset.why);
 }
+/* the job answer, or null: {feat: key} and, for "other", {txt: their words} */
+function cleanJob(v){
+  v = String(v || "").replace(/[\u0000-\u001f\u007f<>]/g, " ").replace(/\s+/g, " ").trim().slice(0, 30);
+  // an address, a phone number or a link is contact details, not a job
+  return /@|https?:|www\.|\d[\d\s().-]{5,}\d/i.test(v) ? "" : v;
+}
+function jobPicked(){
+  const b = $$("#jobOpts button").find(b => b.getAttribute("aria-pressed") === "true");
+  if (!b) return null;
+  const txt = b.dataset.job === "other" ? cleanJob($("#jobText").value) : "";
+  return txt ? {feat: "other", txt: txt} : {feat: b.dataset.job};
+}
+function paintWhySend(){
+  $("#whySend").disabled = !whyPicked().length && !jobPicked();
+}
 $$("#whyOpts button").forEach(b => b.addEventListener("click", () => {
   b.setAttribute("aria-pressed", String(b.getAttribute("aria-pressed") !== "true"));
-  $("#whySend").disabled = !whyPicked().length;
+  paintWhySend();
 }));
+$$("#jobOpts button").forEach(b => b.addEventListener("click", () => {
+  const on = b.getAttribute("aria-pressed") !== "true";
+  $$("#jobOpts button").forEach(o => o.setAttribute("aria-pressed", String(o === b && on)));
+  const other = on && b.dataset.job === "other";
+  $("#jobText").hidden = !other;
+  if (other) $("#jobText").focus();
+  paintWhySend();
+}));
+$("#jobText").addEventListener("keydown", e => {
+  if (e.key === "Enter" && !$("#whySend").disabled){ e.preventDefault(); $("#whySend").click(); }
+});
 $("#whySend").addEventListener("click", () => {
-  const keys = whyPicked();
-  if (keys.length) answerWhy(keys);
+  const keys = whyPicked(), job = jobPicked();
+  if (keys.length || job) answerWhy(keys, job);
 });
 $("#whySkip").addEventListener("click", () => answerWhy(["skip"]));
 
@@ -3093,6 +3161,7 @@ $("#statsToggle").addEventListener("click", () => {
   statsSave();
   paintStatsToggle();
 });
+/* /WEB-ONLY */
 
 /* =====================================================================
    Today's numbers, for the owner only.
@@ -3100,6 +3169,7 @@ $("#statsToggle").addEventListener("click", () => {
    /?admin=<STATS_KEY>). Visitors never see it — a public counter showing
    single digits is worse than no counter.
    ===================================================================== */
+/* WEB-ONLY: function paintToday(){} */
 const ADMIN_KEY = "dc.admin";
 function adminKey(){
   try { return localStorage.getItem(ADMIN_KEY) || ""; } catch { return ""; }
@@ -3134,6 +3204,7 @@ async function paintToday(){
     el.hidden = false;
   } catch {}
 }
+/* /WEB-ONLY */
 
 /* Contact. Assembled at runtime so the served HTML holds no scrapable address.
    To change it, edit the three parts below and nothing else. */
@@ -3346,6 +3417,7 @@ function startLayout(item){
   copyBoxes(S.layout, item);
 }
 
+/* WEB-ONLY: function acctBoot(){} function signinOpen(){ return false; } */
 /* ---- account ---- */
 function acctRead(){
   try { const v = JSON.parse(localStorage.getItem(ACCT_STORE) || "null"); return (v && v.session) || ""; }
@@ -3595,6 +3667,7 @@ $("#signin").addEventListener("click", e => { if (e.target === e.currentTarget) 
 document.addEventListener("keydown", e => {
   if (signinOpen() && e.key === "Escape"){ closeSignin(); e.preventDefault(); }
 }, true);
+/* /WEB-ONLY */
 
 /* =====================================================================
    First-run walkthrough
@@ -3700,7 +3773,7 @@ document.addEventListener("keydown", e => {
   let seen = null;
   try { seen = localStorage.getItem("mc.tour"); } catch {}
   if (!seen) $("#tourBtn").classList.add("pulse");
-  loadSample().catch(err => console.error(err));
+  if (!(EXTENSION && location.hash.startsWith("#src="))) loadSample().catch(err => console.error(err));
 })();
 
 /* expose a tiny hook for automated checks */

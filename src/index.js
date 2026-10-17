@@ -16,9 +16,10 @@ export { Archive } from "./archive.js";
 
 // visit … tour come from the stills page; why is its one question after an
 // export; preset is a saved or loaded preset (never its name or contents);
+// job is the optional line under it (what the person does);
 // vvisit and vexport are the video page.
 const ALLOWED_EVENTS = new Set(["visit", "add", "export", "skip", "use", "tour",
-                                "why", "preset", "vvisit", "vexport"]);
+                                "why", "job", "preset", "vvisit", "vexport"]);
 const MAX_BODY = 1024;
 const BOT_UA = /bot|crawler|spider|crawl|slurp|headless|phantom|puppeteer|playwright|python-requests|curl\/|wget|scrapy|monitor|preview|fetch|http-client|axios|okhttp/;
 
@@ -94,7 +95,8 @@ async function recordEvent(request, env, ctx) {
       str(d.out, 8),                             // blob7  native | fixed
       str(d.id, 24),                             // blob8  anonymous id
       vw > 0 && vw < 820 ? "mobile" : "desktop", // blob9  device class
-      str(d.feat, 24)                            // blob10 feature key ('use') / purpose ('why') / save|load ('preset')
+      str(d.feat, 24),                           // blob10 feature key ('use') / purpose ('why') / job key ('job') / save|load ('preset')
+      d.e === "job" ? cleanJob(d.txt) : ""       // blob11 a job in the person's own words ('job' with "other")
     ],
     doubles: [
       num(d.v),      // double1  visit number for this browser
@@ -124,6 +126,14 @@ async function recordEvent(request, env, ctx) {
   }
 
   return noContent();
+}
+
+/* The one typed answer the page sends. Short, one line, and never contact
+   details — the page filters the same way, this is the copy that counts. */
+export function cleanJob(v) {
+  if (typeof v !== "string") return "";
+  v = v.replace(/[\u0000-\u001f\u007f<>]/g, " ").replace(/\s+/g, " ").trim().slice(0, 30);
+  return /@|https?:|www\.|\d[\d\s().-]{5,}\d/i.test(v) ? "" : v;
 }
 
 function noContent() {

@@ -1,0 +1,6 @@
+{
+  "name": { "message": "DetailCrop – Multi Crop for images" },
+  "description": { "message": "Crop several fixed-ratio details out of every image in a batch and save them as one zip. Nothing is uploaded." },
+  "actionTitle": { "message": "Open DetailCrop" },
+  "openWith": { "message": "Open with DetailCrop" }
+}

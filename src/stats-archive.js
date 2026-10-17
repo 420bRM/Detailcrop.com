@@ -16,7 +16,7 @@ import { archive, BLOBS, DOUBLES } from "./archive.js";
 
 const DATASET = "detailcrop_events";
 const DAY = 86400000;
-const NAMES = ["time", "event", "lang", "country", "ref", "ratio", "fmt", "out", "id", "device", "feat",
+const NAMES = ["time", "event", "lang", "country", "ref", "ratio", "fmt", "out", "id", "device", "feat", "text",
   "visit", "n", "iw", "ih", "mb", "crops", "ow", "oh", "q", "sample", "grid", "bad", "huge",
   "rot", "persp", "secs", "step"];
 

@@ -1,0 +1,836 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="naver-site-verification" content="d3f153a78cae843ba9debf13f66f479e10a227dd">
+<title>DetailCrop</title>
+<meta name="description" content="Pull several fixed-ratio detail crops out of every image in a batch, then download them all as a zip. Runs entirely in your browser — nothing is uploaded.">
+
+
+<link rel="icon" href="icons/icon-32.png">
+<link rel="stylesheet" href="ext.css">
+<style>
+/* ============================================================
+   Palette lifted from the night-city plate:
+   sky #0d151b · building teal #178bbd · lit window #cdaa53
+   neon coral #fc6847 · van green #71e666 · fog #f4eddf
+   Committed dark: this tool is a night scene on purpose.
+   ============================================================ */
+:root{
+  color-scheme:dark;
+  --sky:#080d12; --ground:#0a1016; --panel:#12212a; --panel-2:#162a34;
+  --sunk:#0d1a21; --line:#254250; --line-soft:#1a2f3a;
+  --ink:#e6f0f2; --ink-2:#a8c3ca; --muted:#6d8b96;
+  --amber:#e8b45a; --teal:#35b7e0; --coral:#fc6847; --green:#71e666; --fog:#f4eddf;
+  --acc:var(--amber); --ok:var(--green); --warn:var(--coral);
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 30px rgba(0,0,0,.42);
+  --stage:#05090c;
+  --display:Newsreader,Georgia,serif;
+  --b1:#e8b45a; --b2:#71e666; --b3:#fc6847; --b4:#35b7e0; --b5:#f4eddf; --b6:#e57ec0;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(150% 70% at 50% 0%, #12222c 0%, #0b131a 48%, var(--sky) 100%)
+    fixed no-repeat var(--sky);
+  color:var(--ink);
+  font-family:Archivo,'Pretendard','Apple SD Gothic Neo','Hiragino Sans','Noto Sans JP','Malgun Gothic',system-ui,sans-serif;
+  font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased;
+  /* Korean and Japanese break between words, not inside them */
+  word-break:keep-all; overflow-wrap:break-word;
+}
+h1,h2,h3{margin:0; text-wrap:balance}
+button{font:inherit; color:inherit; cursor:pointer}
+input,select{font:inherit; color:inherit}
+img{max-width:100%}
+[hidden]{display:none !important}
+::selection{background:rgba(232,180,90,.3)}
+
+.wrap{max-width:1500px; margin:0 auto; padding-inline:16px; padding-block:20px 48px}
+
+/* ---------- header ---------- */
+header.bar{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 18px; margin-bottom:16px}
+.brand{
+  font-family:var(--display); font-size:26px; letter-spacing:.01em; color:var(--fog);
+  text-shadow:0 0 26px rgba(232,180,90,.22); line-height:1.1;
+}
+.brand a{color:inherit; text-decoration:none}
+.brand a:hover{color:#fff}
+.brand em{font-style:italic; color:var(--amber)}
+.tagline{color:var(--muted); font-size:13px; max-width:64ch; margin:0}
+.spacer{flex:1 1 auto}
+/* header actions */
+.headBtns{display:flex; gap:8px; flex:0 0 auto}
+.hbtn{
+  background:var(--sunk); border:1px solid var(--line); border-radius:3px;
+  padding:5px 11px; font-size:12px; color:var(--ink-2); white-space:nowrap;
+}
+.hbtn:hover{border-color:var(--teal); color:var(--ink)}
+a.hbtn{text-decoration:none; display:inline-block}
+.hbtn[aria-pressed="true"]{background:var(--amber); color:#12100b; border-color:var(--amber); font-weight:600}
+@keyframes hintPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(232,180,90,.55)}
+  50%{box-shadow:0 0 0 9px rgba(232,180,90,0)}
+}
+.hbtn.pulse{border-color:var(--amber); color:var(--amber); animation:hintPulse 1.9s ease-out infinite}
+@media (prefers-reduced-motion:reduce){ .hbtn.pulse{animation:none; background:rgba(232,180,90,.14)} }
+
+.langs{display:flex; border:1px solid var(--line); border-radius:3px; overflow:hidden; flex:0 0 auto; background:var(--sunk)}
+.langs button{background:transparent; border:0; padding:5px 10px; font-size:12px; letter-spacing:.06em; border-right:1px solid var(--line-soft); color:var(--ink-2)}
+.langs button:last-child{border-right:0}
+.langs button[aria-pressed="true"]{background:var(--amber); color:#12100b; font-weight:600}
+
+/* ---------- hero / dropzone ---------- */
+.shell{display:grid; grid-template-columns:340px minmax(0,1fr); gap:18px; align-items:start}
+.shell.introonly, .shell.wide{grid-template-columns:minmax(0,1fr)}
+.shell.wide .drop{display:none}
+@media (max-width:1280px){ .shell{grid-template-columns:minmax(0,1fr)} }
+
+.drop{
+  position:relative; isolation:isolate; overflow:hidden;
+  border:1px solid var(--line); border-radius:6px;
+  height:clamp(430px, calc(100vh - 128px), 920px);
+  display:flex; flex-direction:column; justify-content:center;
+  padding:32px 22px; text-align:center;
+  position:sticky; top:16px;
+  background:var(--sunk) center 74% / cover no-repeat;
+  transition:border-color .18s, box-shadow .18s;
+}
+.shell.introonly .drop{height:clamp(400px,66vh,660px); position:relative; top:0}
+@media (max-width:1280px){
+  .drop{height:auto; min-height:330px; position:relative; top:0; padding-block:30px}
+}
+.drop::before{                       /* night grade over the plate */
+  content:""; position:absolute; inset:0; z-index:-2;
+  background:linear-gradient(to bottom,
+    rgba(8,13,18,.58) 0%, rgba(8,13,18,.30) 20%,
+    rgba(7,12,17,.62) 48%, rgba(9,15,21,.80) 74%, rgba(9,15,21,.96) 100%);
+}
+.drop::after{                        /* the street fog rolling in */
+  content:""; position:absolute; left:-12%; right:-12%; bottom:-6%; height:62%; z-index:-1;
+  background:radial-gradient(120% 100% at 50% 100%,
+    rgba(226,235,240,.17) 0%, rgba(214,228,236,.07) 40%, transparent 72%);
+  filter:blur(8px); pointer-events:none;
+}
+.drop.hot{border-color:var(--amber); box-shadow:0 0 0 1px var(--amber), 0 0 44px rgba(232,180,90,.22) inset}
+.dropinner{position:relative; z-index:1; max-width:52ch; margin:0 auto}
+.drop h2{font-family:inherit; font-size:clamp(21px,1.8vw,27px); font-weight:600; letter-spacing:-.01em; line-height:1.34; margin-bottom:10px; color:var(--fog); text-shadow:0 2px 16px rgba(6,10,14,.9)}
+.drop p{color:#c2d3da; margin:0 auto 18px; max-width:46ch; text-shadow:0 1px 10px rgba(6,10,14,.9)}
+.drop .note{font-size:12px; color:#93acb6; margin:16px 0 0; text-shadow:0 1px 8px rgba(6,10,14,.9)}
+.heroBtns{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
+.heroBtns .btn{width:auto; padding-inline:20px}
+.strip.hot{border-color:var(--amber)}
+
+/* ---------- filmstrip ---------- */
+.strip{
+  display:flex; gap:6px; overflow-x:auto; padding:8px; background:var(--sunk);
+  border:1px solid var(--line-soft); border-radius:4px; margin-bottom:14px; align-items:center;
+}
+.thumbwrap{position:relative; flex:0 0 auto; line-height:0}
+.rm{
+  position:absolute; top:-5px; right:-5px; width:17px; height:17px; padding:0; border-radius:50%;
+  border:1px solid var(--line); background:var(--panel); color:var(--muted);
+  font-size:12px; line-height:1; display:none; place-items:center;
+}
+.thumbwrap:hover .rm, .rm:focus-visible{display:grid}
+.rm:hover{color:var(--coral); border-color:var(--coral)}
+.thumb{
+  display:block; width:46px; height:62px; border:1px solid var(--line); background-size:cover;
+  background-position:center; border-radius:2px; padding:0; position:relative; opacity:.5;
+  transition:opacity .12s, outline-color .12s; outline:2px solid transparent; outline-offset:1px;
+}
+.thumb:hover{opacity:.85}
+.thumb[aria-current="true"]{opacity:1; outline-color:var(--amber)}
+.thumb .badge{
+  position:absolute; left:0; right:0; bottom:0; background:rgba(232,180,90,.94); color:#12100b;
+  font-size:9px; font-weight:700; letter-spacing:.02em; text-align:center; padding:2px 0 1px;
+}
+.thumb .pip{position:absolute; right:2px; bottom:2px; width:8px; height:8px; border-radius:50%; box-shadow:0 0 0 2px var(--sunk); background:var(--muted)}
+.thumb.done .pip{background:var(--green)}
+.thumb.skip{filter:grayscale(1)}
+.addmore{
+  flex:0 0 auto; width:46px; height:62px; border:1px dashed var(--line); background:transparent;
+  border-radius:2px; color:var(--muted); font-size:20px; line-height:1;
+}
+.addmore:hover{border-color:var(--amber); color:var(--amber)}
+
+/* ---------- layout ---------- */
+.split{display:grid; grid-template-columns:minmax(0,1fr) 316px; gap:18px; align-items:start}
+.center{display:flex; flex-direction:column; gap:18px; min-width:0}
+.underStage{display:grid; grid-template-columns:repeat(auto-fit,minmax(258px,1fr)); gap:18px; align-items:start}
+/* export, then the shortcuts under it, in the second column under the stage */
+.stackCol{display:flex; flex-direction:column; gap:18px; min-width:0}
+@media (max-width:960px){ .split{grid-template-columns:minmax(0,1fr)} }
+
+.stagewrap{
+  background:var(--stage); border:1px solid var(--line-soft); border-radius:4px;
+  padding:20px; display:flex; justify-content:center; min-height:220px; align-items:center;
+  box-shadow:inset 0 0 80px rgba(0,0,0,.6);
+}
+.stage{position:relative; user-select:none; touch-action:none; max-width:100%; overflow:hidden; line-height:0}
+.stage img{
+  position:absolute; left:50%; top:50%; transform-origin:50% 50%;
+  max-width:none; max-height:none; display:block; pointer-events:none;
+}
+/* level guide, shown only while the straighten control is in use */
+.sgrid{
+  position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .14s;
+  background-image:linear-gradient(rgba(255,255,255,.38) 1px, transparent 1px),
+                   linear-gradient(90deg, rgba(255,255,255,.38) 1px, transparent 1px);
+  background-size:12.5% 12.5%;
+}
+.sgrid.on{opacity:1}
+.sgrid::after{
+  content:""; position:absolute; inset:0;
+  border:1px solid rgba(255,255,255,.55);
+}
+/* ---------- alignment section ----------
+   Rotating and un-keystoning a photo is a different job from placing crop
+   boxes, and most visits never need it, so it folds away and starts closed.
+   Closed is not hidden: if the current image is warped, the header carries
+   the numbers and turns amber, or the picture on the stage would look wrong
+   for no visible reason. */
+.align{margin-top:14px; border-top:1px solid var(--line-soft); padding-top:9px}
+.disc{
+  display:flex; align-items:center; gap:8px; width:100%; min-width:0;
+  background:transparent; border:0; padding:3px 0; cursor:pointer; text-align:left;
+  font:inherit; font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--muted); transition:color .16s;
+}
+.disc:hover{color:var(--ink-2)}
+.align[data-live="1"] .disc{color:var(--ink-2)}
+.disc-ic{
+  flex:0 0 auto; width:0; height:0; border-left:5px solid currentColor;
+  border-top:4px solid transparent; border-bottom:4px solid transparent;
+  transform-origin:2px 50%; transition:transform .16s;
+}
+.disc[aria-expanded="true"] .disc-ic{transform:rotate(90deg)}
+.disc-sum{
+  margin-left:auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  font-size:11px; letter-spacing:.02em; text-transform:none;
+  color:var(--amber); font-variant-numeric:tabular-nums;
+}
+.disc[aria-expanded="true"] .disc-sum{display:none}
+@media (prefers-reduced-motion:reduce){ .disc, .disc-ic{transition:none} }
+
+/* ---------- presets ----------
+   The same fold as the alignment panel, at the foot of Settings: one grey
+   line until it is opened, so a first visit sees almost nothing new. The
+   folded line names the preset used last, which is all a returning visitor
+   needs to know before opening it. */
+.presets{margin-top:14px; border-top:1px solid var(--line-soft); padding-top:9px}
+.presets .disc-sum{color:var(--ink-2)}
+.psave{display:flex; gap:6px; margin-top:8px}
+.psave input{flex:1 1 auto}
+.psave .btn{width:auto; flex:0 0 auto; padding:6px 12px}
+.plist{list-style:none; margin:8px 0 0; padding:0}
+.plist li{display:flex; align-items:center; gap:10px; padding:6px 0; border-bottom:1px solid var(--line-soft); font-size:13px}
+.plist .pname{flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--ink-2)}
+.plist .plast{font-size:10px; letter-spacing:.06em; color:var(--amber); margin-left:6px}
+.plist .linkbtn{flex:0 0 auto}
+.acctLine{display:flex; flex-wrap:wrap; align-items:center; gap:4px 14px; margin:12px 0 0; font-size:12px; color:var(--muted)}
+.acctLine #acctWho{flex:1 1 100%; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+/* a padlock, drawn as a mask so it takes the colour of the text around it —
+   the same mark lottodraw.kr puts on its members-only buttons */
+.lock-tag{display:inline-block; flex:0 0 auto; width:10px; height:10px; margin-left:2px; vertical-align:-1px; background:currentColor;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 7V5a4 4 0 1 1 8 0v2h1a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1zm2 0h4V5a2 2 0 1 0-4 0v2z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 7V5a4 4 0 1 1 8 0v2h1a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1zm2 0h4V5a2 2 0 1 0-4 0v2z'/%3E%3C/svg%3E") center / contain no-repeat}
+.lock-tag[hidden]{display:none}
+.lockNote{display:inline-flex; align-items:center; gap:4px; letter-spacing:.04em}
+.lockNote[hidden]{display:none}
+
+/* ---------- sign-in box ----------
+   Only ever opened by a members-only control. Google's button is loaded into
+   it on demand, so the page itself carries no third-party script. */
+.signin{position:fixed; inset:0; z-index:70; display:grid; place-items:center; padding:16px; background:rgba(4,8,11,.72)}
+.signin[hidden]{display:none}
+.signinBox{position:relative; width:100%; max-width:360px; background:var(--panel); border:1px solid var(--line); border-radius:6px; box-shadow:var(--shadow); padding:20px 18px 16px}
+.signinBox h2{margin:0 0 8px; font-size:16px; font-weight:600; color:var(--ink)}
+.signinX{position:absolute; top:8px; right:10px; background:none; border:0; font-size:20px; line-height:1; color:var(--muted); padding:4px}
+.signinX:hover{color:var(--ink)}
+.signinWhy{margin:0 0 8px; font-size:13px; color:var(--amber)}
+.signinWhy:empty{display:none}
+.signinLead{margin:0 0 14px; font-size:13px; line-height:1.6; color:var(--ink-2)}
+/* Google draws its button in an iframe that declares a light colour scheme.
+   On a page that declares dark, the browser backs such an iframe with an
+   opaque white box — so this one spot says light too, and the box goes. */
+.signinBtn{min-height:44px; display:flex; justify-content:center; align-items:center; font-size:12px; color:var(--muted); text-align:center; color-scheme:light}
+.signinFine{margin:14px 0 0; font-size:11.5px; line-height:1.6; color:var(--muted)}
+
+/* ---------- alignment gauges ----------
+   These three read from the centre, not from the left, so they are built
+   like a levelling instrument: a scale with a centre detent and quarter
+   marks, a fill that grows out of the detent in the direction you drag, and
+   a blade instead of a knob. A row stays grey until its axis is off zero, so
+   a glance down the stack says which ones you have touched. */
+.rotrow{display:flex; align-items:center; gap:10px; margin-top:10px; --p:0}
+.rotrow label{
+  font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted);
+  flex:0 0 52px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  transition:color .16s
+}
+.rotrow[data-live="1"] label{color:var(--ink-2)}
+
+.rottrack{
+  position:relative; flex:1 1 auto; min-width:0; height:24px;
+  display:flex; align-items:center; cursor:ew-resize;
+}
+.rottrack::before{                     /* groove and scale */
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:
+    linear-gradient(var(--ink-2), var(--ink-2))     50% 50% / 1px 11px no-repeat,
+    linear-gradient(var(--line), var(--line))       25% 50% / 1px 6px  no-repeat,
+    linear-gradient(var(--line), var(--line))       75% 50% / 1px 6px  no-repeat,
+    linear-gradient(var(--sunk), var(--sunk))        0  50% / 100% 2px no-repeat;
+}
+.rottrack::after{                      /* fill, grown out of the detent */
+  content:""; position:absolute; top:50%; height:2px; margin-top:-1px; border-radius:1px;
+  left:calc(50% + min(0%, calc(var(--p) * 50%)));
+  width:max(calc(var(--p) * 50%), calc(var(--p) * -50%));
+  background:var(--amber); box-shadow:0 0 9px -1px var(--amber); pointer-events:none;
+}
+.rottrack input[type=range]{
+  position:relative; z-index:1; width:100%; height:24px; margin:0;
+  -webkit-appearance:none; appearance:none; background:transparent; cursor:ew-resize;
+}
+.rottrack input[type=range]::-webkit-slider-runnable-track{height:2px; background:transparent}
+.rottrack input[type=range]::-moz-range-track{height:2px; background:transparent}
+.rottrack input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; appearance:none; width:4px; height:20px; margin-top:-9px;
+  border:0; border-radius:1px; background:var(--fog);
+  box-shadow:0 0 0 1px rgba(0,0,0,.7), 0 0 12px -2px var(--amber);
+}
+.rottrack input[type=range]::-moz-range-thumb{
+  width:4px; height:20px; border:0; border-radius:1px; background:var(--fog);
+  box-shadow:0 0 0 1px rgba(0,0,0,.7), 0 0 12px -2px var(--amber);
+}
+.rottrack input[type=range]:focus-visible{outline:none}
+.rottrack input[type=range]:focus-visible::-webkit-slider-thumb{
+  box-shadow:0 0 0 1px var(--sky), 0 0 0 3px var(--teal)}
+.rottrack input[type=range]:focus-visible::-moz-range-thumb{
+  box-shadow:0 0 0 1px var(--sky), 0 0 0 3px var(--teal)}
+
+.rotVal{
+  flex:0 0 auto; min-width:56px; background:var(--sunk); border:1px solid var(--line-soft);
+  border-radius:3px; padding:4px 6px; font-size:12px; color:var(--muted);
+  font-variant-numeric:tabular-nums; text-align:center; cursor:pointer;
+  transition:color .16s, border-color .16s;
+}
+.rotrow[data-live="1"] .rotVal{color:var(--amber); border-color:var(--line)}
+.rotVal:hover{border-color:var(--teal); color:var(--ink)}
+@media (prefers-reduced-motion:reduce){ .rotrow label, .rotVal{transition:none} }
+
+.box{position:absolute; cursor:move}
+.box .edge{position:absolute; inset:0; border:2px solid var(--bc); border-radius:1px}
+.box .win{position:absolute; inset:0; box-shadow:0 0 0 1px rgba(255,255,255,.3) inset}
+.box .tag{position:absolute; top:-2px; left:-2px; background:var(--bc); color:#0a0f13; font-size:12px; font-weight:600; line-height:1; letter-spacing:.04em; padding:4px 8px; border-radius:0 0 4px 0}
+.box[data-sel="true"] .edge{border-width:3px; box-shadow:0 0 18px -2px var(--bc)}
+.box[data-dim="true"]{opacity:.6}
+.box[data-dim="true"] .edge{border-width:1.5px; border-style:dashed}
+.box[data-dim="true"] .win{box-shadow:none}
+.box[data-dim="true"] .grip{display:none}
+.box[data-dim="true"]:hover{opacity:.9}
+.box .grip{position:absolute; right:-8px; bottom:-8px; width:16px; height:16px; background:var(--bc); border:2px solid rgba(10,15,19,.7); border-radius:50%; cursor:nwse-resize}
+
+/* ---------- cards ---------- */
+.rail{display:flex; flex-direction:column; gap:14px; min-width:0}
+/* Beside the stage, the crop controls follow the page down: tuning a setting
+   under the picture should not cost the way back up to "Confirm & next".
+   A screen too short for the whole column scrolls inside it instead of
+   hiding its foot. Stacked (narrow) layouts scroll as one page, as before. */
+@media (min-width:961px){
+  .rail{position:sticky; top:14px; max-height:calc(100vh - 28px); overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin}
+}
+.card{background:var(--panel); border:1px solid var(--line-soft); border-radius:4px; box-shadow:var(--shadow)}
+.card .hd{padding:10px 12px; border-bottom:1px solid var(--line-soft); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); display:flex; align-items:center; justify-content:space-between; gap:8px}
+.card .bd{padding:12px}
+.sub .pick{letter-spacing:.02em; text-transform:none; color:var(--bc, var(--amber)); font-weight:600}
+.seg.ofcrop button[aria-pressed="true"]{background:var(--bc, var(--amber))}
+.sub{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin:14px 0 6px}
+.sub:first-child{margin-top:0}
+
+.worktitle{font-family:inherit; font-size:16px; font-weight:600; letter-spacing:-.005em; word-break:break-all; color:var(--fog)}
+.metaline{color:var(--muted); font-size:12px; font-variant-numeric:tabular-nums; margin-top:2px}
+
+.crops{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
+.crop{min-width:0; background:none; border:0; padding:0; text-align:center}
+/* the preview is a scaled copy of the stage, same transform, so a tilt or a
+   keystone shows up here the moment the slider moves */
+.crop .pv{position:relative; width:100%; overflow:hidden; background:var(--sunk); border-radius:2px}
+/* frame drawn over the image rather than as a border, so the box keeps the
+   exact aspect ratio of the crop it stands for */
+.crop .pv::after{content:""; position:absolute; inset:0; border:2px solid var(--bc);
+  border-radius:2px; pointer-events:none}
+.crop .pv img{position:absolute; left:50%; top:50%; transform-origin:50% 50%;
+  max-width:none; max-height:none; display:block; pointer-events:none}
+.crop[data-sel="true"] .pv{outline:2px solid var(--fog); outline-offset:2px}
+.crop .cap{font-size:11px; color:var(--muted); margin-top:4px; letter-spacing:.06em; display:block}
+
+.seg{display:flex; border:1px solid var(--line); border-radius:3px; overflow:hidden; background:var(--sunk)}
+.seg button{flex:1 1 0; background:transparent; border:0; padding:7px 2px; font-size:13px; font-variant-numeric:tabular-nums; border-right:1px solid var(--line-soft); color:var(--ink-2)}
+.seg button:last-child{border-right:0}
+.seg button:hover:not(:disabled){color:var(--ink); background:rgba(53,183,224,.08)}
+.seg button[aria-pressed="true"]{background:var(--amber); color:#12100b; font-weight:600}
+.seg button:disabled{opacity:.35; cursor:not-allowed}
+.seg.wrapseg{flex-wrap:wrap}
+.seg.wrapseg button{flex:1 0 30%; border-bottom:1px solid var(--line-soft)}
+
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:6px; width:100%; background:rgba(18,33,42,.7); border:1px solid var(--line); border-radius:3px; padding:9px 10px; font-size:13px; color:var(--ink-2); transition:border-color .14s, color .14s, background .14s}
+.btn:hover:not(:disabled){border-color:var(--teal); color:var(--ink)}
+.btn.primary{background:var(--amber); color:#12100b; border-color:var(--amber); font-weight:600}
+.btn.primary:hover:not(:disabled){background:#f3c471; border-color:#f3c471; color:#12100b}
+.btn:disabled{opacity:.4; cursor:not-allowed}
+.row{display:flex; gap:8px}
+
+.padwrap{display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center; margin-top:12px}
+.pad{display:grid; grid-template-columns:repeat(3,38px); grid-template-rows:repeat(3,32px); gap:4px; justify-content:center}
+.pad button{background:var(--sunk); border:1px solid var(--line); border-radius:3px; padding:0; font-size:14px; line-height:1; display:grid; place-items:center; color:var(--ink-2)}
+.pad button:hover{background:var(--panel-2); border-color:var(--teal); color:var(--ink)}
+.pad button:active{background:var(--amber); color:#12100b; border-color:var(--amber)}
+.pad .mid{background:transparent; border:0; cursor:default; font-size:10px; color:var(--muted); letter-spacing:.06em}
+.pad .mid:hover{background:transparent}
+.sizecol{display:flex; flex-direction:column; gap:4px}
+.sizecol button{width:54px; height:32px; background:var(--sunk); border:1px solid var(--line); border-radius:3px; font-size:13px; color:var(--ink-2)}
+.sizecol button:hover{background:var(--panel-2); border-color:var(--teal); color:var(--ink)}
+.sizecol button:active{background:var(--amber); color:#12100b; border-color:var(--amber)}
+.sizecol .lbl{font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); text-align:center}
+
+.readout{font-size:11.5px; color:var(--muted); font-variant-numeric:tabular-nums; margin-top:8px; display:flex; justify-content:space-between; gap:10px; border-top:1px solid var(--line-soft); padding-top:8px}
+.readout b{color:var(--teal); font-weight:500}
+
+.field{display:flex; align-items:center; gap:8px; margin-top:8px}
+.field label{font-size:12px; color:var(--muted); flex:0 0 auto}
+input[type=text],input[type=number],select{
+  background:var(--sunk); border:1px solid var(--line); border-radius:3px; padding:6px 8px;
+  font-size:13px; min-width:0; width:100%; font-variant-numeric:tabular-nums; color:var(--ink);
+}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--amber); outline-offset:1px}
+.xy{display:flex; align-items:center; gap:6px}
+.xy span{color:var(--muted)}
+input[type=range]{width:100%; accent-color:var(--amber)}
+
+.hint{font-size:12px; color:var(--muted); line-height:1.7; margin:0}
+.hint kbd{font-family:inherit; font-size:11px; border:1px solid var(--line); border-bottom-width:2px; border-radius:3px; padding:1px 5px; color:var(--teal); background:var(--sunk)}
+.warn{color:var(--coral); font-size:12px; margin:8px 0 0}
+.okmsg{color:var(--green); font-size:12px; margin:8px 0 0}
+.why{margin-top:12px; padding:10px; border:1px solid var(--line); border-radius:3px; background:var(--sunk)}
+.whyQ{margin:0 0 8px; font-size:13px; color:var(--ink)}
+.whyOpts{display:flex; flex-wrap:wrap; gap:6px}
+.whyOpts button{background:transparent; border:1px solid var(--line); border-radius:3px; padding:5px 8px; font-size:12px; line-height:1.4; color:var(--ink-2); text-align:left}
+.whyOpts button:hover{border-color:var(--teal); color:var(--ink)}
+.whyOpts button[aria-pressed="true"]{background:var(--amber); border-color:var(--amber); color:#12100b; font-weight:600}
+.whyQ2{margin-top:12px}
+.jobText{display:block; width:100%; margin-top:8px; padding:6px 8px; font:inherit; font-size:12px; color:var(--ink); background:transparent; border:1px solid var(--line); border-radius:3px}
+.jobText:focus{outline:none; border-color:var(--teal)}
+.whyFoot{display:flex; align-items:center; gap:14px; margin-top:10px}
+.btn.whySend{width:auto; padding:6px 16px}
+
+.progress{display:flex; align-items:baseline; gap:8px; font-variant-numeric:tabular-nums}
+.progress b{font-family:var(--display); font-size:26px; font-weight:500; color:var(--fog)}
+.pbar{height:3px; background:var(--sunk); border-radius:2px; overflow:hidden; margin-top:8px}
+.pbar i{display:block; height:100%; background:var(--green); width:0%; transition:width .18s; box-shadow:0 0 10px var(--green)}
+
+footer{margin-top:34px; padding-top:18px; border-top:1px solid var(--line-soft); color:var(--muted); font-size:12px}
+footer a{color:var(--teal); text-decoration:none; border-bottom:1px solid transparent}
+footer a:hover{border-bottom-color:var(--teal)}
+
+/* ---------- first-run guided tour ---------- */
+.tour{position:fixed; inset:0; z-index:60; pointer-events:none}
+.tourRing{
+  position:absolute; border-radius:5px; pointer-events:none;
+  box-shadow:0 0 0 9999px rgba(3,6,9,.74), 0 0 0 2px var(--amber), 0 0 26px rgba(232,180,90,.45);
+  transition:left .32s cubic-bezier(.4,0,.2,1), top .32s cubic-bezier(.4,0,.2,1),
+             width .32s cubic-bezier(.4,0,.2,1), height .32s cubic-bezier(.4,0,.2,1);
+}
+.tourTip{
+  position:absolute; width:min(300px, calc(100vw - 28px)); pointer-events:auto;
+  background:var(--panel); border:1px solid var(--line); border-radius:6px;
+  padding:14px 15px 13px; box-shadow:0 18px 44px rgba(0,0,0,.6); text-align:left;
+  transition:left .32s cubic-bezier(.4,0,.2,1), top .32s cubic-bezier(.4,0,.2,1);
+}
+.tourStep{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--amber); margin:0 0 6px; font-variant-numeric:tabular-nums}
+.tourText{margin:0 0 13px; color:var(--ink); font-size:13.5px; line-height:1.6}
+.tourBtns{display:flex; gap:8px; align-items:center}
+.tourBtns .btn{width:auto; flex:0 0 auto; padding-inline:14px}
+.tourBtns .skip{margin-right:auto; background:none; border:0; color:var(--muted); font-size:12.5px; padding:6px 2px}
+.tourBtns .skip:hover{color:var(--ink-2); text-decoration:underline}
+.replayRow{margin-top:10px; padding-top:10px; border-top:1px solid var(--line-soft)}
+.linkbtn{background:none; border:0; padding:0; color:var(--teal); font-size:12px; text-decoration:none; border-bottom:1px solid transparent}
+.linkbtn:hover{border-bottom-color:var(--teal)}
+
+/* ---------- footer ---------- */
+footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14px 40px}
+@media (max-width:820px){ footer{grid-template-columns:minmax(0,1fr)} }
+.footLead{margin:0 0 7px; color:var(--ink-2); font-size:14px; font-weight:600; letter-spacing:-.005em}
+.footBody{margin:0; max-width:66ch; line-height:1.75}
+.footSide{display:flex; flex-direction:column; gap:5px}
+.footSide p{margin:0}
+.footLinks{display:flex; flex-wrap:wrap; gap:4px 16px; margin-bottom:6px !important; font-size:13px}
+
+.todayLine{
+  margin-top:10px; padding-top:9px; border-top:1px solid var(--line-soft);
+  font-size:12px; color:var(--muted); display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 10px;
+}
+.todayNum{font-size:16px; font-weight:700; color:var(--amber); font-variant-numeric:tabular-nums}
+.todayGeo{color:var(--teal); font-variant-numeric:tabular-nums; letter-spacing:.02em}
+.todayGeo::before{content:"·"; color:var(--muted); margin:0 7px 0 3px}
+
+
+/* ---------- the other tool, as a banner under the footer ----------
+   A link between two tools has to earn the trip, so it carries the pitch and
+   the accent colour of where it goes — teal for the video page, amber for
+   stills — and the light slides across it on hover. */
+.crossban{
+  position:relative; display:grid; grid-template-columns:6px minmax(0,1fr) auto;
+  align-items:center; gap:0 18px; margin-top:26px; padding:0; overflow:hidden; isolation:isolate;
+  border:1px solid var(--line-soft); border-radius:4px; text-decoration:none; color:inherit;
+  background:linear-gradient(100deg, var(--sunk) 0%, #10202a 52%, color-mix(in srgb, var(--cb) 16%, #10202a) 100%);
+  transition:border-color .18s, transform .18s;
+}
+.crossban:hover{border-color:var(--cb); transform:translateY(-1px)}
+.crossban::before{                       /* the slash of light that sweeps through */
+  content:""; position:absolute; z-index:-1; top:-40%; bottom:-40%; left:-30%; width:38%;
+  background:linear-gradient(90deg, transparent, color-mix(in srgb, var(--cb) 26%, transparent), transparent);
+  transform:translateX(-60%) skewX(-18deg); transition:transform .55s cubic-bezier(.22,.61,.36,1);
+}
+.crossban:hover::before{transform:translateX(320%) skewX(-18deg)}
+.cb-edge{align-self:stretch; background:var(--cb); box-shadow:0 0 22px -4px var(--cb)}
+.cb-text{padding:16px 0; min-width:0}
+.cb-kicker{display:block; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--cb)}
+.cb-title{display:block; font-family:var(--display); font-size:19px; color:var(--fog); margin-top:3px; letter-spacing:-.005em}
+.cb-title b{font-weight:400; font-style:italic; color:var(--cb)}
+.cb-title u{text-decoration:none; font-family:Archivo,system-ui,sans-serif; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-left:7px; vertical-align:middle}
+.cb-body{display:block; font-size:12.5px; color:var(--ink-2); margin-top:5px; max-width:60ch; line-height:1.6}
+.cb-go{padding:16px 20px 16px 0; font-size:12.5px; color:var(--cb); white-space:nowrap; font-weight:600}
+.cb-go i{font-style:normal; display:inline-block; transition:transform .18s}
+.crossban:hover .cb-go i{transform:translateX(4px)}
+@media (max-width:640px){
+  .crossban{grid-template-columns:4px minmax(0,1fr)}
+  .cb-go{grid-column:2; padding:0 0 16px}
+}
+@media (prefers-reduced-motion:reduce){
+  .crossban, .crossban::before, .cb-go i{transition:none}
+  .crossban:hover{transform:none}
+}
+.sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="bar">
+  <h1 class="brand"><a href="/" id="brandLink">Detail<em>Crop</em></a><span class="sr" data-i="h1sr"></span></h1>
+  <p class="tagline"><span data-i="tagline"></span><span id="memberLine" hidden> <span data-i="memberLine"></span></span></p>
+  <span class="spacer"></span>
+  <div class="headBtns">
+    <button type="button" class="hbtn" id="tourBtn" data-i="tourBtn"></button>
+    <button type="button" class="hbtn" id="wideBtn" aria-pressed="false"></button>
+  </div>
+  <div class="langs" role="group" aria-label="Language">
+    <button type="button" data-lang="en">EN</button>
+    <button type="button" data-lang="ko">한국어</button>
+    <button type="button" data-lang="ja">日本語</button>
+  </div>
+</header>
+
+<!-- ============ empty state ============ -->
+<div class="shell" id="shell">
+<section class="drop" id="drop">
+  <div class="dropinner">
+    <h2 data-i="dropTitle"></h2>
+    <p data-i="dropBody"></p>
+    <div class="heroBtns">
+      <button class="btn primary" id="pickBtn" data-i="pick"></button>
+      <button class="btn" id="sampleBtn" data-i="trySample"></button>
+    </div>
+    <p class="note" data-i="dropNote"></p>
+  </div>
+</section>
+
+<!-- ============ editor ============ -->
+<div id="work" class="work" hidden>
+  <div class="strip" id="strip" role="tablist" aria-label="Images"></div>
+
+  <div class="split">
+    <div class="center">
+      <div class="stagewrap">
+        <div class="stage" id="stage"><img id="art" alt="" data-i-alt="artAlt"><div class="sgrid" id="sgrid"></div></div>
+      </div>
+
+      <div class="underStage">
+        <section class="card">
+          <div class="hd" data-i="settings"></div>
+          <div class="bd">
+            <p class="sub"><span data-i="ratio"></span><span class="pick" id="ratioPick">—</span></p>
+            <div class="seg" id="scopeseg" style="margin-bottom:6px">
+              <button type="button" data-scope="all" data-i="scopeAll"></button>
+              <button type="button" data-scope="one" data-i="scopeOne"></button>
+            </div>
+            <div class="seg wrapseg" id="ratioseg"></div>
+            <p class="hint" id="ratioNote" style="margin:6px 0 0"></p>
+            <div class="field" id="customRatioRow">
+              <label data-i="custom"></label>
+              <div class="xy">
+                <input type="number" id="rw" min="1" step="1" inputmode="numeric" aria-label="Ratio width">
+                <span>:</span>
+                <input type="number" id="rh" min="1" step="1" inputmode="numeric" aria-label="Ratio height">
+              </div>
+            </div>
+
+            <p class="sub" data-i="feedHd"></p>
+          <div class="seg" id="feedseg">
+            <button type="button" data-feed="3" data-i="feed3"></button>
+            <button type="button" data-feed="6" data-i="feed6"></button>
+            <button type="button" data-feed="9" data-i="feed9"></button>
+            <button type="button" data-feed="0" data-i="feedOff"></button>
+          </div>
+          <p class="hint" id="feedNote" hidden data-i="feedNote" style="margin-top:8px"></p>
+
+          <p class="sub" data-i="outSize"></p>
+            <div class="seg" id="outseg">
+              <button type="button" data-out="native" data-i="outNative"></button>
+              <button type="button" data-out="fixed" data-i="outFixed"></button>
+            </div>
+            <div class="field" id="fixedRow">
+              <div class="xy">
+                <input type="number" id="ow" min="1" step="1" inputmode="numeric" aria-label="Output width">
+                <span>×</span>
+                <input type="number" id="oh" min="1" step="1" inputmode="numeric" aria-label="Output height">
+              </div>
+            </div>
+            <p class="hint" id="fixedNote" style="margin-top:6px" data-i="fixedNote"></p>
+
+            <p class="sub" data-i="format"></p>
+            <div class="seg" id="fmtseg">
+              <button type="button" data-fmt="image/webp">WebP</button>
+              <button type="button" data-fmt="image/jpeg">JPEG</button>
+              <button type="button" data-fmt="image/png">PNG</button>
+            </div>
+            <div class="field" id="qualityRow">
+              <label><span data-i="quality"></span> <b id="qval" style="color:var(--ink-2)">86</b></label>
+              <input type="range" id="quality" min="40" max="100" step="1" value="86">
+            </div>
+
+            <p class="sub" data-i="naming"></p>
+            <input type="text" id="pattern" spellcheck="false" aria-label="Filename pattern">
+            <p class="hint" style="margin-top:6px" data-i="namingNote"></p>
+
+            <div class="presets" id="presetPanel" hidden>
+              <button type="button" class="disc" id="presetToggle" aria-expanded="false" aria-controls="presetBody">
+                <span class="disc-ic" aria-hidden="true"></span>
+                <span data-i="presetHd"></span>
+                <span class="lockNote" id="presetLock"><span class="lock-tag" aria-hidden="true"></span><span data-i="presetLoginTag"></span></span>
+                <span class="disc-sum" id="presetSum"></span>
+              </button>
+              <div id="presetBody" hidden>
+                <p class="hint" style="margin-top:6px" data-i="presetNote"></p>
+                <div class="psave">
+                  <input type="text" id="presetName" maxlength="60" spellcheck="false" autocomplete="off" aria-label="Preset name">
+                  <button class="btn" type="button" id="presetSaveBtn"><span data-i="presetSave"></span><span class="lock-tag" hidden></span></button>
+                </div>
+                <ul class="plist" id="presetList"></ul>
+                <p class="hint" id="presetEmpty" style="margin-top:8px"></p>
+                <p class="hint" id="presetMsg" style="margin-top:8px" hidden></p>
+                <p class="acctLine" id="acctLine" hidden>
+                  <span id="acctWho"></span>
+                  <button type="button" class="linkbtn" id="acctOut" data-i="acctLogout"></button>
+                  <button type="button" class="linkbtn" id="acctDel" data-i="acctDelete"></button>
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="stackCol">
+        <section class="card">
+          <div class="hd" data-i="exportHd"></div>
+          <div class="bd">
+            <div class="progress"><b id="doneCount">0</b><span id="doneTotal">/ 0</span></div>
+            <div class="pbar"><i id="pbar"></i></div>
+            <p class="hint" id="exportSummary" style="margin-top:10px"></p>
+            <div style="margin-top:10px">
+              <button class="btn primary" type="button" id="exportAll" data-i="exportAll"></button>
+            </div>
+            <div style="margin-top:8px">
+              <button class="btn" type="button" id="exportOne" data-i="exportOne"></button>
+            </div>
+            <div style="margin-top:8px">
+              <button class="btn" type="button" id="clearAll" data-i="clearAll"></button>
+            </div>
+            <p class="okmsg" id="exportMsg" hidden></p>
+            <div class="why" id="whyBox" hidden>
+              <p class="whyQ" data-i="whyQ"></p>
+              <div class="whyOpts" id="whyOpts">
+                <button type="button" aria-pressed="false" data-why="shop" data-i="whyShop"></button>
+                <button type="button" aria-pressed="false" data-why="art" data-i="whyArt"></button>
+                <button type="button" aria-pressed="false" data-why="social" data-i="whySocial"></button>
+                <button type="button" aria-pressed="false" data-why="dataset" data-i="whyData"></button>
+                <button type="button" aria-pressed="false" data-why="photo" data-i="whyPhoto"></button>
+                <button type="button" aria-pressed="false" data-why="docs" data-i="whyDocs"></button>
+                <button type="button" aria-pressed="false" data-why="try" data-i="whyTry"></button>
+                <button type="button" aria-pressed="false" data-why="other" data-i="whyOther"></button>
+              </div>
+              <p class="whyQ whyQ2" data-i="jobQ"></p>
+              <div class="whyOpts" id="jobOpts">
+                <button type="button" aria-pressed="false" data-job="seller" data-i="jobSeller"></button>
+                <button type="button" aria-pressed="false" data-job="photo" data-i="jobPhoto"></button>
+                <button type="button" aria-pressed="false" data-job="creator" data-i="jobCreator"></button>
+                <button type="button" aria-pressed="false" data-job="marketer" data-i="jobMarketer"></button>
+                <button type="button" aria-pressed="false" data-job="other" data-i="jobOther"></button>
+              </div>
+              <input type="text" class="jobText" id="jobText" maxlength="30" autocomplete="off" hidden>
+              <div class="whyFoot">
+                <button type="button" class="btn primary whySend" id="whySend" data-i="whySend" disabled></button>
+                <button type="button" class="linkbtn" id="whySkip" data-i="whySkip"></button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="hd" data-i="shortcuts"></div>
+          <div class="bd">
+            <p class="hint" id="hintBody"></p>
+          </div>
+        </section>
+        </div>
+      </div>
+    </div>
+
+    <div class="rail">
+
+      <section class="card">
+        <div class="hd"><span id="counter">1 / 1</span><span id="ratiotag">—</span></div>
+        <div class="bd">
+          <h2 class="worktitle" id="wtitle">—</h2>
+          <div class="metaline" id="wmeta">—</div>
+
+          <div class="crops" id="crops" style="margin-top:12px"></div>
+
+          <p class="sub" data-i="cropCount"></p>
+          <div class="seg" id="countseg"></div>
+
+          <div class="padwrap">
+            <div class="pad">
+              <span class="mid"></span>
+              <button type="button" data-nudge="up" aria-label="Up">↑</button>
+              <span class="mid"></span>
+              <button type="button" data-nudge="left" aria-label="Left">←</button>
+              <span class="mid" data-i="move"></span>
+              <button type="button" data-nudge="right" aria-label="Right">→</button>
+              <span class="mid"></span>
+              <button type="button" data-nudge="down" aria-label="Down">↓</button>
+              <span class="mid"></span>
+            </div>
+            <div class="sizecol">
+              <span class="lbl" data-i="size"></span>
+              <button type="button" data-nudge="bigger" aria-label="Bigger">＋</button>
+              <button type="button" data-nudge="smaller" aria-label="Smaller">－</button>
+            </div>
+          </div>
+          <div class="align" id="alignPanel">
+            <button type="button" class="disc" id="alignToggle" aria-expanded="false" aria-controls="alignBody">
+              <span class="disc-ic" aria-hidden="true"></span>
+              <span data-i="alignTitle"></span>
+              <span class="disc-sum" id="alignSum"></span>
+            </button>
+            <div id="alignBody" hidden>
+              <div class="rotrow">
+                <label for="rotSlider" data-i="straighten"></label>
+                <span class="rottrack"><input type="range" id="rotSlider" min="-15" max="15" step="0.1" value="0"></span>
+                <button type="button" class="rotVal" id="rotReset">0.0°</button>
+              </div>
+              <div id="perspRows">
+                <div class="rotrow">
+                  <label for="khSlider" data-i="kHoriz"></label>
+                  <span class="rottrack"><input type="range" id="khSlider" min="-100" max="100" step="1" value="0"></span>
+                  <button type="button" class="rotVal" id="khReset">0</button>
+                </div>
+                <div class="rotrow">
+                  <label for="kvSlider" data-i="kVert"></label>
+                  <span class="rottrack"><input type="range" id="kvSlider" min="-100" max="100" step="1" value="0"></span>
+                  <button type="button" class="rotVal" id="kvReset">0</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="readout">
+            <span><span data-i="pos"></span> <b id="roPos">—</b></span>
+            <span><span data-i="size"></span> <b id="roSize">—</b></span>
+          </div>
+          <p class="warn" id="minwarn" hidden data-i="upscaleWarn"></p>
+
+          <div class="row" style="margin-top:12px">
+            <button class="btn" type="button" id="autoBtn" data-i="autoPlace"></button>
+            <button class="btn" type="button" id="spreadBtn" data-i="spread"></button>
+          </div>
+          <div style="margin-top:8px">
+            <button class="btn" type="button" id="prevBtn" data-i="samePrev"></button>
+          </div>
+          <div style="margin-top:8px">
+            <button class="btn primary" type="button" id="nextBtn" data-i="confirmNext"></button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+</div>
+<input type="file" id="fileInput" accept="image/*" multiple hidden>
+<div class="signin" id="signin" hidden>
+  <div class="signinBox" role="dialog" aria-modal="true" aria-labelledby="signinTitle">
+    <button type="button" class="signinX" id="signinX">×</button>
+    <h2 id="signinTitle" data-i="loginTitle"></h2>
+    <p class="signinWhy" id="signinWhy"></p>
+    <p class="signinLead" data-i="loginLead"></p>
+    <div class="signinBtn" id="signinBtn"></div>
+    <p class="warn" id="signinErr" role="alert" hidden></p>
+    <p class="signinFine"><span data-i="loginFine"></span> <a id="signinPolicy" href="/privacy/" data-i="footPolicy"></a></p>
+  </div>
+</div>
+
+<footer>
+  <div>
+    <p class="footLead" data-i="footLead"></p>
+    <p class="footBody" data-i="footBody"></p>
+  </div>
+  <div class="footSide">
+    <p class="footLinks"><a id="aboutLink" href="/about/" data-i="footAbout"></a><a id="howLink" href="/how-to/" data-i="footHow"></a><a id="usesLink" href="/uses/" data-i="footUses"></a><a id="policyLink" href="/privacy/" data-i="footPolicy"></a></p>
+    <p data-i="footPrivacy"></p>
+    <p data-i="footFree"></p>
+    <p><span data-i="footContact"></span> <a id="mailLink" href="#">&#8230;</a></p>
+  </div>
+</footer>
+
+<a class="crossban" id="crossBan" href="/video/" style="--cb:var(--teal)">
+  <span class="cb-edge" aria-hidden="true"></span>
+  <span class="cb-text">
+    <span class="cb-kicker" data-i="cbKicker"></span>
+    <span class="cb-title">Detail<b>Crop</b> Video <u data-i="cbBeta"></u></span>
+    <span class="cb-body" data-i="cbBody"></span>
+  </span>
+  <span class="cb-go"><span data-i="cbGo"></span> <i aria-hidden="true">→</i></span>
+</a>
+
+<div class="tour" id="tour" hidden>
+  <div class="tourRing" id="tourRing"></div>
+  <div class="tourTip" id="tourTip" role="dialog" aria-live="polite">
+    <p class="tourStep" id="tourStep"></p>
+    <p class="tourText" id="tourText"></p>
+    <div class="tourBtns">
+      <button type="button" class="skip" id="tourSkip" data-i="tourSkip"></button>
+      <button type="button" class="btn primary" id="tourNext"></button>
+    </div>
+  </div>
+</div>
+</div>
+
+<script src="tool.js"></script>
+<script src="ext.js"></script>
+</body>
+</html>

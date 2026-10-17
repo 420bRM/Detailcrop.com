@@ -35,6 +35,12 @@ src/
   google.js             checks Google's ID token
   preset.js             the preset format — also pasted into the stills page
 test/accounts.test.mjs  sign-in and presets end to end: node --test test/*.mjs
+extension/
+  src/                  what only the Chrome extension has: manifest, background.js,
+                        ext.js (right-click image in), ext.css, fonts, icons, _locales
+  build/                the unpacked extension — generated, like public/
+  detailcrop-chrome.zip the file to upload to the Chrome Web Store — generated
+  store/                listing text, screenshots, privacy-practice answers
 wrangler.jsonc
 ```
 
@@ -43,6 +49,10 @@ language, `<title>`, description and canonical (the stills pages also carry
 JSON-LD). **They are generated. Edit `template.html` or
 `template-video.html`, then run `python3 build.py`** — a change hand-typed
 into `public/ko/index.html` is gone the next time anyone builds.
+
+The build also writes the Chrome extension from the same `template.html` (see
+*The Chrome extension* below), so the web tool and the extension are one
+source, never two copies.
 
 The build also writes each page language's interface text into the HTML, so
 crawlers that don't run JavaScript (Naver, link previews) see real text instead
@@ -190,8 +200,11 @@ finishes by itself. Google's script is loaded only when that box opens.
 
 **The privacy policy (`pages/<lang>/privacy.html`) describes exactly this**
 — the anonymous stats, the member's email and presets, Cloudflare and Google
-as the two services involved. Change what is collected, change that page too.
-The tools link it from the footer and the sign-in box. While sign-in is on, the
+as the two services involved, and that the Chrome extension collects nothing.
+Change what is collected, change that page too. The tools link it from the
+footer and the sign-in box. That page is the one place the details live: the
+rest of the site says only that photos are not stored and never reach the
+server (the sign-in box's small print included). While sign-in is on, the
 header line adds "sign in to keep your own settings" (`#memberLine`).
 
 **Sign-in is off until `GOOGLE_CLIENT_ID` is set** in `wrangler.jsonc`. Off,
@@ -337,7 +350,7 @@ certificate transparency logs within minutes and get swept.
 ## Usage stats
 
 `POST /e` records one row per event. The stills page sends `visit`, `add`,
-`export`, `skip`, `use` (one per feature per load), `tour`, `why` and
+`export`, `skip`, `use` (one per feature per load), `tour`, `why`, `job` and
 `preset`; the video page sends `vvisit` and `vexport`. Anything else is dropped
 (`ALLOWED_EVENTS` in `src/index.js`). Payloads run ~170–250 bytes and the
 Worker drops anything over 1 KB, so it could not receive an image even by
@@ -362,6 +375,17 @@ JOIN. Because one person can pick several, count respondents with
 `count(DISTINCT blob8)`, not by adding up the purposes. The /stats page shows
 it as *무엇에 쓰는가*.
 
+**`job` — what the person does, optional.** Under the same question sits one
+more line: *seller*, *photo* (photographer), *creator* (artist or designer),
+*marketer* or *other*, at most one. *Other* opens a box for their own words,
+the only typed thing the page ever sends: 30 characters, one line, and
+anything that looks like an email address, phone number or link is dropped —
+in the page and again in the Worker (`cleanJob` in `src/index.js`), which is
+the copy that counts. No names or contact details are asked for. The key goes
+in `blob10`, their own words in `blob11`. *Send* works with either part
+answered; *Skip* sends no `job`. The /stats page shows it as *누가 쓰는가*, with
+the typed answers listed beside it.
+
 **Kept for good, in our own store.** Analytics Engine drops rows after about
 three months, so `/e` also writes every row into `src/archive.js`, a Durable
 Object's SQLite, with no end date. Owner-only, behind `?k=<STATS_KEY>`:
@@ -382,10 +406,12 @@ pattern and account removed (`strayPreset`).
 contents. Counting `load` per `blob8` over weeks is the return-visit signal
 presets exist for.
 
-**Never collected:** the images, any pixel data, file names, IP addresses, or
-anything identifying a person. `blob8` is a random string the browser
+**Never in the stats:** the images, any pixel data, file names, IP addresses,
+or anything identifying a person. `blob8` is a random string the browser
 generates for itself; the footer has an off switch and `navigator.doNotTrack`
-is honoured.
+is honoured. The one place the site does hold personal data is the sign-in:
+a member's Google email address and account ID, kept in `src/accounts.js`
+(never in the stats) until they delete their account.
 
 | column | meaning | column | meaning |
 |---|---|---|---|
@@ -398,8 +424,8 @@ is honoured.
 | blob7 | native / fixed | double7 | output width (fixed only) |
 | blob8 | anonymous id | double8 | output height (fixed only) |
 | blob9 | desktop / mobile | double9 | quality |
-| blob10 | feature key (`use`) / purpose (`why`) / `save`·`load` (`preset`) | double10 | 1 = demo plate (or sample clip) only |
-| | | double11 | feed-grid tiles (0 = free crops) |
+| blob10 | feature key (`use`) / purpose (`why`) / job key (`job`) / `save`·`load` (`preset`) | double10 | 1 = demo plate (or sample clip) only |
+| blob11 | a job in the person's own words (`job` with `other`, ≤ 30 chars) | double11 | feed-grid tiles (0 = free crops) |
 | | | double12 | files rejected as not images |
 | | | double13 | files rejected past the side limit |
 | | | double14 | largest straighten angle used, degrees |
@@ -488,6 +514,60 @@ WHERE blob1 = 'skip' AND timestamp > NOW() - INTERVAL '30' DAY
 Analytics Engine samples at high volume. When that starts, weight aggregates
 by `_sample_interval`
 (`SUM(_sample_interval * double2) / SUM(_sample_interval)`).
+
+## The Chrome extension
+
+`extension/` packs the stills tool as a Manifest V3 extension. The toolbar
+button opens the tool in a tab; on any web page, right-click an image →
+**Open with DetailCrop** puts that image in the tool (into the tool tab already
+open, so several can be gathered into one batch, or a new tab). The image is
+read from its own address and cropped inside the extension. The extension
+sends nothing anywhere: no stats, no sign-in, no fonts from Google.
+
+**It is built, not copied.** `python3 build.py` makes `extension/build/` and
+`extension/detailcrop-chrome.zip` from `template.html` plus `extension/src/`:
+
+- code between `/* WEB-ONLY: <stub> */` and `/* /WEB-ONLY */` in the template
+  (the stats beacon, the owner's counter, sign-in and presets) is replaced by
+  the stub, and `<!-- WEB-ONLY -->` HTML (the stats switch) is dropped;
+- the page's inline script becomes `tool.js` (Manifest V3 runs no inline
+  scripts), and `ext.js` from `extension/src/` runs after it;
+- Google Fonts become `ext.css` and files under `fonts/` (OFL-1.1).
+
+The build stops if anything that talks to a server is left in `tool.js`. In
+the template, `EXTENSION` is true inside the extension: links then point at
+`https://detailcrop.com` and open in a new tab, and a tab opened with a
+picture skips the sample plate.
+
+**Permissions.** `contextMenus` only. Sites whose images cannot be read from
+another origin need a host permission; it is optional, asked for one site at
+a time, and only after the user clicks *Allow and open* in the tool. The
+reasons, in the words the store asks for, are in
+`extension/store/privacy-practices.md`.
+
+**Tested** in this repo's Chromium with Playwright: toolbar open, right-click
+open into an open tab and into a new one, zip export, the permission prompt
+for a site without CORS, and loading after the permission is held; no request
+left the extension. Store screenshots are `extension/store/screenshots/`
+(1280 × 800, two per language).
+
+To try it locally: `chrome://extensions` → *Developer mode* on → *Load
+unpacked* → pick `extension/build`.
+
+To ship a new version: raise `version` in `extension/src/manifest.json`, run
+`python3 build.py`, upload the new zip.
+
+### Chrome 웹 스토어 등록 순서 (운영자가 직접)
+
+1. **개발자 등록** — <https://chrome.google.com/webstore/devconsole> 에 구글 계정으로 들어가 약관에 동의하고 등록비(1회, 5달러)를 냅니다. 이메일 인증까지 마칩니다.
+2. **zip 받기** — GitHub 저장소에서 `extension/detailcrop-chrome.zip` 을 열고 *Download* 를 눌러 내려받습니다. 압축은 풀지 않습니다.
+3. **새 항목 올리기** — 대시보드 **+ 새 항목(New item)** → 그 zip을 올립니다.
+4. **스토어 등록정보** — `extension/store/listing.md` 의 자세한 설명을 언어별로 붙여 넣고, `extension/store/screenshots/` 의 PNG를 언어별로 올립니다. 아이콘(128×128)은 zip 안에 있어 따로 올리지 않아도 됩니다. 카테고리는 *Tools* 나 *Photos*.
+5. **개인정보 보호 관행** — `extension/store/privacy-practices.md` 의 답을 그대로 옮깁니다. 개인정보처리방침 URL은 `https://detailcrop.com/privacy/`.
+6. **배포 설정** — 공개(Public), 모든 지역.
+7. **검토 제출** — *검토를 위해 제출* 을 누릅니다. 보통 며칠 걸리고, 결과는 이메일로 옵니다. 반려되면 그 메일 내용을 그대로 보여 주세요.
+
+새 버전을 낼 때는 `manifest.json` 의 `version` 을 올려 빌드한 zip을 같은 항목의 *패키지* 탭에 올리고 다시 제출합니다.
 
 ## Deliberately not done
 
