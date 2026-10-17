@@ -11,7 +11,7 @@ import { accountRoute } from "../src/account-api.js";
 
 function fakeSql() {
   const db = new DatabaseSync(":memory:");
-  return { exec(q, ...p) { const st = db.prepare(q); return /^\s*select/i.test(q) ? { toArray: () => st.all(...p) } : (st.run(...p), { toArray: () => [] }); } };
+  return { exec(q, ...p) { const st = db.prepare(q); return /^\s*(select|pragma)/i.test(q) ? { toArray: () => st.all(...p) } : (st.run(...p), { toArray: () => [] }); } };
 }
 function stub(obj) { return { idFromName: () => "all", get: () => ({ fetch: (u, i) => obj.fetch(new Request(u, i)) }) }; }
 function makeEnv() {
@@ -86,3 +86,41 @@ test("a deleted account leaves its settings, never its email, name or pattern", 
   assert.ok(body.includes("4:5") && body.includes("customPattern"));
   for (const gone of ["kim@example.com", "김철수", "kimcheolsu", "aaaaaa1"]) assert.ok(!body.includes(gone), gone);
 });
+
+test("a job answer keeps its own words, never contact details", async () => {
+  const env = makeEnv();
+  const sent = [
+    { e: "job", id: "a", feat: "seller" },
+    { e: "job", id: "b", feat: "other", txt: "  꽃집\n사장 <b> " },
+    { e: "job", id: "c", feat: "other", txt: "me@example.com" },
+    { e: "job", id: "d", feat: "other", txt: "010-1234-5678" },
+    { e: "job", id: "e", feat: "other", txt: "x".repeat(80) },
+    { e: "why", id: "f", feat: "shop", txt: "not a job" }
+  ];
+  for (const e of sent) {
+    const c = ctx();
+    await worker.fetch(beacon(e), env, c);
+    await c.done();
+  }
+  const words = env.points.map(p => p.blobs[10]);
+  assert.deepEqual(words, ["", "꽃집 사장 b", "", "", "x".repeat(30), ""]);
+  assert.equal(env.points[0].blobs[9], "seller");
+  const csv = await (await worker.fetch(new Request("https://detailcrop.com/stats/export?k=" + env.STATS_KEY), env, ctx())).text();
+  const lines = csv.replace(/^﻿/, "").trim().split("\n");
+  assert.equal(lines[0].split(",")[11], "text");
+  assert.ok(lines[2].includes(",other,꽃집 사장 b,"));
+});
+
+test("an archive made before the text column gets it on the next start", () => {
+  const sql = fakeSql();
+  sql.exec("CREATE TABLE events (ts INTEGER, " + Array.from({ length: 10 }, (_, i) => "b" + (i + 1) + " TEXT").join(", ") + ", "
+    + Array.from({ length: 17 }, (_, i) => "d" + (i + 1) + " REAL").join(", ") + ")");
+  sql.exec("INSERT INTO events (ts, b1) VALUES (1, 'visit')");
+  const a = new Archive({ storage: { sql } });
+  a.insert(2, ["job", "", "", "", "", "", "", "id", "", "other", "florist"], []);
+  const rows = OPS_read(a);
+  assert.equal(rows.length, 2);
+  assert.equal(rows[0].b11, "");
+  assert.equal(rows[1].b11, "florist");
+});
+function OPS_read(a) { return a.sql.exec("SELECT * FROM events ORDER BY ts").toArray(); }

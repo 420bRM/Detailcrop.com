@@ -1,0 +1,14 @@
+/* Extension-only styles: the fonts, and the note ext.js shows. */
+/* The two faces the site takes from Google Fonts, kept inside the extension
+   so it fetches nothing. Latin only; Korean and Japanese use system fonts, as
+   on the site. Both are OFL-1.1 (fonts/OFL-*.txt). */
+@font-face{font-family:'Archivo'; font-style:normal; font-weight:400 600; font-display:swap; src:url(fonts/archivo-latin.woff2) format('woff2')}
+@font-face{font-family:'Newsreader'; font-style:normal; font-weight:400 500; font-display:swap; src:url(fonts/newsreader-latin.woff2) format('woff2')}
+@font-face{font-family:'Newsreader'; font-style:italic; font-weight:400; font-display:swap; src:url(fonts/newsreader-italic-latin.woff2) format('woff2')}
+
+/* the line ext.js shows while a picture from a web page comes in */
+.extNote{position:fixed; left:50%; top:12px; transform:translateX(-50%); z-index:60; max-width:min(560px, calc(100vw - 32px));
+  display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; padding:10px 14px; border:1px solid var(--line); border-radius:4px;
+  background:var(--panel, #10151a); color:var(--ink); font-size:13px; line-height:1.45; box-shadow:0 8px 30px rgba(0,0,0,.45)}
+.extNote[hidden]{display:none}
+.extNote .btn{width:auto; padding:6px 14px}

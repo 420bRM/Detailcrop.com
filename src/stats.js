@@ -42,6 +42,14 @@ const WHY_LABELS = {
   try:     "그냥 써 보는 중",
   other:   "기타"
 };
+/* The optional line under that question: what the person does. One at most. */
+const JOB_LABELS = {
+  seller:   "온라인 셀러",
+  photo:    "사진가",
+  creator:  "작가·디자이너",
+  marketer: "마케터",
+  other:    "기타"
+};
 /* Walkthrough steps, in the order TOUR[] defines them in the page. */
 const TOUR_LABELS = ["크롭 박스", "컷 개수", "컷 목록", "비율", "필름스트립", "내보내기"];
 
@@ -159,6 +167,16 @@ npx wrangler secret put STATS_KEY</pre>
        person can sit under several purposes */
     whyPeople: `SELECT count(DISTINCT blob8) AS people
                 FROM ${DATASET} WHERE blob1='why' AND blob10 != 'skip' AND ${W}`,
+
+    /* What people do for a living — the optional line under that question.
+       One answer per person; a later answer from the same browser would be
+       a second row, so people are counted, not rows. */
+    jobs: `SELECT blob10 AS job, count(DISTINCT blob8) AS people
+           FROM ${DATASET} WHERE blob1='job' AND ${W}
+           GROUP BY job ORDER BY people DESC LIMIT 12`,
+    jobWords: `SELECT blob11 AS words, count(DISTINCT blob8) AS people
+               FROM ${DATASET} WHERE blob1='job' AND blob11 != '' AND ${W}
+               GROUP BY words ORDER BY people DESC LIMIT 20`,
 
     /* The video page's own events. Exports of the sample clip are left out. */
     video: `SELECT blob1 AS step, count(DISTINCT blob8) AS people,
@@ -419,6 +437,19 @@ function render(R, days, failed, weakKey) {
       num(r.grid_runs) ? ` · 격자 ${n0(r.grid_runs)}` : ""}`
   }));
 
+  /* what they do: shares of the people who answered this line */
+  const jobRows = R.jobs.rows || [];
+  const jobPeople = jobRows.reduce((a, r) => a + num(r.people), 0);
+  const jobList = jobRows.map(r => ({
+    label: JOB_LABELS[r.job] || r.job || "?",
+    value: jobPeople > 0 ? share(num(r.people), jobPeople) : 0,
+    display: `${n0(r.people)}명`,
+    sub: `${jobPeople > 0 ? Math.round(share(num(r.people), jobPeople)) : 0}%`
+  }));
+  const wordList = (R.jobWords.rows || []).map(r => ({
+    label: r.words, value: num(r.people), display: `${n0(r.people)}명`
+  }));
+
   /* the video page */
   const vBy = {};
   (R.video.rows || []).forEach(r => { vBy[r.step] = r; });
@@ -574,6 +605,20 @@ function render(R, days, failed, weakKey) {
         ${mini("내보낸 사람", n0(ve.people))}
       </div>
       <div style="margin-top:14px">${rankList(vratioList, { emptyNote: "아직 내보낸 기록이 없습니다." })}</div>
+    </div>
+  </section>
+
+  <section class="panelGrid">
+    <div class="panel">
+      <h2>누가 쓰는가 <span>직업 · 내보낸 뒤 질문의 선택 항목 · ${days}일</span></h2>
+      <div class="strip">
+        ${mini("답함", n0(jobPeople))}
+      </div>
+      <div style="margin-top:14px">${rankList(jobList, { scaleMax: 100, emptyNote: "아직 응답이 없습니다." })}</div>
+    </div>
+    <div class="panel">
+      <h2>'기타'에 직접 적은 직업 <span>30자 이내 · 연락처 모양은 버림 · ${days}일</span></h2>
+      ${rankList(wordList, { emptyNote: "아직 직접 적은 답이 없습니다." })}
     </div>
   </section>
 
