@@ -120,6 +120,11 @@ The page reads the real size from the JPEG header (`jpegSize`) and, when the
 browser opened it smaller, says so as the file is added; the how-to page says
 it too.
 
+**Korean copy follows one set of rules** — nouns on buttons and labels,
+합니다체 in sentences, "~하면 ~됩니다" instead of commands, "~하시겠습니까?"
+in confirm dialogs. The table is in DECISIONS.md §20; new Korean strings
+follow it.
+
 **Updates page (`pages/<lang>/updates.html`).** What changed for the person
 using the tool, newest first, in plain words — no internals. Add a line there
 whenever a fix or feature reaches `main`.
