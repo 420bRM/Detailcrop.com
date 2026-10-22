@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="naver-site-verification" content="d3f153a78cae843ba9debf13f66f479e10a227dd">
+<title>업데이트 노트 | 디테일크롭 DetailCrop</title>
+<meta name="description" content="디테일크롭에서 새로 생긴 기능과 고친 문제를 날짜순으로 적었습니다.">
+<meta property="og:title" content="업데이트 노트 | 디테일크롭 DetailCrop">
+<meta property="og:description" content="디테일크롭에서 새로 생긴 기능과 고친 문제를 날짜순으로 적었습니다.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="DetailCrop">
+<meta property="og:image" content="https://detailcrop.com/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://detailcrop.com/ko/updates/">
+<meta property="og:url" content="https://detailcrop.com/ko/updates/">
+<link rel="alternate" hreflang="en" href="https://detailcrop.com/updates/">
+<link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/updates/">
+<link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/updates/">
+<link rel="alternate" hreflang="x-default" href="https://detailcrop.com/updates/">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"업데이트 노트","description":"디테일크롭에서 새로 생긴 기능과 고친 문제를 날짜순으로 적었습니다.","inLanguage":"ko","url":"https://detailcrop.com/ko/updates/","isPartOf":{"@context":"https://schema.org","@type":"WebSite","name":"DetailCrop","alternateName":["Detail Crop","Multi Crop","디테일크롭","멀티크롭","ディテールクロップ","マルチクロップ"],"url":"https://detailcrop.com/"},"publisher":{"@type":"Organization","name":"DetailCrop","url":"https://detailcrop.com/"}}</script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap">
+<link rel="stylesheet" href="/fonts/pretendard/pretendardvariable-dynamic-subset.css">
+<style>
+/* Same night palette as the tools, set for reading instead of working. */
+:root{
+  color-scheme:dark;
+  --sky:#080d12; --panel:#12212a; --sunk:#0d1a21; --line:#254250; --line-soft:#1a2f3a;
+  --ink:#e6f0f2; --ink-2:#a8c3ca; --muted:#6d8b96;
+  --amber:#e8b45a; --teal:#35b7e0; --fog:#f4eddf;
+  --display:Newsreader,Georgia,serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  min-height:100vh;
+  background:radial-gradient(150% 70% at 50% 0%, #12222c 0%, #0b131a 48%, var(--sky) 100%) fixed no-repeat var(--sky);
+  color:var(--ink);
+  font-family:Archivo,'Pretendard','Apple SD Gothic Neo','Hiragino Sans','Noto Sans JP','Malgun Gothic',system-ui,sans-serif;
+  font-size:16px; line-height:1.8; -webkit-font-smoothing:antialiased;
+  word-break:keep-all; overflow-wrap:break-word;
+}
+a{color:var(--teal); text-decoration:none; border-bottom:1px solid rgba(53,183,224,.35)}
+a:hover{border-bottom-color:var(--teal)}
+.wrap{max-width:760px; margin:0 auto; padding:20px 16px 56px}
+
+header.bar{display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 18px; margin-bottom:44px}
+.brand{font-family:var(--display); font-size:26px; letter-spacing:.01em; color:var(--fog); line-height:1.1; text-shadow:0 0 26px rgba(232,180,90,.22)}
+.brand a{color:inherit; border:0}
+.brand em{font-style:italic; color:var(--amber)}
+.spacer{flex:1 1 auto}
+.langs{display:flex; border:1px solid var(--line); border-radius:3px; overflow:hidden; background:var(--sunk); font-size:12px}
+.langs a{border:0; padding:4px 10px; color:var(--ink-2); border-right:1px solid var(--line-soft); letter-spacing:.06em}
+.langs a:last-child{border-right:0}
+.langs a[aria-current]{background:var(--amber); color:#12100b; font-weight:600}
+.go{border:1px solid var(--amber); color:var(--amber); border-radius:3px; padding:4px 12px; font-size:13px; white-space:nowrap}
+.go:hover{background:var(--amber); color:#12100b}
+
+article h1{font-weight:600; font-size:clamp(28px,5.5vw,36px); line-height:1.3; letter-spacing:-.01em; color:var(--fog); margin:0 0 28px; text-wrap:balance}
+.lead{color:var(--ink-2); font-size:17px; margin:-14px 0 36px}
+article h2{font-weight:600; font-size:21px; color:var(--fog); margin:44px 0 10px; line-height:1.4; letter-spacing:-.005em}
+article h3{font-size:16px; font-weight:600; color:var(--ink); margin:24px 0 4px}
+/* Korean runs on one face, Hangul and Latin alike. Archivo has no Hangul, so the fallback stack
+   used to split every Korean sentence between two fonts. */
+html[lang="ko"] body{font-family:'Pretendard Variable',Pretendard,'Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif; font-size:17px; line-height:1.75; letter-spacing:-.005em}
+html[lang="ko"] article h1,html[lang="ko"] article h2,html[lang="ko"] article h3{font-weight:700; letter-spacing:-.02em}
+html[lang="ko"] article h3{font-size:17px}
+html[lang="ko"] article strong{font-weight:700}
+article p{margin:0 0 14px}
+article ul{margin:0 0 16px; padding-left:1.2em}
+article li{margin:3px 0}
+article strong{color:var(--fog); font-weight:600}
+article em{font-style:normal; color:var(--amber)}
+code{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.9em; background:var(--sunk); border:1px solid var(--line-soft); border-radius:3px; padding:1px 5px; word-break:break-all}
+kbd{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.82em; background:var(--panel); border:1px solid var(--line); border-bottom-width:2px; border-radius:3px; padding:0 5px}
+table{border-collapse:collapse; width:100%; margin:6px 0 18px; font-size:15px}
+th,td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line-soft); vertical-align:top}
+th{white-space:nowrap; font-weight:400; width:1%}
+article figure{margin:14px 0 18px}
+article figure img{display:block; max-width:100%; height:auto; border:1px solid var(--line); border-radius:6px; background:var(--sunk)}
+
+.cta{margin:48px 0 0; padding:22px; border:1px solid var(--line); border-radius:6px; background:var(--sunk); display:flex; flex-wrap:wrap; align-items:center; gap:12px 20px}
+.cta p{margin:0; flex:1 1 260px; color:var(--ink-2)}
+
+footer{margin-top:48px; padding-top:18px; border-top:1px solid var(--line-soft); color:var(--muted); font-size:13px; line-height:1.7}
+footer nav{display:flex; flex-wrap:wrap; gap:4px 18px; margin-bottom:8px}
+footer nav a[aria-current]{color:var(--ink); border-bottom-color:transparent}
+footer p{margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="bar">
+  <p class="brand"><a href="/ko/">Detail<em>Crop</em></a></p>
+  <span class="spacer"></span>
+  <nav class="langs" aria-label="Language"><a href="/updates/" hreflang="en">EN</a><a href="/ko/updates/" hreflang="ko" aria-current="page">한국어</a><a href="/ja/updates/" hreflang="ja">日本語</a></nav>
+  <a class="go" href="/ko/">디테일크롭 열기 →</a>
+</header>
+
+<article>
+<h1>업데이트 노트</h1>
+<p>새로 생긴 기능과 고친 문제를 최근 것부터 적습니다.</p>
+
+<h2>2026년 10월 22일</h2>
+<ul>
+  <li>휴대폰에서 메모리가 부족할 때 일부 컷이 검은 화면으로 저장되던 문제를 해결했습니다. 그래도 만들지 못한 컷이 있으면 빈 파일을 넣지 않고, 몇 개를 빼고 저장했는지 알려 드립니다.</li>
+  <li>고정 크기로 내보낼 때 비율을 바꾸면 컷이 늘어난 채 저장되던 문제를 해결했습니다. 인스타그램 피드 분할도 이제 4:5 크기로 정확히 저장됩니다.</li>
+  <li>휴대폰이 아주 큰 사진을 원본보다 작게 열면 그 사실을 알려 드립니다. 원본 해상도로 자르려면 컴퓨터에서 작업하세요.</li>
+</ul>
+
+<h2>2026년 10월 13일</h2>
+<ul>
+  <li>로그인하면 자주 쓰는 설정을 프리셋으로 저장하고, 다른 기기에서도 불러올 수 있습니다.</li>
+  <li>컴퓨터 화면에서 오른쪽 작업 칸이 스크롤을 따라와, 아래로 내려도 바로 쓸 수 있습니다.</li>
+</ul>
+
+<h2>2026년 9월 28일</h2>
+<ul>
+  <li>다음 사진이 방금 확정한 상자 배치 그대로 시작합니다. 비슷한 사진이 이어질 때 상자를 다시 놓지 않아도 됩니다.</li>
+  <li>영상 도구를 열면 예시 영상이 바로 재생됩니다.</li>
+</ul>
+
+<h2>2026년 9월 25일</h2>
+<ul>
+  <li><a href="/ko/about/">소개</a>, <a href="/ko/how-to/">사용법</a>, <a href="/ko/uses/">활용 예시</a> 페이지를 열었습니다.</li>
+  <li><a href="/video/ko/">영상 자르기 도구</a>를 정식으로 공개했습니다.</li>
+</ul>
+
+<h2>2026년 9월 13일</h2>
+<ul>
+  <li>디테일크롭을 공개했습니다.</li>
+</ul>
+</article>
+
+<div class="cta">
+  <p>사진 여러 장을 한 번에, 한 장에서 여러 컷씩. 무료이고, 사진은 서버에 올라가지 않습니다.</p>
+  <a class="go" href="/ko/">디테일크롭 열기 →</a>
+</div>
+
+<footer>
+  <nav><a href="/ko/">도구</a><a href="/ko/about/">About</a><a href="/ko/how-to/">사용법</a><a href="/ko/uses/">활용 예시</a><a href="/ko/updates/" aria-current="page">업데이트 노트</a><a href="/ko/privacy/">개인정보 처리방침</a></nav>
+  <p>사진은 브라우저 안에서만 처리되고 서버로 전송되지 않습니다.</p>
+  <p>© DetailCrop</p>
+</footer>
+</div>
+<script>
+// the address is assembled here rather than written into the page, to keep it out of scrapers
+document.querySelectorAll("a.mail").forEach(a => {
+  const addr = "contact" + String.fromCharCode(64) + "detailcrop.com";
+  a.textContent = addr;
+  a.href = "mailto:" + addr + "?subject=DetailCrop";
+});
+</script>
+</body>
+</html>

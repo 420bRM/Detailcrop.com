@@ -3,7 +3,7 @@
 #   template.html        ->  public/{,ko/,ja/}index.html         (stills)
 #   template-video.html  ->  public/video/{,ko/,ja/}index.html   (video)
 #   template-page.html + pages/<lang>/<slug>.html
-#                        ->  public/{,ko/,ja/}<slug>/index.html  (about, how-to, uses)
+#                        ->  public/{,ko/,ja/}<slug>/index.html  (about, how-to, uses, updates, privacy)
 #   public/sitemap.xml
 #   template.html + extension/src/  ->  extension/build/  and  extension/detailcrop-chrome.zip
 # The templates are the source of truth — never hand-edit anything they write.
@@ -95,16 +95,16 @@ VLANGS = {
 }
 
 # The reading pages, in footer order. Each lives at pages/<lang>/<slug>.html.
-PAGES = ["about", "how-to", "uses", "privacy"]
+PAGES = ["about", "how-to", "uses", "updates", "privacy"]
 
 PAGE_UI = {
-  "en": dict(open="Open DetailCrop", nav=["About", "How to use", "Use cases", "Privacy"], tool="The tool",
+  "en": dict(open="Open DetailCrop", nav=["About", "How to use", "Use cases", "Updates", "Privacy"], tool="The tool",
              cta="Crop a whole batch of images at once, several crops each. Free, and nothing is uploaded.",
              privacy="Runs entirely in your browser. Your images are never uploaded."),
-  "ko": dict(open="디테일크롭 열기", nav=["About", "사용법", "활용 예시", "개인정보 처리방침"], tool="도구",
+  "ko": dict(open="디테일크롭 열기", nav=["About", "사용법", "활용 예시", "업데이트 노트", "개인정보 처리방침"], tool="도구",
              cta="사진 여러 장을 한 번에, 한 장에서 여러 컷씩. 무료이고, 사진은 서버에 올라가지 않습니다.",
              privacy="사진은 브라우저 안에서만 처리되고 서버로 전송되지 않습니다."),
-  "ja": dict(open="DetailCropを開く", nav=["DetailCropについて", "使い方", "使い方の例", "プライバシーポリシー"], tool="ツール",
+  "ja": dict(open="DetailCropを開く", nav=["DetailCropについて", "使い方", "使い方の例", "更新情報", "プライバシーポリシー"], tool="ツール",
              cta="複数の画像をまとめて、1枚から何カットも。無料で、アップロードはありません。",
              privacy="処理はすべてブラウザ内で行われます。画像がアップロードされることはありません。"),
 }
@@ -194,7 +194,7 @@ def prerender(s, strings):
 
 def foot_hrefs(s, code):
     sfx = "/" if code == "en" else "/%s/" % code
-    for id_, slug in (("aboutLink", "about"), ("howLink", "how-to"), ("usesLink", "uses"), ("policyLink", "privacy")):
+    for id_, slug in (("aboutLink", "about"), ("howLink", "how-to"), ("usesLink", "uses"), ("newsLink", "updates"), ("policyLink", "privacy")):
         s = s.replace('<a id="%s" href="/%s/"' % (id_, slug), '<a id="%s" href="%s%s/"' % (id_, sfx, slug), 1)
     return s
 

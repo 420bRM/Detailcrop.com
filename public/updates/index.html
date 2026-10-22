@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="naver-site-verification" content="d3f153a78cae843ba9debf13f66f479e10a227dd">
+<title>Updates | DetailCrop</title>
+<meta name="description" content="What is new in DetailCrop and what has been fixed, newest first.">
+<meta property="og:title" content="Updates | DetailCrop">
+<meta property="og:description" content="What is new in DetailCrop and what has been fixed, newest first.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="DetailCrop">
+<meta property="og:image" content="https://detailcrop.com/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://detailcrop.com/updates/">
+<meta property="og:url" content="https://detailcrop.com/updates/">
+<link rel="alternate" hreflang="en" href="https://detailcrop.com/updates/">
+<link rel="alternate" hreflang="ko" href="https://detailcrop.com/ko/updates/">
+<link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/updates/">
+<link rel="alternate" hreflang="x-default" href="https://detailcrop.com/updates/">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Updates","description":"What is new in DetailCrop and what has been fixed, newest first.","inLanguage":"en","url":"https://detailcrop.com/updates/","isPartOf":{"@context":"https://schema.org","@type":"WebSite","name":"DetailCrop","alternateName":["Detail Crop","Multi Crop","디테일크롭","멀티크롭","ディテールクロップ","マルチクロップ"],"url":"https://detailcrop.com/"},"publisher":{"@type":"Organization","name":"DetailCrop","url":"https://detailcrop.com/"}}</script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap">
+
+<style>
+/* Same night palette as the tools, set for reading instead of working. */
+:root{
+  color-scheme:dark;
+  --sky:#080d12; --panel:#12212a; --sunk:#0d1a21; --line:#254250; --line-soft:#1a2f3a;
+  --ink:#e6f0f2; --ink-2:#a8c3ca; --muted:#6d8b96;
+  --amber:#e8b45a; --teal:#35b7e0; --fog:#f4eddf;
+  --display:Newsreader,Georgia,serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  min-height:100vh;
+  background:radial-gradient(150% 70% at 50% 0%, #12222c 0%, #0b131a 48%, var(--sky) 100%) fixed no-repeat var(--sky);
+  color:var(--ink);
+  font-family:Archivo,'Pretendard','Apple SD Gothic Neo','Hiragino Sans','Noto Sans JP','Malgun Gothic',system-ui,sans-serif;
+  font-size:16px; line-height:1.8; -webkit-font-smoothing:antialiased;
+  word-break:keep-all; overflow-wrap:break-word;
+}
+a{color:var(--teal); text-decoration:none; border-bottom:1px solid rgba(53,183,224,.35)}
+a:hover{border-bottom-color:var(--teal)}
+.wrap{max-width:760px; margin:0 auto; padding:20px 16px 56px}
+
+header.bar{display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 18px; margin-bottom:44px}
+.brand{font-family:var(--display); font-size:26px; letter-spacing:.01em; color:var(--fog); line-height:1.1; text-shadow:0 0 26px rgba(232,180,90,.22)}
+.brand a{color:inherit; border:0}
+.brand em{font-style:italic; color:var(--amber)}
+.spacer{flex:1 1 auto}
+.langs{display:flex; border:1px solid var(--line); border-radius:3px; overflow:hidden; background:var(--sunk); font-size:12px}
+.langs a{border:0; padding:4px 10px; color:var(--ink-2); border-right:1px solid var(--line-soft); letter-spacing:.06em}
+.langs a:last-child{border-right:0}
+.langs a[aria-current]{background:var(--amber); color:#12100b; font-weight:600}
+.go{border:1px solid var(--amber); color:var(--amber); border-radius:3px; padding:4px 12px; font-size:13px; white-space:nowrap}
+.go:hover{background:var(--amber); color:#12100b}
+
+article h1{font-weight:600; font-size:clamp(28px,5.5vw,36px); line-height:1.3; letter-spacing:-.01em; color:var(--fog); margin:0 0 28px; text-wrap:balance}
+.lead{color:var(--ink-2); font-size:17px; margin:-14px 0 36px}
+article h2{font-weight:600; font-size:21px; color:var(--fog); margin:44px 0 10px; line-height:1.4; letter-spacing:-.005em}
+article h3{font-size:16px; font-weight:600; color:var(--ink); margin:24px 0 4px}
+/* Korean runs on one face, Hangul and Latin alike. Archivo has no Hangul, so the fallback stack
+   used to split every Korean sentence between two fonts. */
+html[lang="ko"] body{font-family:'Pretendard Variable',Pretendard,'Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif; font-size:17px; line-height:1.75; letter-spacing:-.005em}
+html[lang="ko"] article h1,html[lang="ko"] article h2,html[lang="ko"] article h3{font-weight:700; letter-spacing:-.02em}
+html[lang="ko"] article h3{font-size:17px}
+html[lang="ko"] article strong{font-weight:700}
+article p{margin:0 0 14px}
+article ul{margin:0 0 16px; padding-left:1.2em}
+article li{margin:3px 0}
+article strong{color:var(--fog); font-weight:600}
+article em{font-style:normal; color:var(--amber)}
+code{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.9em; background:var(--sunk); border:1px solid var(--line-soft); border-radius:3px; padding:1px 5px; word-break:break-all}
+kbd{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.82em; background:var(--panel); border:1px solid var(--line); border-bottom-width:2px; border-radius:3px; padding:0 5px}
+table{border-collapse:collapse; width:100%; margin:6px 0 18px; font-size:15px}
+th,td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line-soft); vertical-align:top}
+th{white-space:nowrap; font-weight:400; width:1%}
+article figure{margin:14px 0 18px}
+article figure img{display:block; max-width:100%; height:auto; border:1px solid var(--line); border-radius:6px; background:var(--sunk)}
+
+.cta{margin:48px 0 0; padding:22px; border:1px solid var(--line); border-radius:6px; background:var(--sunk); display:flex; flex-wrap:wrap; align-items:center; gap:12px 20px}
+.cta p{margin:0; flex:1 1 260px; color:var(--ink-2)}
+
+footer{margin-top:48px; padding-top:18px; border-top:1px solid var(--line-soft); color:var(--muted); font-size:13px; line-height:1.7}
+footer nav{display:flex; flex-wrap:wrap; gap:4px 18px; margin-bottom:8px}
+footer nav a[aria-current]{color:var(--ink); border-bottom-color:transparent}
+footer p{margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="bar">
+  <p class="brand"><a href="/">Detail<em>Crop</em></a></p>
+  <span class="spacer"></span>
+  <nav class="langs" aria-label="Language"><a href="/updates/" hreflang="en" aria-current="page">EN</a><a href="/ko/updates/" hreflang="ko">한국어</a><a href="/ja/updates/" hreflang="ja">日本語</a></nav>
+  <a class="go" href="/">Open DetailCrop →</a>
+</header>
+
+<article>
+<h1>Updates</h1>
+<p>New features and fixes, newest first.</p>
+
+<h2>22 October 2026</h2>
+<ul>
+  <li>Fixed some crops being saved as black images when a phone ran short of memory. If a crop still cannot be made, it is left out rather than saved empty, and the export message says how many.</li>
+  <li>Fixed crops coming out stretched when the ratio was changed while exporting at a fixed size. Instagram feed splits now save at an exact 4:5.</li>
+  <li>When a phone opens a very large photo smaller than its original size, the page now tells you. For full-resolution crops, use a computer.</li>
+</ul>
+
+<h2>13 October 2026</h2>
+<ul>
+  <li>Signed-in members can save the settings they use most as a preset and load it on any device.</li>
+  <li>On a computer, the work panel on the right now follows the page as you scroll.</li>
+</ul>
+
+<h2>28 September 2026</h2>
+<ul>
+  <li>The next picture starts with the boxes you just confirmed, so a run of similar shots does not need the boxes placed again.</li>
+  <li>The video tool now plays its sample clip as soon as it opens.</li>
+</ul>
+
+<h2>25 September 2026</h2>
+<ul>
+  <li>Added the <a href="/about/">About</a>, <a href="/how-to/">How to use</a> and <a href="/uses/">Use cases</a> pages.</li>
+  <li>The <a href="/video/">video crop tool</a> is now public.</li>
+</ul>
+
+<h2>13 September 2026</h2>
+<ul>
+  <li>DetailCrop launched.</li>
+</ul>
+</article>
+
+<div class="cta">
+  <p>Crop a whole batch of images at once, several crops each. Free, and nothing is uploaded.</p>
+  <a class="go" href="/">Open DetailCrop →</a>
+</div>
+
+<footer>
+  <nav><a href="/">The tool</a><a href="/about/">About</a><a href="/how-to/">How to use</a><a href="/uses/">Use cases</a><a href="/updates/" aria-current="page">Updates</a><a href="/privacy/">Privacy</a></nav>
+  <p>Runs entirely in your browser. Your images are never uploaded.</p>
+  <p>© DetailCrop</p>
+</footer>
+</div>
+<script>
+// the address is assembled here rather than written into the page, to keep it out of scrapers
+document.querySelectorAll("a.mail").forEach(a => {
+  const addr = "contact" + String.fromCharCode(64) + "detailcrop.com";
+  a.textContent = addr;
+  a.href = "mailto:" + addr + "?subject=DetailCrop";
+});
+</script>
+</body>
+</html>

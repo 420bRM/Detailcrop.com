@@ -811,7 +811,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
     <p class="footBody" data-i="footBody"></p>
   </div>
   <div class="footSide">
-    <p class="footLinks"><a id="aboutLink" href="/about/" data-i="footAbout"></a><a id="howLink" href="/how-to/" data-i="footHow"></a><a id="usesLink" href="/uses/" data-i="footUses"></a><a id="policyLink" href="/privacy/" data-i="footPolicy"></a></p>
+    <p class="footLinks"><a id="aboutLink" href="/about/" data-i="footAbout"></a><a id="howLink" href="/how-to/" data-i="footHow"></a><a id="usesLink" href="/uses/" data-i="footUses"></a><a id="newsLink" href="/updates/" data-i="footNews"></a><a id="policyLink" href="/privacy/" data-i="footPolicy"></a></p>
     <p data-i="footPrivacy"></p>
     <p data-i="footFree"></p>
     <p><span data-i="footContact"></span> <a id="mailLink" href="#">&#8230;</a></p>
@@ -889,6 +889,7 @@ const I18N = {
     tooBig:(n)=>`${n} skipped — over 200 MB.`,
     tooWide:(n,px)=>`${n} skipped — longer than ${px}px on a side, which is more than a browser canvas can hold.`,
     cantOpen:(n)=>`${n} skipped — this browser could not open them. Usually too large for the device.`,
+    shrunk:(n)=>`This phone opened ${n===1?"one picture":n+" pictures"} smaller than ${n===1?"its":"their"} original size — phone browsers shrink very large photos to save memory. For full-resolution crops, use a computer.`,
     notImage:(n)=>`${n} skipped — not an image.`,
     confirmClear:"Remove all images and start over?",
     dims:(w,h)=>`${w} × ${h} px`,
@@ -939,6 +940,7 @@ const I18N = {
     jobMarketer:"Marketer", jobOther:"Other",
     jobPh:"Your line of work, in a few words (no names or contact details)",
     memberLine:"Sign in to keep your own settings as presets.",
+    footNews:"Updates",
     footPolicy:"Privacy",
     presetHd:"Presets", presetLoginTag:"Sign in",
     presetNote:"A preset keeps the ratio, output size, format, quality, file names, feed split and where the boxes sit — never the images, and not the straighten values. Loading one sets the batch to it and lays its boxes on this image, on images you have not opened yet and on images you add next. Images you have already worked on keep their boxes.",
@@ -1008,6 +1010,7 @@ const I18N = {
     tooBig:(n)=>`${n}장은 200MB를 넘어 건너뛰었습니다.`,
     tooWide:(n,px)=>`${n}장은 한 변이 ${px}px를 넘습니다. 브라우저 캔버스가 감당하는 한계라 자를 수 없습니다.`,
     cantOpen:(n)=>`${n}장은 이 브라우저가 열지 못했습니다. 기기에 비해 너무 큰 경우입니다.`,
+    shrunk:(n)=>`${n}장은 이 휴대폰이 원본보다 작게 열었습니다. 휴대폰 브라우저는 메모리를 아끼려고 아주 큰 사진을 줄여서 엽니다. 원본 해상도로 자르려면 컴퓨터에서 작업하세요.`,
     notImage:(n)=>`${n}개는 이미지가 아니라 건너뛰었습니다.`,
     confirmClear:"이미지를 전부 지우고 처음부터 시작할까요?",
     dims:(w,h)=>`${w} × ${h} px`,
@@ -1058,6 +1061,7 @@ const I18N = {
     jobMarketer:"마케터", jobOther:"기타",
     jobPh:"하시는 일을 짧게 (이름·연락처는 적지 마세요)",
     memberLine:"로그인하면 개인 맞춤 설정을 저장해 쓸 수 있습니다.",
+    footNews:"업데이트 노트",
     footPolicy:"개인정보 처리방침",
     presetHd:"프리셋", presetLoginTag:"로그인",
     presetNote:"비율, 출력 크기, 포맷, 품질, 파일명, 피드 분할, 상자 위치를 저장합니다. 이미지와 수평·원근 값은 담지 않습니다. 불러오면 설정이 작업 전체에 걸리고, 상자는 지금 이미지와 아직 열지 않은 이미지, 앞으로 추가하는 이미지에 놓입니다. 이미 작업한 이미지의 상자는 그대로입니다.",
@@ -1127,6 +1131,7 @@ const I18N = {
     tooBig:(n)=>`${n}件は200MBを超えるためスキップしました。`,
     tooWide:(n,px)=>`${n}件は一辺が${px}pxを超えています。ブラウザのキャンバス上限のため切り抜けません。`,
     cantOpen:(n)=>`${n}件はこのブラウザで開けませんでした。端末に対して大きすぎる場合です。`,
+    shrunk:(n)=>`${n}件はこのスマートフォンが元より小さく開きました。スマートフォンのブラウザはメモリを節約するため、とても大きな写真を縮小して開きます。元の解像度で切り抜くにはパソコンで作業してください。`,
     notImage:(n)=>`${n}件は画像ではないためスキップしました。`,
     confirmClear:"画像をすべて消して最初からやり直しますか？",
     dims:(w,h)=>`${w} × ${h} px`,
@@ -1177,6 +1182,7 @@ const I18N = {
     jobMarketer:"マーケター", jobOther:"その他",
     jobPh:"お仕事を短く（名前や連絡先は書かないでください）",
     memberLine:"ログインすると、自分好みの設定を保存して使えます。",
+    footNews:"更新情報",
     footPolicy:"プライバシーポリシー",
     presetHd:"プリセット", presetLoginTag:"ログイン",
     presetNote:"比率、出力サイズ、形式、画質、ファイル名、フィード分割、ボックスの位置を保存します。画像と傾き補正の値は含みません。読み込むと設定が作業全体にかかり、ボックスはこの画像・まだ開いていない画像・これから追加する画像に置かれます。作業済みの画像のボックスはそのままです。",
@@ -1385,6 +1391,7 @@ function applyLang(){
   $("#aboutLink").href = SITE + sfx + "about/";
   $("#howLink").href   = SITE + sfx + "how-to/";
   $("#usesLink").href  = SITE + sfx + "uses/";
+  $("#newsLink").href  = SITE + sfx + "updates/";
   $("#policyLink").href = $("#signinPolicy").href = SITE + sfx + "privacy/";
   // ratio labels that are words
   $$("#ratioseg button").forEach(b => {
@@ -1927,7 +1934,7 @@ async function addFiles(fileList, isSample){
     S.cur = 0; S.sel = 0;
   }
 
-  let skippedBig = 0, skippedType = 0, skippedHuge = 0, skippedDecode = 0, biggestMB = 0;
+  let skippedBig = 0, skippedType = 0, skippedHuge = 0, skippedDecode = 0, shrunk = 0, biggestMB = 0;
   const room = MAX_FILES - S.items.length;
   const accepted = [];
 
@@ -1950,6 +1957,8 @@ async function addFiles(fileList, isSample){
     if (dim.w > MAX_SIDE || dim.h > MAX_SIDE){
       URL.revokeObjectURL(url); skippedHuge++; continue;
     }
+    const real = await jpegSize(f);
+    if (real && real.w * real.h > dim.w * dim.h * 1.02) shrunk++;
     const item = {
       id: ++uid,
       file: f,
@@ -1970,6 +1979,7 @@ async function addFiles(fileList, isSample){
   if (skippedBig) notes.push(T().tooBig(skippedBig));
   if (skippedHuge) notes.push(T().tooWide(skippedHuge, MAX_SIDE));
   if (skippedDecode) notes.push(T().cantOpen(skippedDecode));
+  if (shrunk) notes.push(T().shrunk(shrunk));
   if (skippedType) notes.push(T().notImage(skippedType));
   if (notes.length) flash(notes.join(" "), true);
   // Rejected files are otherwise invisible: the visitor sees a message and
@@ -2024,6 +2034,30 @@ function measure(url){
     im.onerror = rej;
     im.src = url;
   });
+}
+
+/* Android Chrome opens a very large JPEG at a reduced scale to save memory
+   and reports the reduced size as the picture's own, so every crop comes out
+   smaller than the file could give. The file's header still holds the real
+   size; comparing the two is how the page knows to say so. Areas are
+   compared, since a rotated phone photo swaps its sides. */
+async function jpegSize(f){
+  try {
+    const b = new Uint8Array(await f.slice(0, 1 << 18).arrayBuffer());
+    if (b[0] !== 0xFF || b[1] !== 0xD8) return null;
+    let i = 2;
+    while (i + 9 < b.length){
+      if (b[i] !== 0xFF){ i++; continue; }
+      const m = b[i + 1];
+      if (m === 0xFF || m === 0x01 || (m >= 0xD0 && m <= 0xD8)){ i += 2 - (m === 0xFF); continue; }
+      if (m === 0xD9 || m === 0xDA) return null;
+      // a frame header: SOF0-15, less DHT (C4), JPG (C8) and DAC (CC)
+      if (m >= 0xC0 && m <= 0xCF && m !== 0xC4 && m !== 0xC8 && m !== 0xCC)
+        return {h: (b[i + 5] << 8) | b[i + 6], w: (b[i + 7] << 8) | b[i + 8]};
+      i += 2 + ((b[i + 2] << 8) | b[i + 3]);
+    }
+  } catch {}
+  return null;
 }
 
 function loadImage(url){

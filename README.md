@@ -11,7 +11,7 @@ served with `noindex` so the two hostnames do not compete in search.
 ```
 template.html           the stills tool — one of the two files to edit
 template-video.html     the video tool (/video/)
-template-page.html      shell for the reading pages (about, how-to, uses)
+template-page.html      shell for the reading pages (about, how-to, uses, updates, privacy)
 pages/<lang>/<slug>.html  their text: a few header lines, "---", then HTML
 build.py                writes every page below, and the sitemap
 public/
@@ -25,7 +25,7 @@ public/
   favicon.ico           16/32/48/64/128/256, each drawn at its own size
   apple-touch-icon.png  180
   icon-512.png
-  about/ how-to/ uses/ privacy/  reading pages; also under ko/ and ja/
+  about/ how-to/ uses/ updates/ privacy/  reading pages; also under ko/ and ja/
   robots.txt  sitemap.xml   (sitemap is generated)
 src/
   index.js              Worker: serves assets, POST /e, routes /stats and /api
@@ -116,6 +116,13 @@ empty it is left out of the zip and the export message says how many.
 Android Chrome also decodes very large JPEGs at a reduced scale (Chromium caps
 a decode at 1/25 of device memory) and reports the reduced size as the natural
 size, so a phone's crops of an A0 scan come out smaller than a desktop's.
+The page reads the real size from the JPEG header (`jpegSize`) and, when the
+browser opened it smaller, says so as the file is added; the how-to page says
+it too.
+
+**Updates page (`pages/<lang>/updates.html`).** What changed for the person
+using the tool, newest first, in plain words — no internals. Add a line there
+whenever a fix or feature reaches `main`.
 
 ## Features worth knowing about
 
