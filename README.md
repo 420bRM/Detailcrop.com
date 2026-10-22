@@ -108,6 +108,15 @@ can be 100 MP while a 50 MB PNG is 12 MP. Measured in Chrome, 16000×12000
 far lower and fails silently**, so a decode failure reports "this browser
 could not open it" rather than guessing a threshold.
 
+Phones also fail silently at export: short of memory, a full-size draw just
+does not happen and the empty canvas still encodes, as an all-black JPEG. So
+every crop of a picture without see-through parts is checked before it is
+written; an empty one is drawn again from a fresh object URL, and if it stays
+empty it is left out of the zip and the export message says how many.
+Android Chrome also decodes very large JPEGs at a reduced scale (Chromium caps
+a decode at 1/25 of device memory) and reports the reduced size as the natural
+size, so a phone's crops of an A0 scan come out smaller than a desktop's.
+
 ## Features worth knowing about
 
 **Feed grid.** The Instagram buttons (3/6/9) lay contiguous tiles that

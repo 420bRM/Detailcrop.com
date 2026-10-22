@@ -884,6 +884,7 @@ const I18N = {
     summaryNone:"No crops set yet.",
     exporting:(a,b)=>`Exporting ${a} / ${b}…`,
     exported:(n)=>`${n} file${n===1?"":"s"} saved to your downloads.`,
+    failed:(n)=>`${n} crop${n===1?"":"s"} left out — the browser ran out of memory drawing ${n===1?"it":"them"}. Close other tabs or apps and export again.`,
     nothing:"Nothing to export — set at least one crop.",
     tooBig:(n)=>`${n} skipped — over 200 MB.`,
     tooWide:(n,px)=>`${n} skipped — longer than ${px}px on a side, which is more than a browser canvas can hold.`,
@@ -1002,6 +1003,7 @@ const I18N = {
     summaryNone:"아직 지정된 컷이 없습니다.",
     exporting:(a,b)=>`내보내는 중 ${a} / ${b}…`,
     exported:(n)=>`${n}개 파일이 다운로드 폴더에 저장됐습니다.`,
+    failed:(n)=>`${n}개 컷은 메모리가 모자라 그리지 못해 뺐습니다. 다른 탭이나 앱을 닫고 다시 내보내 보세요.`,
     nothing:"내보낼 컷이 없습니다. 최소 한 컷은 지정하세요.",
     tooBig:(n)=>`${n}장은 200MB를 넘어 건너뛰었습니다.`,
     tooWide:(n,px)=>`${n}장은 한 변이 ${px}px를 넘습니다. 브라우저 캔버스가 감당하는 한계라 자를 수 없습니다.`,
@@ -1120,6 +1122,7 @@ const I18N = {
     summaryNone:"まだカットが指定されていません。",
     exporting:(a,b)=>`書き出し中 ${a} / ${b}…`,
     exported:(n)=>`${n}件のファイルをダウンロードに保存しました。`,
+    failed:(n)=>`${n}件のカットはメモリ不足で描けなかったため除きました。ほかのタブやアプリを閉じて、もう一度書き出してください。`,
     nothing:"書き出すカットがありません。最低1カット指定してください。",
     tooBig:(n)=>`${n}件は200MBを超えるためスキップしました。`,
     tooWide:(n,px)=>`${n}件は一辺が${px}pxを超えています。ブラウザのキャンバス上限のため切り抜けません。`,
@@ -1742,6 +1745,7 @@ function warpGL(ctx, img, item, g, q0x, q0y, sw, sh){
     paint(dx, dy, dw, dh, box);
   }
   block(0, 0, sw, sh, 0);
+  tile.width = tile.height = 0;
 }
 
 /* ---------- Instagram feed grid ----------
@@ -1825,6 +1829,15 @@ function setRatioSilent(id){
   S.ratioId = id;
   const p = RATIO_PRESETS.find(x => x.id === id);
   if (p && p.w){ S.rw = p.w; S.rh = p.h; }
+  fitOutToRatio();
+}
+
+/* The fixed output frame is written for the batch ratio, so it follows that
+   ratio when it changes: the width stays and the height follows, as it does
+   when the width is typed. Otherwise a 4:5 crop would go out in the 2:3
+   frame left from before, stretched. */
+function fitOutToRatio(){
+  if (ratioLocked()) S.oh = Math.max(1, Math.round(S.ow / ratioVal()));
 }
 
 function placeNewBox(item){
@@ -1943,6 +1956,7 @@ async function addFiles(fileList, isSample){
       name: f.name.replace(/\.[^./\\]+$/, ""),
       url, w: dim.w, h: dim.h,
       thumb: dim.thumb,
+      alpha: dim.alpha,
       boxes: [],
       done: false,
       isSample: !!isSample
@@ -1989,10 +2003,23 @@ function measure(url){
       const scale = Math.min(1, 120 / Math.max(im.naturalWidth, im.naturalHeight));
       c.width = Math.max(1, Math.round(im.naturalWidth * scale));
       c.height = Math.max(1, Math.round(im.naturalHeight * scale));
-      c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+      const cx = c.getContext("2d");
+      cx.drawImage(im, 0, 0, c.width, c.height);
       let thumb = "";
       try { thumb = c.toDataURL("image/jpeg", 0.7); } catch {}
-      res({w: im.naturalWidth, h: im.naturalHeight, thumb});
+      // A picture with see-through parts can crop to an empty file on purpose;
+      // one without cannot, so for those an empty crop means a failed draw.
+      let alpha = false;
+      try {
+        const d = cx.getImageData(0, 0, c.width, c.height).data;
+        let clear = false, solid = false;
+        for (let k = 3; k < d.length; k += 4){
+          if (d[k] < 255) clear = true;
+          if (d[k] > 0) solid = true;
+        }
+        alpha = clear && solid;
+      } catch {}
+      res({w: im.naturalWidth, h: im.naturalHeight, thumb, alpha});
     };
     im.onerror = rej;
     im.src = url;
@@ -2306,6 +2333,7 @@ function setRatio(id){
   S.ratioId = id;
   const p = RATIO_PRESETS.find(x => x.id === id);
   if (p && p.w){ S.rw = p.w; S.rh = p.h; }
+  fitOutToRatio();
   if (id === "free" && S.outMode === "fixed") S.outMode = "native";
   if (id === "free") S.items.forEach(i => { if (i.grid){ i.grid = null; i.gridRect = null; } });
   S.items.forEach(i => { if (i.grid) clampGrid(i); });
@@ -2626,6 +2654,9 @@ function drawCrop(img, b, item){
     x2.imageSmoothingEnabled = true;
     x2.imageSmoothingQuality = "high";
     x2.drawImage(canvas, 0, 0, cw, ch, 0, 0, nw, nh);
+    // hand the bigger step back now rather than at some later GC: on a
+    // phone the next crop needs that memory
+    canvas.width = canvas.height = 0;
     canvas = c2; ctx = x2; cw = nw; ch = nh;
   }
 
@@ -2636,6 +2667,7 @@ function drawCrop(img, b, item){
     x3.imageSmoothingEnabled = true;
     x3.imageSmoothingQuality = "high";
     x3.drawImage(canvas, 0, 0, cw, ch, 0, 0, ow, oh);
+    canvas.width = canvas.height = 0;
     canvas = c3;
   }
   return {canvas, ow, oh};
@@ -2643,6 +2675,47 @@ function drawCrop(img, b, item){
 
 function toBlob(canvas, mime, q){
   return new Promise(res => canvas.toBlob(b => res(b), mime, q));
+}
+
+/* A browser that runs short of memory does not throw: the draw quietly does
+   not happen, and the empty canvas still encodes — as an all-black JPEG, or
+   a clear PNG. The screen looks fine throughout, since it never needs the
+   picture at full size. So a crop of a picture with no see-through parts is
+   looked at before it is written. */
+function looksEmpty(canvas){
+  const p = document.createElement("canvas");
+  p.width = p.height = 16;
+  const x = p.getContext("2d", {willReadFrequently: true});
+  x.drawImage(canvas, 0, 0, 16, 16);
+  const d = x.getImageData(0, 0, 16, 16).data;
+  for (let k = 3; k < d.length; k += 4) if (d[k] > 8) return false;
+  return true;
+}
+
+/* One crop, made and encoded. An empty result is tried again from a fresh
+   object URL, so the browser decodes the file from scratch instead of
+   reusing a decode that already failed, after a pause that lets it free
+   what the failed try held. Null when every try came back empty. */
+async function cropFile(item, img, b){
+  for (let attempt = 0; attempt < 3; attempt++){
+    let url = null;
+    if (attempt){
+      await new Promise(r => setTimeout(r, 500 * attempt));
+      url = URL.createObjectURL(item.file);
+      try { img = await loadImage(url); }
+      catch { URL.revokeObjectURL(url); continue; }
+    }
+    const {canvas, ow, oh} = drawCrop(img, b, item);
+    if (url) URL.revokeObjectURL(url);
+    if (!item.alpha && looksEmpty(canvas)){
+      canvas.width = canvas.height = 0;
+      continue;
+    }
+    const blob = await toBlob(canvas, S.fmt, S.fmt === "image/png" ? undefined : S.quality / 100);
+    canvas.width = canvas.height = 0;
+    if (blob) return {blob, ow, oh};
+  }
+  return null;
 }
 
 async function runExport(only){
@@ -2657,17 +2730,18 @@ async function runExport(only){
   const label = btn.textContent;
   const used = new Map();
   const entries = [];
-  let n = 0;
+  let n = 0, failed = 0;
 
   try {
     for (const item of targets){
       const imgIdx = S.items.indexOf(item);
       const img = await loadImage(item.url);
+      let missed = 0;
       for (let i = 0; i < item.boxes.length; i++){
-        const {canvas, ow, oh} = drawCrop(img, item.boxes[i], item);
-        const blob = await toBlob(canvas, S.fmt, S.fmt === "image/png" ? undefined : S.quality / 100);
-        canvas.width = canvas.height = 0;
-        if (!blob) continue;
+        const got = await cropFile(item, img, item.boxes[i]);
+        // left out and said so, never written as a black file
+        if (!got){ missed++; continue; }
+        const {blob, ow, oh} = got;
         let name = fileNameFor(item, i, imgIdx, ow, oh);
         if (used.has(name)){
           const c = used.get(name) + 1;
@@ -2679,13 +2753,16 @@ async function runExport(only){
         btn.textContent = T().exporting(n, totalCrops);
         await new Promise(r => setTimeout(r, 0));
       }
-      item.done = true;
+      failed += missed;
+      if (!missed) item.done = true;
     }
 
+    if (!entries.length){ flash(T().failed(failed), true); return; }
     const zip = makeZip(entries);
     const stamp = new Date().toISOString().slice(0, 10);
     saveBlob(zip, `crops-${stamp}.zip`);
-    flash(T().exported(entries.length), false);
+    if (failed) flash(T().exported(entries.length) + " " + T().failed(failed), true);
+    else flash(T().exported(entries.length), false);
     const shape = {
       n: targets.length,
       crops: entries.length,
@@ -2901,6 +2978,7 @@ function setCustomSide(field, v){
     refitBoxes(it);
   } else {
     S[field] = v;
+    fitOutToRatio();
     S.items.forEach(i => i.boxes.forEach(x => { x.rid = null; }));
     refitAll();
   }
@@ -2985,6 +3063,7 @@ function loadPrefs(){
   if (!["image/webp","image/jpeg","image/png"].includes(S.fmt)) S.fmt = "image/webp";
   S.quality = clamp(S.quality, 40, 100);
   if (S.ratioId === "free" && S.outMode === "fixed") S.outMode = "native";
+  fitOutToRatio();
 }
 document.addEventListener("change", savePrefs);
 window.addEventListener("beforeunload", savePrefs);
@@ -3274,6 +3353,7 @@ function applyPreset(p){
   S.ratioId = p.ratio.id; S.rw = p.ratio.w; S.rh = p.ratio.h;
   S.ratioScope = p.ratio.scope;
   S.outMode = p.out.mode; S.ow = p.out.w; S.oh = p.out.h;
+  fitOutToRatio();
   S.fmt = p.fmt; S.quality = p.quality; S.pattern = p.pattern;
   const it = cur();
   const fresh = i => i === it || !i.seen;
