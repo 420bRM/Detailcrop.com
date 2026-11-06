@@ -3460,6 +3460,7 @@ async function acctBoot(){
     catch (e){ if (e.status === 401) signOutLocal(); }
   }
   paintPresets();
+  oneTap();
 }
 
 /* ---- panel ---- */
@@ -3592,6 +3593,39 @@ function loadGis(){
   });
   return gisLoad;
 }
+/* Set up once, for both the sign-in box's button and One Tap. */
+let gisReady = false;
+function initGis(){
+  if (gisReady) return;
+  google.accounts.id.initialize({
+    client_id: A.client, callback: onCredential,
+    auto_select: false,             /* the member always picks the account */
+    cancel_on_tap_outside: false,   /* One Tap closes with its own ×, not with a click on the page */
+    context: "signin", itp_support: true,
+    use_fedcm_for_prompt: true, use_fedcm_for_button: true
+  });
+  gisReady = true;
+}
+/* One Tap (2026-11-06, DECISIONS 19): a signed-out visitor gets Google's
+   account chooser on its own — top right on a computer, at the bottom on a
+   phone; Chrome draws it itself (FedCM). Picking an account signs in through
+   onCredential. Closed, Google and Chrome keep it away for a while (2 h, then
+   a day, a week, four weeks), and a browser with no Google session never sees
+   it. Not offered again in a tab that has just signed out or deleted its
+   account. Loaded after the first paint, so the tool is never waiting on it. */
+const NO_TAP_STORE = "dc.notap";   /* sessionStorage */
+function oneTap(){
+  if (!A.on || A.user) return;
+  try { if (sessionStorage.getItem(NO_TAP_STORE)) return; } catch {}
+  const go = () => loadGis().then(() => {
+    if (A.user || signinOpen()) return;   /* the box's own button takes over */
+    initGis();
+    google.accounts.id.prompt();
+  }).catch(() => {});   /* blocked: the box still offers Google's button */
+  if (window.requestIdleCallback) requestIdleCallback(go, {timeout: 3000});
+  else setTimeout(go, 1500);
+}
+function noTap(){ try { sessionStorage.setItem(NO_TAP_STORE, "1"); } catch {} }
 function signinOpen(){ return !$("#signin").hidden; }
 async function openSignin(why, then){
   const t = T();
@@ -3605,10 +3639,8 @@ async function openSignin(why, then){
   $("#signinX").focus();
   try {
     await loadGis();
-    google.accounts.id.initialize({
-      client_id: A.client, callback: onCredential,
-      auto_select: false, cancel_on_tap_outside: true, use_fedcm_for_button: true
-    });
+    initGis();
+    try { google.accounts.id.cancel(); } catch {}   /* close One Tap if it is up */
     slot.textContent = "";
     google.accounts.id.renderButton(slot, {type: "standard", theme: "filled_black", size: "large",
       text: "continue_with", shape: "pill", locale: S.lang, width: 260});
@@ -3631,6 +3663,8 @@ async function onCredential(resp){
     paintPresets();
     if (then) then();
   } catch (e){
+    /* from One Tap the box is shut: open it, so the error shows next to Google's button */
+    if (!signinOpen()) await openSignin();
     err.textContent = e.code === "too_many" ? T().loginTooMany : T().loginFail;
     err.hidden = false;
   }
@@ -3638,6 +3672,7 @@ async function onCredential(resp){
 async function logout(){
   try { await api("/api/auth/logout", {}); } catch {}
   try { google.accounts.id.disableAutoSelect(); } catch {}
+  noTap();
   signOutLocal();
   paintPresets();
 }
@@ -3645,6 +3680,7 @@ async function deleteAccount(){
   if (!confirm(T().acctDelAsk)) return;
   try { await api("/api/me/delete", {confirm: true}); }
   catch (e){ if (e.status !== 401){ presetMsg(T().presetFail); return; } }
+  noTap();
   signOutLocal();
   paintPresets();
   presetMsg(T().acctDeleted);

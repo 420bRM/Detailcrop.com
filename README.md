@@ -196,7 +196,10 @@ Google's keys, and the Worker answers with a 30-day session the page keeps in
 `dc.account`. Members, sessions and presets sit in one Durable Object
 (`src/accounts.js`); only the email address comes from Google. Signed out, the
 panel shows a padlock and *Save* opens the sign-in box; once signed in the save
-finishes by itself. Google's script is loaded only when that box opens.
+finishes by itself. A signed-out visitor also gets Google's One Tap account
+chooser on its own, once the page has drawn (`oneTap()`, DECISIONS 19), so
+Google's script loads with the stills page whenever sign-in is on and nobody
+is signed in.
 
 **The privacy policy (`pages/<lang>/privacy.html`) describes exactly this**
 — the anonymous stats, the member's email and presets, Cloudflare and Google
