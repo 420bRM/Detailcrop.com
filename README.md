@@ -328,6 +328,36 @@ recoverable from `localStorage.getItem("dc.admin")` in a browser where the
 footer readout is armed. The dashboard warns at the top if the key is
 shorter than 16 characters.
 
+### Where visits come from, and AI search
+
+*어디서 오는가 · 유입 경로* groups every referrer host (`blob4`) into five:
+**AI 검색 · 검색 엔진 · SNS·커뮤니티 · 직접 · 기타**, as a bar, above the
+top hosts each tagged with its group. The grouping is `refGroup()` in
+`src/stats.js`; the SQL only returns hosts (up to 500 per window) and the
+matching happens in JS, so no Analytics Engine string functions are relied
+on. A host matches a listed name exactly or as a subdomain. The site's own
+host counts as *직접*.
+
+`AI_HOSTS` in `src/stats.js` is the one list of AI answer engines:
+chatgpt.com, chat.openai.com, perplexity.ai, gemini.google.com,
+copilot.microsoft.com, claude.ai, you.com, phind.com, poe.com,
+chat.deepseek.com, grok.com, meta.ai, chat.mistral.ai. Add a new one there.
+
+The **AI 검색** panel below it shows, for the chosen window: AI search visits,
+their share of all visits, the exports from those page loads, the conversion
+rate (people who exported ÷ people who visited, both counted per host and
+added up), the list by source, and visits per day as bars.
+
+ChatGPT puts `?utm_source=chatgpt.com` on the links it cites, and its app
+often sends no referrer. So when `document.referrer` is empty, `track()` in
+the page sends the `utm_source` value as `ref` instead — lower-cased, only
+`a-z 0-9 . -`, at most 64 characters. A real referrer always wins.
+
+**What cannot be seen:** Google's AI Overviews and AI Mode, and Copilot
+inside Bing search, arrive with google.com or bing.com as the referrer —
+the same as an ordinary search — so they count under *검색 엔진*. The panel
+says so in its last line.
+
 ### Today's numbers on the site itself
 
 Open `https://detailcrop.com/?admin=<STATS_KEY>` once. The key is stored in
@@ -418,7 +448,7 @@ a member's Google email address and account ID, kept in `src/accounts.js`
 | blob1 | event | double1 | visit number for this browser (per page) |
 | blob2 | ui language | double2 | images (video: clips) in batch / files rejected / presets held (`preset`) |
 | blob3 | country | double3 | median image width (`add`, `vexport`) |
-| blob4 | referrer host | double4 | median image height (`add`, `vexport`) |
+| blob4 | referrer host (empty referrer: the page's `utm_source`) | double4 | median image height (`add`, `vexport`) |
 | blob5 | crop ratio, or `mixed` | double5 | median file size, MB |
 | blob6 | output format (video: codec) | double6 | crops exported |
 | blob7 | native / fixed | double7 | output width (fixed only) |
