@@ -3030,6 +3030,10 @@ function track(event, extra){
   if (statsMuted()) return;
   let ref = "";
   try { ref = document.referrer ? new URL(document.referrer).host : ""; } catch {}
+  // ChatGPT tags its citation links ?utm_source=chatgpt.com, and its app
+  // often sends no referrer, so the tag stands in for one
+  if (!ref) try { ref = (new URL(location.href).searchParams.get("utm_source") || "")
+    .toLowerCase().replace(/[^a-z0-9.-]/g, "").slice(0, 64); } catch {}
   const body = JSON.stringify(Object.assign({
     e: event, id: STATS.id, v: STATS.visits, lang: S.lang, ref: ref, w: window.innerWidth
   }, extra || {}));

@@ -50,6 +50,39 @@ const JOB_LABELS = {
   marketer: "마케터",
   other:    "기타"
 };
+/* Where a visit came from. blob4 is the referrer's host — or, when the
+   browser sent no referrer, the page's ?utm_source= (ChatGPT tags its
+   citation links that way and its app often sends no referrer). A host
+   matches a name below exactly or as a subdomain (www.perplexity.ai).
+   AI_HOSTS is the one list of AI answer engines; add to it here. Google's AI
+   Overviews / AI Mode and Copilot inside Bing search arrive as google.com and
+   bing.com, the same as ordinary search, so they cannot be told apart. */
+export const AI_HOSTS = [
+  "chatgpt.com", "chat.openai.com", "perplexity.ai", "gemini.google.com",
+  "copilot.microsoft.com", "claude.ai", "you.com", "phind.com", "poe.com",
+  "chat.deepseek.com", "grok.com", "meta.ai", "chat.mistral.ai"
+];
+const SEARCH_RE = /(^|\.)(google|bing|naver|daum|yahoo|duckduckgo|baidu|yandex|ecosia|seznam|sogou|qwant|startpage|brave)\.[a-z.]+$/;
+const SOCIAL_HOSTS = [
+  "t.co", "x.com", "twitter.com", "facebook.com", "fb.com", "instagram.com", "threads.net", "threads.com",
+  "linkedin.com", "lnkd.in", "reddit.com", "youtube.com", "youtu.be", "pinterest.com", "pin.it",
+  "tiktok.com", "kakao.com", "band.us", "blog.naver.com", "cafe.naver.com", "cafe.daum.net",
+  "brunch.co.kr", "tistory.com", "velog.io", "clien.net", "dcinside.com", "ruliweb.com", "theqoo.net",
+  "fmkorea.com", "quora.com", "news.ycombinator.com", "producthunt.com", "discord.com", "telegram.org",
+  "medium.com", "note.com", "qiita.com", "hatena.ne.jp", "line.me"
+];
+const OWN_HOSTS = ["detailcrop.com", "workers.dev"];
+const hostIn = (h, list) => list.some(d => h === d || h.endsWith("." + d));
+export const REF_GROUPS = ["AI 검색", "검색 엔진", "SNS·커뮤니티", "직접", "기타"];
+export function refGroup(ref) {
+  const h = String(ref || "").toLowerCase().trim().replace(/\.$/, "");
+  if (!h || hostIn(h, OWN_HOSTS)) return "직접";
+  if (hostIn(h, AI_HOSTS)) return "AI 검색";
+  if (hostIn(h, SOCIAL_HOSTS)) return "SNS·커뮤니티";   // before search: blog.naver.com is not a search
+  if (SEARCH_RE.test(h)) return "검색 엔진";
+  return "기타";
+}
+
 /* Walkthrough steps, in the order TOUR[] defines them in the page. */
 const TOUR_LABELS = ["크롭 박스", "컷 개수", "컷 목록", "비율", "필름스트립", "내보내기"];
 
@@ -132,9 +165,17 @@ npx wrangler secret put STATS_KEY</pre>
                        sumIf(_sample_interval, blob1='export') AS exports
                 FROM ${DATASET} WHERE ${W}
                 GROUP BY country ORDER BY visits DESC LIMIT 10`,
-    referrers: `SELECT blob4 AS ref, sum(_sample_interval) AS visits
-                FROM ${DATASET} WHERE ${W} AND blob1='visit'
-                GROUP BY ref ORDER BY visits DESC LIMIT 10`,
+    /* Every referrer host with its visits and exports, grouped in JS by
+       refGroup() — plain SQL, no host-matching functions to depend on.
+       Rows per (host, event) so people can be counted per event too. */
+    refs: `SELECT blob4 AS ref, blob1 AS ev, sum(_sample_interval) AS n,
+                  count(DISTINCT blob8) AS people
+           FROM ${DATASET} WHERE ${W} AND (blob1='visit' OR blob1='export')
+           GROUP BY ref, ev ORDER BY n DESC LIMIT 500`,
+    /* visits per day per referrer, for the AI chart; direct visits left out */
+    refDaily: `SELECT toStartOfDay(timestamp) AS day, blob4 AS ref, sum(_sample_interval) AS visits
+               FROM ${DATASET} WHERE ${W} AND blob1='visit' AND blob4 != ''
+               GROUP BY day, ref ORDER BY day ASC LIMIT 5000`,
     settings: `SELECT blob5 AS ratio, blob6 AS fmt,
                       sum(_sample_interval) AS exports,
                       avg(double6)          AS crops,
@@ -302,7 +343,7 @@ function histogram(buckets, opts) {
 
 /* Proportion bar for a part-to-whole split, always directly labelled so the
    colours are never the only thing carrying identity. */
-const SEG_COLORS = ["var(--teal)", "var(--amber)", "var(--pink)", "var(--fog)"];
+const SEG_COLORS = ["var(--teal)", "var(--amber)", "var(--pink)", "var(--fog)", "var(--green)"];
 function segBar(label, rows) {
   const total = rows.reduce((a, r) => a + num(r.n), 0);
   if (!total) return "";
@@ -450,6 +491,34 @@ function render(R, days, failed, weakKey) {
     label: r.words, value: num(r.people), display: `${n0(r.people)}명`
   }));
 
+  /* where visits come from, grouped; and the AI share of them */
+  const refHosts = {};
+  (R.refs.rows || []).forEach(r => {
+    const k = String(r.ref || "");
+    const o = refHosts[k] || (refHosts[k] = { ref: k, group: refGroup(k), visits: 0, exports: 0, vPeople: 0, ePeople: 0 });
+    if (r.ev === "visit") { o.visits += num(r.n); o.vPeople += num(r.people); }
+    else { o.exports += num(r.n); o.ePeople += num(r.people); }
+  });
+  const hostList = Object.values(refHosts).sort((a, b) => b.visits - a.visits);
+  const groupVisits = REF_GROUPS.map(g => ({ label: g,
+    n: hostList.filter(h => h.group === g).reduce((a, h) => a + h.visits, 0) }));
+  const allVisits = groupVisits.reduce((a, g) => a + g.n, 0);
+  const aiHosts = hostList.filter(h => h.group === "AI 검색" && (h.visits || h.exports));
+  const ai = aiHosts.reduce((a, h) => ({ visits: a.visits + h.visits, exports: a.exports + h.exports,
+    vPeople: a.vPeople + h.vPeople, ePeople: a.ePeople + h.ePeople }), { visits: 0, exports: 0, vPeople: 0, ePeople: 0 });
+  const aiByDay = {};
+  (R.refDaily.rows || []).forEach(r => {
+    if (refGroup(r.ref) !== "AI 검색") return;
+    const d = String(r.day || "").slice(0, 10);
+    aiByDay[d] = (aiByDay[d] || 0) + num(r.visits);
+  });
+  const aiDays = daily.map(d => ({ day: String(d.day || "").slice(0, 10), n: aiByDay[String(d.day || "").slice(0, 10)] || 0 }));
+  const aiPeak = Math.max(0, ...aiDays.map(d => d.n));
+  const aiBars = aiPeak ? aiDays.map(d => `<div class="bar" title="${esc(d.day.slice(5))} · AI 검색 방문 ${n0(d.n)}">
+      <i style="height:${d.n ? Math.max(4, Math.round(d.n / aiPeak * 100)) : 0}%"></i></div>`).join("") : "";
+  const aiAxis = aiDays.map((d, i) => (i % every === 0 || i === aiDays.length - 1)
+      ? `<span>${esc(d.day.slice(5))}</span>` : "").join("");
+
   /* the video page */
   const vBy = {};
   (R.video.rows || []).forEach(r => { vBy[r.step] = r; });
@@ -530,10 +599,30 @@ function render(R, days, failed, weakKey) {
     </div>
     <div class="panel">
       <h2>어디서 오는가 <span>유입 경로 · ${days}일</span></h2>
-      ${rankList((R.referrers.rows || []).map(r => ({
-        label: r.ref || "직접 / 북마크", value: num(r.visits)
-      })))}
+      ${segBar("묶음", groupVisits.filter(g => g.n))}
+      <div style="margin-top:14px">${rankList(hostList.filter(h => h.visits).slice(0, 10).map(h => ({
+        label: h.ref || "직접 / 북마크", value: h.visits, sub: h.ref ? h.group : ""
+      })))}</div>
     </div>
+  </section>
+
+  <section class="panel wide">
+    <h2>AI 검색 <span>ChatGPT · Perplexity · Gemini · Claude 등에서 온 방문 · ${days}일</span></h2>
+    <div class="strip">
+      ${mini("AI 검색 방문", n0(ai.visits))}
+      ${mini("전체 방문 중", allVisits > 0 ? share(ai.visits, allVisits).toFixed(1) + "%" : "—")}
+      ${mini("내보내기", n0(ai.exports))}
+      ${mini("전환율", ai.vPeople > 0 ? share(ai.ePeople, ai.vPeople).toFixed(1) + "%" : "—")}
+    </div>
+    <div class="aiGrid">
+      <div>${rankList(aiHosts.map(h => ({
+        label: h.ref, value: h.visits,
+        sub: `내보내기 ${n0(h.exports)}${h.vPeople ? ` · 전환 ${Math.round(share(h.ePeople, h.vPeople))}%` : ""}`
+      })), { emptyNote: "아직 AI 검색에서 온 방문이 없습니다." })}</div>
+      <div>${aiBars ? `<p class="segLabel">날짜별 AI 검색 방문</p><div class="chartBox aiChart"><div class="bars">${aiBars}</div></div>
+        <div class="axis">${aiAxis}</div>` : ""}</div>
+    </div>
+    <p class="note">전환율은 AI 검색으로 들어와 내보낸 사람 ÷ 방문한 사람입니다. 구글 AI 요약·AI 모드와 Bing 검색 안의 Copilot은 referrer가 google.com·bing.com으로 와서 일반 검색과 나눌 수 없어 '검색 엔진'에 들어갑니다.</p>
   </section>
 
   <section class="panel wide">
@@ -714,6 +803,10 @@ a{color:inherit}
   padding:8px 11px; font-size:12px; color:var(--ink); pointer-events:none; box-shadow:var(--shadow);
   white-space:nowrap; transform:translate(-50%,-100%); margin-top:-10px}
 .tooltip b{color:var(--amber); font-variant-numeric:tabular-nums}
+.aiGrid{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:18px; margin-top:14px; align-items:start}
+@media (max-width:760px){ .aiGrid{grid-template-columns:minmax(0,1fr)} }
+.chartBox.aiChart{height:120px; padding:10px 12px 6px}
+.note{margin-top:12px; font-size:12px; color:var(--muted); line-height:1.5}
 .tipDate{color:var(--muted); font-size:10.5px; display:block; margin-bottom:2px}
 
 h2{font-size:14.5px; color:var(--ink-2); display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 8px}
