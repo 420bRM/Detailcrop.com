@@ -1,0 +1,36 @@
+# DetailCrop
+
+> DetailCrop (디테일크롭, ディテールクロップ) is a free browser tool for Multi Crop: place up to six fixed-ratio crop boxes on every image in a batch and download every crop as one zip. Images are processed in the browser and never uploaded. No install; an account is optional and only stores settings presets.
+
+- Typical uses: several close-ups per product photo, artwork details, Instagram feed splits (3/6/9 tiles, numbered in posting order), one photo in several ratios.
+- Limits: up to 200 images, 200 MB each, 16384 px per side; up to six crops per image.
+- Output: WebP, JPEG or PNG, at the crop's own pixels or a fixed size; a file-name pattern of your choice.
+- There is a video version for cutting several fixed-ratio clips (9:16, 1:1, 4:5…) out of a video as mp4.
+- Interface in English, Korean and Japanese.
+
+## Tools
+
+- [Image tool (en)](https://detailcrop.com/): DetailCrop's Multi Crop lets you batch crop multiple images at once: place up to six fixed-ratio crops on every image and download them all as one zip. Free, no upload — it runs in your browser.
+- [Image tool (ko)](https://detailcrop.com/ko/): 디테일크롭(DetailCrop) 멀티크롭으로 여러 이미지를 한번에 자르세요. 이미지마다 같은 비율의 컷을 최대 6개씩 잡아 zip 하나로 내려받습니다. 무료, 업로드 없이 브라우저에서 처리됩니다.
+- [Image tool (ja)](https://detailcrop.com/ja/): DetailCrop（ディテールクロップ）のマルチクロップで、複数の画像をまとめてトリミング。1枚につき同じ比率のカットを最大6つ切り出し、zipひとつでダウンロード。無料・アップロード不要。
+- [Video tool (en)](https://detailcrop.com/video/): DetailCrop's Multi Crop for video: crop several fixed-ratio clips out of every video at once — 9:16 for Shorts, 1:1 or 4:5 for the feed — and save them all as mp4. Free, runs in your browser, nothing is uploaded.
+- [Video tool (ko)](https://detailcrop.com/video/ko/): 디테일크롭 영상 멀티크롭으로 여러 영상을 한번에 자르세요. 가로 영상에서 쇼츠용 9:16, 피드용 1:1·4:5 컷을 여러 개씩 잡아 mp4로 내보냅니다. 무료, 업로드 없이 브라우저에서 처리됩니다.
+- [Video tool (ja)](https://detailcrop.com/video/ja/): ディテールクロップの動画マルチクロップで、複数の動画をまとめてトリミング。横長の動画からショート用9:16、フィード用1:1・4:5のカットを何本も切り出し、mp4で書き出します。無料・アップロード不要。
+
+## Guides
+
+- [About DetailCrop](https://detailcrop.com/about/): DetailCrop is a free Multi Crop tool: place several fixed-ratio crops on every image in a batch and download them all as one zip. No install, no account, no upload.
+- [About](https://detailcrop.com/ko/about/): 디테일크롭은 사진 한 장에서 확대컷을 여러 개씩, 여러 장을 한 번에 잘라 zip으로 받는 무료 도구입니다. 설치나 가입 없이 브라우저에서 바로 쓰고, 사진은 서버로 올라가지 않습니다.
+- [DetailCrop（ディテールクロップ）について](https://detailcrop.com/ja/about/): DetailCrop（ディテールクロップ）は、1枚の画像から同じ比率のカットを何枚も、複数の画像をまとめて切り抜ける無料のマルチクロップツールです。インストール・登録・アップロード不要。
+- [How to crop many images at once](https://detailcrop.com/how-to/): How to batch crop a set of photos to the same ratio with DetailCrop's Multi Crop: load the images, set the ratio, place the crops, and download everything as one zip — step by step, with screenshots.
+- [사용법](https://detailcrop.com/ko/how-to/): 사진 여러 장을 같은 비율로 한 번에 자르는 방법. 디테일크롭에서 이미지를 불러오고, 비율을 정하고, 상자를 놓고, zip으로 받기까지 실제 화면과 함께 순서대로 설명합니다.
+- [複数の画像をまとめて切り抜く方法](https://detailcrop.com/ja/how-to/): 写真を何枚も同じ比率で一括トリミングする方法。DetailCropのマルチクロップで画像を読み込み、比率を決め、枠を置いて、zipでダウンロードするまでを画面つきで順番に説明します。
+- [What people use Multi Crop for](https://detailcrop.com/uses/): Product detail shots, Instagram grid splits, artwork close-ups, and one photo in several ratios. Real ways to use DetailCrop's Multi Crop, with the settings that go with them.
+- [활용 예시](https://detailcrop.com/ko/uses/): 쇼핑몰 상세페이지 확대컷, 인스타그램 피드 분할, 그림 디테일컷, 사진 한 장으로 여러 비율 만들기. 디테일크롭을 실제로 어떻게 쓰는지 설정값과 함께 정리했습니다.
+- [マルチクロップ、こんな使い方](https://detailcrop.com/ja/uses/): 商品ページのディテールカット、インスタグラムのフィード分割、作品の寄り、1枚から複数の比率まで。DetailCropのマルチクロップの実際の使い方を設定例つきで紹介します。
+
+## Optional
+
+- [Privacy policy](https://detailcrop.com/privacy/): What DetailCrop collects and why, how long it is kept and who stores it. Images never leave your browser; signed-in members give us an email address and their presets, nothing more.
+- [개인정보 처리방침](https://detailcrop.com/ko/privacy/): 디테일크롭이 어떤 정보를 왜 받고, 얼마나 보관하며, 어디에 맡기는지 적었습니다. 이미지는 서버로 보내지 않고, 로그인 회원에게는 이메일과 프리셋만 받습니다.
+- [プライバシーポリシー](https://detailcrop.com/ja/privacy/): DetailCropが何を、なぜ受け取り、どれだけ保管し、どこに預けるのかをまとめました。画像はサーバーに送りません。ログイン会員から受け取るのはメールアドレスとプリセットだけです。

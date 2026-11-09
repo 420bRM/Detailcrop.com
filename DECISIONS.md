@@ -553,3 +553,21 @@ Cloudflare·Google(둘 다 미국)이라는 국외 이전. 수집 항목이 바�
 
 **만들지 않은 것.** 쇼핑몰 규격 프리셋, 셀러 사용 사례 페이지, 유료화, "AI에 올릴 수 없는 사진" 문구 — 운영자가
 하지 않기로 했다.
+
+---
+
+## 19. AI 검색에는 열고, AI 학습에는 닫는다 (2026-11-09)
+
+AI 검색 유입을 늘리려고(통계의 'AI 검색' 칸, DX21~23) 사이트가 AI 로봇에 어떻게 보이는지 확인했다.
+`public/robots.txt`는 모두 허용인데, **Cloudflare가 그 앞에 자체 규칙을 붙여** 학습용 로봇(GPTBot,
+ClaudeBot, Google-Extended, CCBot 등)을 막고 있었다. GPTBot·ClaudeBot에는 403까지 준다.
+
+**그대로 둔다.** AI 답변이 출처로 인용하려고 페이지를 읽는 로봇은 따로 있고, 그쪽은 모두 열려 있다:
+ChatGPT 검색(OAI-SearchBot·ChatGPT-User), Perplexity, Claude 검색(Claude-SearchBot), 구글(Googlebot —
+AI 요약도 이것으로 읽는다), Bing(ChatGPT 검색이 많이 기대는 색인). 인용되는 데에 학습 데이터가 될 필요는
+없다. 하나 애매한 것은 Google-Extended다. Gemini 앱이 답에 근거를 붙일 때도 이 표시를 따르므로, 막아 두면
+Gemini에서 덜 인용될 수 있다. 바꾸려면 Cloudflare 대시보드의 AI 크롤러 설정에서 바꾼다(저장소 파일이 아니다).
+
+`/llms.txt`를 만들었다. AI가 사이트를 빨리 파악하라고 두는 짧은 안내문(llmstxt.org 형식)이다. 쓰는지
+확실하지 않은 형식이라 손으로 관리하지 않고 `build.py`가 페이지 제목·설명에서 만든다. Chrome 확장은 스토어
+공개 뒤에 넣는다.

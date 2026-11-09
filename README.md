@@ -26,7 +26,7 @@ public/
   apple-touch-icon.png  180
   icon-512.png
   about/ how-to/ uses/ privacy/  reading pages; also under ko/ and ja/
-  robots.txt  sitemap.xml   (sitemap is generated)
+  robots.txt  sitemap.xml  llms.txt   (sitemap and llms.txt are generated)
 src/
   index.js              Worker: serves assets, POST /e, routes /stats and /api
   stats.js              the /stats dashboard and /api/today
@@ -92,6 +92,26 @@ sent. Google does not take IndexNow and keeps reading the sitemap. The key is
 deleting or renaming it makes every ping fail. To announce every page at once,
 run the workflow by hand from the Actions tab. `python3 scripts/indexnow.py
 all --dry-run` lists what would be sent.
+
+**AI crawlers and llms.txt.** What a bot sees at `/robots.txt` is not only
+`public/robots.txt`: Cloudflare puts its own managed block in front of it
+(dashboard → the domain → *Security → Bots*, the AI crawler settings). As of
+2026-11-09 that block says `ai-train=no` and disallows the **training**
+crawlers — GPTBot, ClaudeBot, Google-Extended, CCBot, meta-externalagent
+and others — and Cloudflare answers GPTBot and ClaudeBot with 403. The
+crawlers that fetch pages **for AI search answers** are allowed and get the
+page: OAI-SearchBot and ChatGPT-User (ChatGPT search), PerplexityBot,
+Claude-SearchBot, Googlebot (which also feeds Google's AI Overviews) and
+Bingbot (which ChatGPT search leans on). That split is deliberate: being cited
+in AI answers is wanted, being training data is not required for it. One
+grey area: Google-Extended also governs grounding in the Gemini app, so while
+it is blocked Gemini may cite the site less. Changing any of this is a switch
+in the Cloudflare dashboard, not a file here.
+
+`/llms.txt` (written by `build.py`) is a short Markdown map of the site in
+the llmstxt.org format: what the tool does, its limits, and every indexed
+page with its description, in all three languages. It is built from the same
+titles and descriptions as the pages, so editing a page's header updates it.
 
 ## Limits
 
