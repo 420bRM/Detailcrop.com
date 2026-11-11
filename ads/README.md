@@ -24,50 +24,54 @@
 
 **디테일크롭 DetailCrop — 여러 이미지 한번에 자르기(멀티크롭)**: 사진마다 같은 비율의 컷을 최대 6개씩 잡아 zip 하나로 받는 무료 브라우저 도구. 동영상 판(`/video/`), 크롬 확장도 있다.
 
-- 한국어 도착 페이지: <https://detailcrop.com/ko/> (영어 `/`, 일본어 `/ja/`)
+- 도착 페이지: **영어 <https://detailcrop.com/>** (한국어 `/ko/`, 일본어 `/ja/`)
 - 쓰는 사람(사이트 '누가 쓰는가' 질문 항목): 판매자(쇼핑몰 상세컷), 사진가, 작가 · 디자이너(작품 확대컷), 마케터(인스타 피드 분할)
-- 1차는 **국내(한국어)** 만. 해외(영어 · 일본어)는 국내 결과를 본 뒤.
+- **광고는 영어로(2026-11-11 사장님 결정)** — 영어권(미국 · 영국 · 캐나다 · 호주 · 뉴질랜드 · 아일랜드). 한국어 · 일본어는 영어 결과를 본 뒤.
+- 영어 문구는 크롬 웹 스토어 등록 문구(`extension/store/listing.md` English)와 같은 말을 쓴다.
 
 ## 2. 지금 상태 (2026-11-11)
 
 | 채널 | 상태 | 비고 |
 |---|---|---|
-| 구글 디스플레이 | **1차 시험 자료 준비(설정 · 게시 전)** | 예산 · 기간은 사장님이 정한다. 아래 4장은 제안값 |
-| 구글 검색 광고 | 후보 | 도구는 '찾는 사람'이 많아 검색 광고가 더 맞을 수 있다 — 디스플레이 결과를 보고 판단 |
-| 메타(인스타그램) | 후보 | 같은 이미지를 그대로 쓸 수 있다(인스타 피드 분할 기능과 잘 맞음) |
+| 구글 디스플레이(영어) | **1차 시험 자료 준비(설정 · 게시 전)** | 예산 · 기간은 사장님이 정한다. 아래 4장은 제안값 |
+| 구글 검색 광고(영어) | **추천 1순위** | 도구는 '찾는 사람'에게 보이는 게 맞다. 같은 문구를 검색 광고 제목 · 설명으로 쓸 수 있다 |
+| 레딧(Reddit) 광고 | 추천 | 판매자 · 사진 · 디자인 커뮤니티를 골라 낼 수 있다. 최소 예산 · 단가는 조사 필요 |
+| 무료 등록(Product Hunt · AlternativeTo) | 추천 | 돈이 들지 않는 소개 자리. 올리는 글은 사장님 확인 뒤 |
+| 메타(인스타그램) · 핀터레스트 | 후보 | 같은 이미지를 그대로 쓸 수 있다 |
 
 **측정:** `/stats` 대시보드가 방문 · 내보내기를 센다. 페이지는 리퍼러가 비었을 때만 `utm_source` 를 `ref` 로 보내므로, 구글 광고 클릭은 리퍼러(googlesyndication · google 등)로 잡힐 수 있다. 시작 후 /stats 의 '출처'에서 어떻게 보이는지 먼저 확인한다.
 
-## 3. 이미지 — `public/ads/google-detailcrop-1/`
+## 3. 이미지 — `public/ads/google-detailcrop-en-1/` (영어)
 
-목록 쪽: <https://detailcrop.com/ads/google-detailcrop-1/> (noindex, 병합 · 배포 뒤 열림). 구글 Ads "웹사이트 스캔"에 넣어 고른다.
+목록 쪽: <https://detailcrop.com/ads/google-detailcrop-en-1/> (noindex, 병합 · 배포 뒤 열림). 구글 Ads "웹사이트 스캔"에 넣어 고른다.
 
 | 파일 | 크기 | 내용 |
 |---|---|---|
-| `landscape-1-crops.jpg` | 1200×628 | 왼쪽 예시 사진에 상자 6개, 오른쪽 잘린 컷 6장 + '여러 사진을 한 번에, 사진마다 여섯 컷까지' |
-| `landscape-2-strip.jpg` | 1200×628 | 잘린 컷 6장 + '한 장에서 여섯 컷, zip 하나로' |
-| `square-1-crops.jpg` | 1200×1200 | 사진 + 컷 2×3 + '사진마다 여섯 컷, 한 번에' |
+| `landscape-1-crops.jpg` | 1200×628 | 왼쪽 예시 사진에 상자 6개, 오른쪽 잘린 컷 6장 + 'Batch-crop every image, six details each' |
+| `landscape-2-strip.jpg` | 1200×628 | 잘린 컷 6장 + 'Six crops per image, one zip' |
+| `square-1-crops.jpg` | 1200×1200 | 사진 + 컷 2×3 + 'Six crops per image, at once' |
 | `square-2-grid.jpg` | 1200×1200 | 컷 3×2 크게 + 로고 |
 | `portrait-crops.jpg` | 900×1600 | 9:16 — 사진 위 · 컷 아래 |
 | `logo-square.png` | 1200×1200 | 앱 아이콘(icon-512 와 같은 모양) |
 | `logo-landscape.png` | 1200×300 | 아이콘 + DetailCrop |
 
 그림은 도구의 예시 사진(template.html 의 DEMO '야경-도시')과 상자 색(--b1~)으로 그렸다. 다시 만들기: `NODE_PATH=$(npm root -g) node scripts/make-ad-images.cjs`
-(새 세트는 스크립트의 `OUT` · `IMAGES` 를 바꿔 `public/ads/<매체>-detailcrop-<차수>/` 에).
+(새 세트는 스크립트의 `OUT` · `IMAGES` 를 바꿔 `public/ads/<매체>-detailcrop-<언어>-<차수>/` 에). 처음 만든 한국어 세트는 영어로 바꾸며 지웠다(가지 기록에 남음).
 
-## 4. 구글 디스플레이 1차 시험 (제안 — 사장님 확인 전)
+## 4. 구글 디스플레이 1차 시험 — 영어 (제안 — 사장님 확인 전)
 
-- 캠페인 **DetailCrop 시험1** · 디스플레이 · 대한민국 · 한국어 · 클릭수 최대화(최대 CPC 300원) · 하루 10,000원 · 7일 (날짜는 사장님이)
-- 광고그룹 **이미지 자르기**: 키워드 이미지 자르기 · 사진 여러장 자르기 · 일괄 크롭 · 상세컷 · 상세페이지 이미지 · 인스타 분할 · 사진 크롭 · 이미지 비율 자르기 · 최적화된 타기팅 끔
-- 최종 URL `https://detailcrop.com/ko/?utm_source=google&utm_medium=display&utm_campaign=detailcrop_test1` · 비즈니스 이름 **디테일크롭**
+- 캠페인 **DetailCrop EN test1** · 디스플레이 · 미국 · 영국 · 캐나다 · 호주 · 뉴질랜드 · 아일랜드 · 영어 · 클릭수 최대화(최대 CPC 400원) · 하루 10,000원 · 7일 (날짜는 사장님이)
+  영어권은 클릭 값이 한국보다 비싸다 — 첫날 노출이 거의 없으면 CPC 한도를 올릴지 사장님께 묻는다.
+- 광고그룹 **batch crop**: 키워드 batch crop images · bulk image cropper · crop multiple images at once · product photo crop · instagram grid split · image cropper online · crop images to same size · 최적화된 타기팅 끔
+- 최종 URL `https://detailcrop.com/?utm_source=google&utm_medium=display&utm_campaign=detailcrop_en_test1` · 비즈니스 이름 **DetailCrop**
 
-### 광고 문구 (구글 글자 수: 한글 1자 = 2 · 모두 한도 안 확인)
-- 짧은 제목(30 이내): 여러 이미지 한번에 자르기 / 상세컷 한번에 자르기 / 사진마다 6컷, zip 하나로 / 업로드 없이 브라우저에서 / 무료 멀티크롭 디테일크롭
-- 긴 제목(90 이내): 사진 여러 장에서 같은 비율의 컷을 최대 6개씩 잘라 zip 하나로 받으세요
+### 광고 문구 (영어 1자 = 1 · 모두 한도 안 확인)
+- 짧은 제목(30 이내): Batch Crop Images Online / Six Crops Per Image, One Zip / Free Multi Crop Tool / Crop Product Detail Shots / Crops Stay in Your Browser
+- 긴 제목(90 이내): Crop up to six fixed-ratio details from every image in a batch and download one zip
 - 설명(90 이내):
-  1. 쇼핑몰 상세컷, 작품 확대컷, 인스타 피드 조각을 같은 규격으로 한 번에 자릅니다.
-  2. 사진은 서버로 가지 않습니다. 브라우저 안에서 자르고 바로 내려받습니다. 무료.
-  3. 다음 사진은 방금 잡은 상자 배치로 시작합니다. 비율·크기·파일명도 정할 수 있습니다.
+  1. Product detail shots, artwork close-ups, Instagram tiles: same crops, same size, at once.
+  2. Free and private. Images are cropped in your browser and never uploaded to a server.
+  3. The next image starts from the boxes you just placed. Set ratio, size and file names.
 
 ## 5. 탭제어(브라우저 위임 Claude) 프롬프트
 
@@ -86,22 +90,22 @@
 
 [1. 캠페인]
 - 목표: 목표 없이 만들기(또는 웹사이트 트래픽) → 유형: 디스플레이
-- 이름: DetailCrop 시험1
-- 위치: 대한민국 / 언어: 한국어
-- 입찰: 클릭수 최대화, 최대 CPC 한도 300원
+- 이름: DetailCrop EN test1
+- 위치: 미국, 영국, 캐나다, 호주, 뉴질랜드, 아일랜드 / 언어: 영어
+- 입찰: 클릭수 최대화, 최대 CPC 한도 400원
 - 예산: 하루 10,000원
 - 기간: (내가 알려 주는 날짜)
 - 기기: 기본값(모든 기기)
 
 [2. 광고그룹·타기팅]
-- 광고그룹 이름: 이미지 자르기
-- 키워드: 이미지 자르기, 사진 여러장 자르기, 일괄 크롭, 상세컷, 상세페이지 이미지, 인스타 분할, 사진 크롭, 이미지 비율 자르기
+- 광고그룹 이름: batch crop
+- 키워드: batch crop images, bulk image cropper, crop multiple images at once, product photo crop, instagram grid split, image cropper online, crop images to same size
 - 최적화된 타기팅: 끔
 
 [3. 광고 — 반응형 디스플레이 광고]
-- 최종 URL: https://detailcrop.com/ko/?utm_source=google&utm_medium=display&utm_campaign=detailcrop_test1
-- 비즈니스 이름: 디테일크롭
-- 이미지·로고: "이미지 추가" → "웹사이트 스캔"에 https://detailcrop.com/ads/google-detailcrop-1/ 을 넣고 아래 파일 이름의 이미지를 고른다.
+- 최종 URL: https://detailcrop.com/?utm_source=google&utm_medium=display&utm_campaign=detailcrop_en_test1
+- 비즈니스 이름: DetailCrop
+- 이미지·로고: "이미지 추가" → "웹사이트 스캔"에 https://detailcrop.com/ads/google-detailcrop-en-1/ 을 넣고 아래 파일 이름의 이미지를 고른다.
   자르기 화면이 나오면 아래 비율로, 그림 전체가 들어가게 맞춘다.
     가로 1.91:1 → landscape-1-crops.jpg, landscape-2-strip.jpg
     정사각형 1:1 → square-1-crops.jpg, square-2-grid.jpg
@@ -111,17 +115,17 @@
   · 스캔으로 안 찾아지거나 고를 수 없으면 "업로드" 파일 선택 창을 띄운 채 멈추고 "파일 올려 주세요"라고 말한다.
   · "이미지 속 텍스트가 많음" 경고가 뜨면 그 이미지만 뺀다.
 - 짧은 광고 제목 5개:
-  여러 이미지 한번에 자르기
-  상세컷 한번에 자르기
-  사진마다 6컷, zip 하나로
-  업로드 없이 브라우저에서
-  무료 멀티크롭 디테일크롭
-- 긴 광고 제목: 사진 여러 장에서 같은 비율의 컷을 최대 6개씩 잘라 zip 하나로 받으세요
+  Batch Crop Images Online
+  Six Crops Per Image, One Zip
+  Free Multi Crop Tool
+  Crop Product Detail Shots
+  Crops Stay in Your Browser
+- 긴 광고 제목: Crop up to six fixed-ratio details from every image in a batch and download one zip
 - 설명 3개:
-  쇼핑몰 상세컷, 작품 확대컷, 인스타 피드 조각을 같은 규격으로 한 번에 자릅니다.
-  사진은 서버로 가지 않습니다. 브라우저 안에서 자르고 바로 내려받습니다. 무료.
-  다음 사진은 방금 잡은 상자 배치로 시작합니다. 비율·크기·파일명도 정할 수 있습니다.
-- 행동 유도 버튼을 고를 수 있으면 "지금 사용하기" 또는 "자세히 알아보기"(없으면 자동)
+  Product detail shots, artwork close-ups, Instagram tiles: same crops, same size, at once.
+  Free and private. Images are cropped in your browser and never uploaded to a server.
+  The next image starts from the boxes you just placed. Set ratio, size and file names.
+- 행동 유도 버튼을 고를 수 있으면 "Use now" 또는 "Learn more"(없으면 자동)
 
 [4. 게시 전 확인]
 게시 버튼을 누르기 전에 멈추고 표로 보여 준다:
@@ -132,7 +136,7 @@
 ### ② 매일 확인 (바꾸지 않음)
 
 ```
-Google Ads 의 "DetailCrop 시험1" 캠페인만 본다. 아무것도 바꾸지 않는다.
+Google Ads 의 "DetailCrop EN test1" 캠페인만 본다. 아무것도 바꾸지 않는다.
 기간: 어제 하루, 그리고 시작일부터 어제까지 합계.
 1. 노출 · 클릭 · 클릭률 · 평균 CPC · 비용
 2. 게재된 위치 상위 10곳: 위치 · 노출 · 클릭 · 비용
@@ -147,3 +151,4 @@ Google Ads 의 "DetailCrop 시험1" 캠페인만 본다. 아무것도 바꾸지 
 | 날짜 | 매체 | 한 일 · 결과 | 비용 |
 |---|---|---|---|
 | 2026-11-11 | 구글 | 1차 시험 이미지 7장 · 문구 · 탭제어 프롬프트 준비 | 0 |
+| 2026-11-11 | 구글 | 사장님 결정: 디테일크롭 광고는 영어로 → 이미지 7장 · 문구 · 프롬프트를 영어로 바꿈. 매체 추천: 구글 검색 · 레딧 · 무료 등록(Product Hunt · AlternativeTo) | 0 |
