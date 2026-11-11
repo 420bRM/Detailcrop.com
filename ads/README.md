@@ -33,7 +33,7 @@
 
 | 채널 | 상태 | 비고 |
 |---|---|---|
-| 구글 디스플레이(영어) | **1차 시험 자료 준비(설정 · 게시 전)** | 예산 · 기간은 사장님이 정한다. 아래 4장은 제안값 |
+| 구글 디스플레이(영어) | 보류 | 이미지(3장)는 준비됨 — 검색 광고 결과를 본 뒤 |
 | 구글 검색 광고(영어) | **사장님 결정(11-11): 1차는 검색 광고로** — 설정은 아래 4장을 검색용으로 옮겨 쓴다(반응형 검색 광고: 제목 30자 · 설명 90자) | 도구는 '찾는 사람'에게 보이는 게 맞다. 같은 문구를 검색 광고 제목 · 설명으로 쓸 수 있다 |
 | 레딧(Reddit) 광고 | **조사함(11-11) — 6-1장** | 하루 최소 $5, 원화 결제 안 됨(달러 계정) |
 | 무료 등록(Product Hunt · AlternativeTo) | 추천 | 돈이 들지 않는 소개 자리. 올리는 글은 사장님 확인 뒤 |
@@ -58,89 +58,133 @@
 그림은 도구의 예시 사진(template.html 의 DEMO '야경-도시')과 상자 색(--b1~)으로 그렸다. 다시 만들기: `NODE_PATH=$(npm root -g) node scripts/make-ad-images.cjs`
 (새 세트는 스크립트의 `OUT` · `IMAGES` 를 바꿔 `public/ads/<매체>-detailcrop-<언어>-<차수>/` 에). 처음 만든 한국어 세트는 영어로 바꾸며 지웠다(가지 기록에 남음).
 
-## 4. 구글 디스플레이 1차 시험 — 영어 (제안 — 사장님 확인 전)
+## 4. 구글 검색 광고 1차 시험 — 영어 (사장님 확정 11-11: 하루 1만 원 · 7일)
 
-- 캠페인 **DetailCrop EN test1** · 디스플레이 · 미국 · 영국 · 캐나다 · 호주 · 뉴질랜드 · 아일랜드 · 영어 · 클릭수 최대화(최대 CPC 400원) · 하루 10,000원 · 7일 (날짜는 사장님이)
-  영어권은 클릭 값이 한국보다 비싸다 — 첫날 노출이 거의 없으면 CPC 한도를 올릴지 사장님께 묻는다.
-- 광고그룹 **batch crop**: 키워드 batch crop images · bulk image cropper · crop multiple images at once · product photo crop · instagram grid split · image cropper online · crop images to same size · 최적화된 타기팅 끔
-- 최종 URL `https://detailcrop.com/?utm_source=google&utm_medium=display&utm_campaign=detailcrop_en_test1` · 비즈니스 이름 **DetailCrop**
+디스플레이(이미지) 안은 보류 — 3장 이미지는 나중에 디스플레이 · 레딧 · 메타에 쓴다. 검색 광고는 이미지가 필요 없어 사이트 병합을 기다리지 않아도 된다.
 
-### 광고 문구 (영어 1자 = 1 · 모두 한도 안 확인)
-- 짧은 제목(30 이내): Batch Crop Images Online / Six Crops Per Image, One Zip / Free Multi Crop Tool / Crop Product Detail Shots / Crops Stay in Your Browser
-- 긴 제목(90 이내): Crop up to six fixed-ratio details from every image in a batch and download one zip
-- 설명(90 이내):
-  1. Product detail shots, artwork close-ups, Instagram tiles: same crops, same size, at once.
-  2. Free and private. Images are cropped in your browser and never uploaded to a server.
-  3. The next image starts from the boxes you just placed. Set ratio, size and file names.
+- 캠페인 **DetailCrop EN search1** · 검색 · **검색 파트너 끔 · 디스플레이 네트워크 끔**
+- 위치: 미국 · 영국 · 캐나다 · 호주 · 뉴질랜드 · 아일랜드(위치 옵션: "그 위치에 있거나 자주 있는 사람") · 언어: 영어
+- 예산 하루 **10,000원** · **7일**(시작일은 게시하는 날, 끝나는 날 = 시작일 + 6일) · 입찰 클릭수 최대화, 최대 CPC 한도 **500원**(영어권은 한국보다 비싸 300원이면 거의 안 나갈 수 있음)
+- 광고그룹 2개 — 둘 다 첫 화면(도구)으로 보낸다(들어오자마자 쓰게):
+  - **batch crop**: "batch crop images" · "crop multiple images at once" · "bulk image cropper" · "bulk crop photos" · "crop multiple photos" · "multi crop images" · "crop images to same size" · [batch crop images]
+    최종 URL `https://detailcrop.com/?utm_source=google&utm_medium=cpc&utm_campaign=detailcrop_en_search1&utm_content=batch`
+  - **product · instagram**: "crop product photos" · "product photo cropper" · "split image for instagram grid" · "instagram grid split" · "instagram carousel crop" · "etsy photo crop"
+    최종 URL `https://detailcrop.com/?utm_source=google&utm_medium=cpc&utm_campaign=detailcrop_en_search1&utm_content=product`
+- 제외 키워드(캠페인): photoshop · lightroom · apk · download · remove background · pdf · job · jobs · course
+- 측정: Google Ads 보고서(노출 · 클릭 · 비용 · 검색어) + /stats(방문 · **내보내기** · 출처). 기준은 클릭당 비용이 아니라 **내보내기까지 간 사람 1명당 비용**. 페이지는 리퍼러가 있으면 utm 대신 리퍼러를 적으므로 /stats 에서는 google 쪽 출처로 보일 수 있다 — 첫날 확인.
+
+### 반응형 검색 광고 (두 광고그룹 같은 광고 · 글자 수 모두 한도 안 확인)
+- 제목 15개(30자 이내): Batch Crop Images Online / Crop Multiple Images at Once / Six Crops Per Image, One Zip / Free Multi Crop Tool / DetailCrop: Batch Image Crop / Your Images Are Not Uploaded / Runs in Your Browser / Crop Product Detail Shots / Same Ratio for Every Image / Instagram Grid in 3, 6 or 9 / Export All Crops as One Zip / No Sign-Up Needed to Crop / Crop Images to the Same Size / 1:1, 4:5, 2:3, 16:9 or Custom / Free Bulk Image Cropper
+- 설명 4개(90자 이내):
+  1. Crop up to six fixed-ratio details from every image in a batch and download one zip.
+  2. Product detail shots, artwork close-ups, Instagram tiles: same crops, same size, at once.
+  3. Free and private. Images are cropped in your browser and never uploaded to a server.
+  4. The next image starts from the boxes you just placed. Set ratio, size and file names.
+- 경로 표시: detailcrop.com/**batch-crop**/**free**
+- 사이트링크 4개: How to Use(`/how-to/`) · Use Cases(`/uses/`) · Video Multi Crop(`/video/`) · Privacy(`/privacy/`)
+- 콜아웃: Free to Use · Nothing Uploaded · Up to 6 Crops per Image · One Zip Download · WebP, JPEG or PNG · Chrome Extension Too
+
+### (보류) 디스플레이 안 — 처음 제안
+- 캠페인 DetailCrop EN test1 · 디스플레이 · 같은 6개국 · 최대 CPC 400원 · 키워드 batch crop images 등, 문구는 위 3장 이미지와 함께. 필요해지면 이 기록과 가지 기록을 보고 다시 만든다.
 
 ## 5. 탭제어(브라우저 위임 Claude) 프롬프트
 
-### ① 캠페인 만들기
+### ① 캠페인 만들기 (검색 광고)
 
 ```
-너는 내 브라우저에서 Google Ads 디스플레이 캠페인 1개를 만든다. 게시(사용 설정)는 내가 확인한 뒤에만 누른다.
+너는 내 브라우저에서 Google Ads 검색 캠페인 1개를 만든다. 게시(사용 설정)는 내가 확인한 뒤에만 누른다.
 
 [지킬 것]
 - 결제 수단·카드 입력 화면이 나오면 멈추고 나에게 넘긴다. 결제 정보는 절대 입력하지 않는다.
-- 이미 있는 다른 캠페인·광고는 건드리지 않는다.
+- 이미 있는 다른 캠페인·광고는 건드리지 않는다(LottoHex 캠페인 포함).
 - Google Ads 계정이 여러 개면 어느 계정인지 먼저 묻는다.
 - 정책 경고("제한됨", "비승인" 등)가 뜨면 멈추고 원문 그대로 알려 준다.
 - 아래 문구는 바꾸지 않는다. 글자 수 초과로 안 들어가면 멈추고 묻는다.
-- 자동 생성 자산·자동 생성 동영상·이미지 자동 개선은 모두 끈다(내가 준 이미지·문구만 쓴다).
+- 자동 생성 자산(자동 제목·설명·이미지·사이트링크), "AI Max"·검색어 확장·최종 URL 확장은 모두 끈다(내가 준 문구만 쓴다).
+- 구글이 추천하는 키워드·예산 올리기 제안은 받지 않는다.
 
 [1. 캠페인]
-- 목표: 목표 없이 만들기(또는 웹사이트 트래픽) → 유형: 디스플레이
-- 이름: DetailCrop EN test1
-- 위치: 미국, 영국, 캐나다, 호주, 뉴질랜드, 아일랜드 / 언어: 영어
-- 입찰: 클릭수 최대화, 최대 CPC 한도 400원
+- 목표: 목표 없이 만들기(또는 웹사이트 트래픽) → 유형: 검색
+- 이름: DetailCrop EN search1
+- 네트워크: 검색 파트너 끔, 디스플레이 네트워크 끔
+- 위치: 미국, 영국, 캐나다, 호주, 뉴질랜드, 아일랜드
+  위치 옵션: "그 위치에 있거나 자주 있는 사람"(관심 있는 사람 아님)
+- 언어: 영어
 - 예산: 하루 10,000원
-- 기간: (내가 알려 주는 날짜)
-- 기기: 기본값(모든 기기)
+- 입찰: 클릭수 최대화, 최대 CPC 한도 500원
+- 기간: 오늘 시작, 6일 뒤 종료(모두 7일). 날짜를 표에 적어 보여 준다.
+- 제외 키워드(캠페인 단위): photoshop, lightroom, apk, download, remove background, pdf, job, jobs, course
 
-[2. 광고그룹·타기팅]
-- 광고그룹 이름: batch crop
-- 키워드: batch crop images, bulk image cropper, crop multiple images at once, product photo crop, instagram grid split, image cropper online, crop images to same size
-- 최적화된 타기팅: 끔
+[2. 광고그룹 1 — 이름: batch crop]
+- 키워드(구문 일치는 "따옴표", 일치는 [대괄호] 그대로 넣는다):
+  "batch crop images"
+  "crop multiple images at once"
+  "bulk image cropper"
+  "bulk crop photos"
+  "crop multiple photos"
+  "multi crop images"
+  "crop images to same size"
+  [batch crop images]
+- 최종 URL: https://detailcrop.com/?utm_source=google&utm_medium=cpc&utm_campaign=detailcrop_en_search1&utm_content=batch
 
-[3. 광고 — 반응형 디스플레이 광고]
-- 최종 URL: https://detailcrop.com/?utm_source=google&utm_medium=display&utm_campaign=detailcrop_en_test1
-- 비즈니스 이름: DetailCrop
-- 이미지·로고: "이미지 추가" → "웹사이트 스캔"에 https://detailcrop.com/ads/google-detailcrop-en-1/ 을 넣고 아래 파일 이름의 이미지를 고른다.
-  자르기 화면이 나오면 아래 비율로, 그림 전체가 들어가게 맞춘다.
-    가로 1.91:1 → landscape-1-crops.jpg, landscape-2-strip.jpg
-    정사각형 1:1 → square-1-crops.jpg, square-2-grid.jpg
-    세로 9:16(칸이 있을 때만) → portrait-crops.jpg
-    로고 1:1 → logo-square.png
-    로고 4:1 → logo-landscape.png
-  · 스캔으로 안 찾아지거나 고를 수 없으면 "업로드" 파일 선택 창을 띄운 채 멈추고 "파일 올려 주세요"라고 말한다.
-  · "이미지 속 텍스트가 많음" 경고가 뜨면 그 이미지만 뺀다.
-- 짧은 광고 제목 5개:
+[3. 광고그룹 2 — 이름: product instagram]
+- 키워드:
+  "crop product photos"
+  "product photo cropper"
+  "split image for instagram grid"
+  "instagram grid split"
+  "instagram carousel crop"
+  "etsy photo crop"
+- 최종 URL: https://detailcrop.com/?utm_source=google&utm_medium=cpc&utm_campaign=detailcrop_en_search1&utm_content=product
+
+[4. 광고 — 반응형 검색 광고, 두 광고그룹에 같은 내용으로 하나씩(최종 URL만 위처럼 다르게)]
+- 표시 경로: batch-crop / free
+- 광고 제목 15개:
   Batch Crop Images Online
+  Crop Multiple Images at Once
   Six Crops Per Image, One Zip
   Free Multi Crop Tool
+  DetailCrop: Batch Image Crop
+  Your Images Are Not Uploaded
+  Runs in Your Browser
   Crop Product Detail Shots
-  Crops Stay in Your Browser
-- 긴 광고 제목: Crop up to six fixed-ratio details from every image in a batch and download one zip
-- 설명 3개:
+  Same Ratio for Every Image
+  Instagram Grid in 3, 6 or 9
+  Export All Crops as One Zip
+  No Sign-Up Needed to Crop
+  Crop Images to the Same Size
+  1:1, 4:5, 2:3, 16:9 or Custom
+  Free Bulk Image Cropper
+- 설명 4개:
+  Crop up to six fixed-ratio details from every image in a batch and download one zip.
   Product detail shots, artwork close-ups, Instagram tiles: same crops, same size, at once.
   Free and private. Images are cropped in your browser and never uploaded to a server.
   The next image starts from the boxes you just placed. Set ratio, size and file names.
-- 행동 유도 버튼을 고를 수 있으면 "Use now" 또는 "Learn more"(없으면 자동)
+- 제목 고정(핀)은 하지 않는다.
 
-[4. 게시 전 확인]
+[5. 애셋 — 캠페인 단위]
+- 사이트링크 4개(제목 / 설명1 / 설명2 / URL):
+  How to Use / Step-by-step multi crop guide / Set ratio, boxes, export a zip / https://detailcrop.com/how-to/
+  Use Cases / Product shots, grids, artwork / See what people crop with it / https://detailcrop.com/uses/
+  Video Multi Crop / Crop several clips at once / 9:16, 1:1 and 4:5 from one clip / https://detailcrop.com/video/
+  Privacy / Images never leave your browser / No upload, no image data sent / https://detailcrop.com/privacy/
+- 콜아웃 6개: Free to Use, Nothing Uploaded, Up to 6 Crops per Image, One Zip Download, WebP, JPEG or PNG, Chrome Extension Too
+- 비즈니스 이름: DetailCrop (로고를 넣으라고 하면 건너뛴다)
+
+[6. 게시 전 확인]
 게시 버튼을 누르기 전에 멈추고 표로 보여 준다:
-캠페인 이름 · 예산 · 기간 · 입찰 · 위치/언어 · 키워드 · 최종 URL · 들어간 이미지 파일 이름과 비율 · 광고 제목 · 설명 · 경고 메시지(있으면 원문).
+캠페인 이름 · 네트워크 · 위치/위치 옵션 · 언어 · 예산 · 입찰 · 시작일/종료일 · 광고그룹별 키워드와 최종 URL · 제외 키워드 · 광고 제목 · 설명 · 사이트링크 · 콜아웃 · 꺼 둔 자동 기능 · 경고 메시지(있으면 원문).
 내가 "게시"라고 하면 그때 누른다.
 ```
 
 ### ② 매일 확인 (바꾸지 않음)
 
 ```
-Google Ads 의 "DetailCrop EN test1" 캠페인만 본다. 아무것도 바꾸지 않는다.
+Google Ads 의 "DetailCrop EN search1" 캠페인만 본다. 아무것도 바꾸지 않는다.
 기간: 어제 하루, 그리고 시작일부터 어제까지 합계.
 1. 노출 · 클릭 · 클릭률 · 평균 CPC · 비용
-2. 게재된 위치 상위 10곳: 위치 · 노출 · 클릭 · 비용
-3. 키워드별 노출 · 클릭
+2. 키워드별 노출 · 클릭 · 평균 CPC · 비용
+3. 실제 검색어(검색어 보고서) 상위 20개 — 엉뚱한 검색어가 있으면 제외 키워드 후보로 적기(넣지는 않음)
 4. 광고·자산 상태: 승인/제한됨/비승인, 경고 원문
 5. 이상한 점: 예산 초과, 이상한 앱·사이트에서 클릭이 몰림 등
 표로 짧게 정리한다. 바꿀 것이 보이면 제안만 하고 손대지 않는다.
@@ -174,3 +218,4 @@ Google Ads 의 "DetailCrop EN test1" 캠페인만 본다. 아무것도 바꾸지
 | 2026-11-11 | 구글 | 1차 시험 이미지 7장 · 문구 · 탭제어 프롬프트 준비 | 0 |
 | 2026-11-11 | 구글 | 사장님 결정: 디테일크롭 광고는 영어로 → 이미지 7장 · 문구 · 프롬프트를 영어로 바꿈. 매체 추천: 구글 검색 · 레딧 · 무료 등록(Product Hunt · AlternativeTo) | 0 |
 | 2026-11-11 | 구글 · 레딧 | 사장님 결정: 1차는 구글 **검색** 광고. 레딧 광고 조사(6-1) · 유입 뒤 다음 단계 사례 정리(6-2) | 0 |
+| 2026-11-11 | 구글 검색 | 사장님 확정: 하루 1만 원 · 7일 검색 광고. 설정 · 문구 · 탭제어 프롬프트(검색용) 준비 — 게시는 사장님 | 0 |
