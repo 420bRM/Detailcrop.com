@@ -8,7 +8,7 @@
 #   public/llms.txt                   (a plain-text map of the site for AI answer engines)
 #   template.html + extension/src/  ->  extension/build/  and  extension/detailcrop-chrome.zip
 # The templates are the source of truth — never hand-edit anything they write.
-import json, io, os, re, shutil, sys, zipfile
+import html, json, io, os, re, shutil, sys, zipfile
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 TPL  = os.path.join(ROOT, "template.html")
@@ -300,6 +300,35 @@ def read_page(code, slug):
     meta = dict(line.split(": ", 1) for line in head.strip().splitlines())
     return meta, body.strip()
 
+# ---------- questions and answers ----------
+# A heading <h3> that ends in ? or ？, followed directly by one or more <p>,
+# is a question and its answer, wherever it sits — no page is named here, so
+# a new Q&A block on any reading page is picked up by itself. Two or more on
+# a page get a FAQPage JSON-LD, written from the text as it reads on screen.
+# The matched tags get faq-q / faq-a classes; the page's CSS draws "Q." and
+# "A." from those, so the letters never enter the text or the JSON-LD.
+FAQ_RE = re.compile(r"<h3>((?:(?!</h3>).)*?[?？])</h3>((?:\s*<p>.*?</p>)+)", re.S)
+
+def plain(fragment):
+    t = re.sub(r"<[^>]+>", "", fragment)
+    return re.sub(r"\s+", " ", html.unescape(t)).strip()
+
+def faq(body):
+    found = FAQ_RE.findall(body)
+    if len(found) < 2:
+        return body, []
+    items = [(plain(q), " ".join(plain(p) for p in re.findall(r"<p>(.*?)</p>", a, re.S))) for q, a in found]
+    def mark(m):
+        return '<h3 class="faq-q">%s</h3>%s' % (m.group(1), re.sub(r"<p>", '<p class="faq-a">', m.group(2), count=1))
+    return FAQ_RE.sub(mark, body), items
+
+def faq_ld(code, items):
+    return ldscript({
+      "@context": "https://schema.org", "@type": "FAQPage", "inLanguage": code,
+      "mainEntity": [{"@type": "Question", "name": q,
+                      "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in items],
+    })
+
 def build_pages():
     tpl = io.open(os.path.join(ROOT, "template-page.html"), encoding="utf-8").read()
     for code in LANGS:
@@ -313,6 +342,7 @@ def build_pages():
                         .replace("__ABOUT__", page_url(code, "about"))
                         .replace("__HOW__", page_url(code, "how-to"))
                         .replace("__USES__", page_url(code, "uses")))
+            body, qa = faq(body)
             langlinks = "".join('<a href="%s" hreflang="%s"%s>%s</a>' % (
                 page_url(c, slug), c, ' aria-current="page"' if c == code else "", LANG_LABEL[c]) for c in LANGS)
             footlinks = '<a href="%s">%s</a>' % (tool, ui["tool"]) + "".join(
@@ -327,7 +357,7 @@ def build_pages():
               "url": BASE + path,
               "isPartOf": website_ld(),
               "publisher": {"@type": "Organization", "name": "DetailCrop", "url": BASE + "/"},
-            })
+            }) + ("\n" + faq_ld(code, qa) if qa else "")
             s = tpl
             if not meta.get("lead"):
                 s = s.replace('<p class="lead">__LEAD__</p>\n', "", 1)
@@ -344,7 +374,8 @@ def build_pages():
             dest = os.path.join(OUT, path.strip("/"), "index.html")
             os.makedirs(os.path.dirname(dest), exist_ok=True)
             io.open(dest, "w", encoding="utf-8").write(s)
-            print("%-3s %s  %d bytes" % (code, os.path.relpath(dest, OUT), len(s.encode("utf-8"))))
+            print("%-3s %s  %d bytes%s" % (code, os.path.relpath(dest, OUT), len(s.encode("utf-8")),
+                                            "  FAQ %d" % len(qa) if qa else ""))
 
 def build_sitemap():
     groups = [{c: cfg["path"] for c, cfg in LANGS.items()},

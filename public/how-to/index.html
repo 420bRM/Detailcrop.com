@@ -22,6 +22,7 @@
 <link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/how-to/">
 <link rel="alternate" hreflang="x-default" href="https://detailcrop.com/how-to/">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to crop many images at once","description":"How to batch crop a set of photos to the same ratio with DetailCrop's Multi Crop: load the images, set the ratio, place the crops, and download everything as one zip — step by step, with screenshots.","inLanguage":"en","url":"https://detailcrop.com/how-to/","isPartOf":{"@context":"https://schema.org","@type":"WebSite","name":"DetailCrop","alternateName":["Detail Crop","Multi Crop","디테일크롭","멀티크롭","ディテールクロップ","マルチクロップ"],"url":"https://detailcrop.com/"},"publisher":{"@type":"Organization","name":"DetailCrop","url":"https://detailcrop.com/"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"en","mainEntity":[{"@type":"Question","name":"Are my photos uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. Nothing leaves your computer, so there is no upload to wait for."}},{"@type":"Question","name":"How many images can I crop at once?","acceptedAnswer":{"@type":"Answer","text":"Up to 200 files, 200 MB each. Each image can give up to six crops."}},{"@type":"Question","name":"Can one photo have crops in different ratios?","acceptedAnswer":{"@type":"Answer","text":"Yes. Switch the toggle above the ratio buttons to Selected crop and only the box you have selected changes ratio."}},{"@type":"Question","name":"Can every crop come out the same size?","acceptedAnswer":{"@type":"Answer","text":"Choose Fixed size under output size and every crop is scaled to the same pixel dimensions. It needs a locked ratio."}},{"@type":"Question","name":"Can I skip an image?","acceptedAnswer":{"@type":"Answer","text":"Set that image's crop count to 0 and it is left out of the export."}}]}</script>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -72,6 +73,10 @@ article h3{font-size:16px; font-weight:600; color:var(--ink); margin:24px 0 4px}
 html[lang="ko"] body{font-family:'Pretendard Variable',Pretendard,'Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif; font-size:17px; line-height:1.75; letter-spacing:-.005em}
 html[lang="ko"] article h1,html[lang="ko"] article h2,html[lang="ko"] article h3{font-weight:700; letter-spacing:-.02em}
 html[lang="ko"] article h3{font-size:17px}
+/* questions and answers (build.py marks them): the letters are drawn here so
+   they stay out of the text, and the empty alt keeps screen readers quiet */
+article h3.faq-q::before{content:"Q. " / ""; color:var(--amber)}
+article p.faq-a::before{content:"A. " / ""; color:var(--muted); font-weight:600}
 html[lang="ko"] article strong{font-weight:700}
 article p{margin:0 0 14px}
 article ul{margin:0 0 16px; padding-left:1.2em}
@@ -161,6 +166,18 @@ footer p{margin:0}
   <tr><th>Wheel / <kbd>Ctrl</kbd>+wheel</th><td>move / resize the box over the picture</td></tr>
 </table>
 <p>For ideas on how to put it to work, see <a href="/uses/">what people use it for</a>.</p>
+
+<h2>Questions</h2>
+<h3 class="faq-q">Are my photos uploaded to a server?</h3>
+<p class="faq-a">No. Nothing leaves your computer, so there is no upload to wait for.</p>
+<h3 class="faq-q">How many images can I crop at once?</h3>
+<p class="faq-a">Up to 200 files, 200 MB each. Each image can give up to six crops.</p>
+<h3 class="faq-q">Can one photo have crops in different ratios?</h3>
+<p class="faq-a">Yes. Switch the toggle above the ratio buttons to <em>Selected crop</em> and only the box you have selected changes ratio.</p>
+<h3 class="faq-q">Can every crop come out the same size?</h3>
+<p class="faq-a">Choose <em>Fixed size</em> under output size and every crop is scaled to the same pixel dimensions. It needs a locked ratio.</p>
+<h3 class="faq-q">Can I skip an image?</h3>
+<p class="faq-a">Set that image's crop count to 0 and it is left out of the export.</p>
 </article>
 
 <div class="cta">
