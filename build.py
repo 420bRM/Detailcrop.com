@@ -115,6 +115,26 @@ PAGE_HEAD = {"en": "", "ja": "",
              "ko": '<link rel="stylesheet" href="/fonts/pretendard/pretendardvariable-dynamic-subset.css">'}
 
 
+# Opened inside KakaoTalk's in-app browser (a link shared in a chat): hand the
+# same address, #hash included, to the phone's default browser — Samsung
+# Internet, Chrome or Safari — where Google sign-in (Google refuses in-app
+# browsers) and saving the zip work. kakaotalk://web/openExternal is the
+# address KakaoTalk takes for this, on Android and iPhone. Other in-app
+# browsers (Naver, Instagram…) have no such address, so they are left alone.
+#   - once per tab (sessionStorage), never inside a frame;
+#   - Chromium stops reading a page as soon as it starts navigating away, so
+#     the page is left with no body. If the page is seen again with no body
+#     (the hand-off failed, or the visitor came back to KakaoTalk), it reloads
+#     once — the flag keeps it from leaving a second time.
+# Every page carries it at the top of <head> through the __KAKAO__ marker;
+# the Chrome extension drops it (WEB-ONLY in template.html).
+KAKAO_OUT = ('<script>(function(){try{if(!/KAKAOTALK/i.test(navigator.userAgent)||window.top!==window.self'
+             '||sessionStorage.getItem("dc_kakao_out"))return;sessionStorage.setItem("dc_kakao_out","1");'
+             'location.href="kakaotalk://web/openExternal?url="+encodeURIComponent(location.href);'
+             'var back=function(){if(!document.hidden&&!document.body)location.reload();};'
+             'setTimeout(back,2500);document.addEventListener("visibilitychange",back);}catch(e){}})();</script>')
+
+
 def head_urls(path, langs=None, xdefault="/"):
     langs = langs or LANGS
     L = ['<link rel="canonical" href="%s%s">' % (BASE, path),
@@ -215,7 +235,7 @@ def main():
     tpl = tpl.replace(PRESET_MARK, preset_format(), 1)
     strings = i18n_strings(tpl)
     for code, cfg in LANGS.items():
-        s = tpl
+        s = tpl.replace("__KAKAO__", KAKAO_OUT, 1)
         s = s.replace('<html lang="en">', '<html lang="%s">' % code, 1)
         s = s.replace("<title>%s</title>" % LANGS["en"]["title"],
                       "<title>%s</title>" % cfg["title"], 1)
@@ -233,7 +253,7 @@ def main():
         s = foot_hrefs(s, code)
         s = prerender(s, strings[code])
         s = s.replace('const PAGE_LANG = "__LANG__";', 'const PAGE_LANG = "%s";' % code, 1)
-        assert "__LANG__" not in s and "__HEAD_URLS__" not in s and "__JSONLD__" not in s, code
+        assert "__LANG__" not in s and "__HEAD_URLS__" not in s and "__JSONLD__" not in s and KAKAO_OUT in s, code
         dest = os.path.join(OUT, cfg["file"])
         os.makedirs(os.path.dirname(dest), exist_ok=True)
         io.open(dest, "w", encoding="utf-8").write(s)
@@ -243,7 +263,7 @@ def build_video():
     tpl = io.open(VTPL, encoding="utf-8").read()
     strings = i18n_strings(tpl)
     for code, cfg in VLANGS.items():
-        s = tpl
+        s = tpl.replace("__KAKAO__", KAKAO_OUT, 1)
         s = s.replace('<html lang="en">', '<html lang="%s">' % code, 1)
         s = s.replace("<title>%s</title>" % VLANGS["en"]["title"],
                       "<title>%s</title>" % cfg["title"], 1)
@@ -265,7 +285,7 @@ def build_video():
         s = foot_hrefs(s, code)
         s = prerender(s, strings[code])
         s = s.replace('const PAGE_LANG = "__LANG__";', 'const PAGE_LANG = "%s";' % code, 1)
-        assert "__LANG__" not in s and "__HEAD_URLS__" not in s and "__JSONLD__" not in s, code
+        assert "__LANG__" not in s and "__HEAD_URLS__" not in s and "__JSONLD__" not in s and KAKAO_OUT in s, code
         dest = os.path.join(OUT, cfg["file"])
         os.makedirs(os.path.dirname(dest), exist_ok=True)
         io.open(dest, "w", encoding="utf-8").write(s)
@@ -311,7 +331,7 @@ def build_pages():
             s = tpl
             if not meta.get("lead"):
                 s = s.replace('<p class="lead">__LEAD__</p>\n', "", 1)
-            for k, v in (("__LANG__", code), ("__HEAD_EXTRA__", PAGE_HEAD[code]), ("__TITLE__", esc(meta["title"], True)),
+            for k, v in (("__KAKAO__", KAKAO_OUT), ("__LANG__", code), ("__HEAD_EXTRA__", PAGE_HEAD[code]), ("__TITLE__", esc(meta["title"], True)),
                          ("__DESC__", esc(meta["description"], True)),
                          ("__HEAD_URLS__", head_urls(path, alts, page_url("en", slug))),
                          ("__JSONLD__", ld), ("__LANGLINKS__", langlinks),
@@ -320,7 +340,7 @@ def build_pages():
                          ("__PRIVACY__", ui["privacy"]), ("__OPEN__", ui["open"]),
                          ("__TOOL__", tool), ("__BODY__", body)):
                 s = s.replace(k, v)
-            assert not re.search(r"__[A-Z]+__", s), (code, slug, re.findall(r"__[A-Z]+__", s))
+            assert not re.search(r"__[A-Z]+__", s) and KAKAO_OUT in s, (code, slug, re.findall(r"__[A-Z]+__", s))
             dest = os.path.join(OUT, path.strip("/"), "index.html")
             os.makedirs(os.path.dirname(dest), exist_ok=True)
             io.open(dest, "w", encoding="utf-8").write(s)
@@ -398,7 +418,7 @@ def extension_page(tpl):
     s, n = re.subn(r"/\* WEB-ONLY: (.*?) \*/\n.*?/\* /WEB-ONLY \*/\n", lambda m: m.group(1) + "\n", s, flags=re.S)
     assert n == 4, "expected 4 WEB-ONLY code blocks in template.html, found %d" % n
     s, n = re.subn(r"[ \t]*<!-- WEB-ONLY -->\n.*?<!-- /WEB-ONLY -->\n", "", s, flags=re.S)
-    assert n == 1, n
+    assert n == 2, n   # the KakaoTalk hand-off in <head>, the stats line in the footer
     s = re.sub(r'<link rel="preconnect" href="https://fonts\.g[^"]*"[^>]*>\n', "", s)
     s, n = re.subn(r'<link rel="stylesheet" href="https://fonts\.googleapis\.com/[^"]*">', '<link rel="stylesheet" href="ext.css">', s)
     assert n == 1, n
@@ -413,7 +433,7 @@ def extension_page(tpl):
     s = s.replace("<script>\n" + scripts[0] + "</script>",
                   '<script src="tool.js"></script>\n<script src="ext.js"></script>', 1)
     js = scripts[0]
-    for bad in ("__LANG__", "accounts.google.com", "sendBeacon", "/api/", '"/e"'):
+    for bad in ("__LANG__", "__KAKAO__", "kakaotalk:", "accounts.google.com", "sendBeacon", "/api/", '"/e"'):
         assert bad not in js, "extension tool.js still holds " + bad
     assert not re.search(r"<script(?![^>]*\bsrc=)(?![^>]*application/ld\+json)", s), "inline script left"
     assert "https://fonts.g" not in s
