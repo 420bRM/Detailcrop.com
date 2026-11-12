@@ -5,6 +5,7 @@
 #   template-page.html + pages/<lang>/<slug>.html
 #                        ->  public/{,ko/,ja/}<slug>/index.html  (about, how-to, uses)
 #   public/sitemap.xml
+#   public/llms.txt                   (a plain-text map of the site for AI answer engines)
 #   template.html + extension/src/  ->  extension/build/  and  extension/detailcrop-chrome.zip
 # The templates are the source of truth — never hand-edit anything they write.
 import json, io, os, re, shutil, sys, zipfile
@@ -364,6 +365,40 @@ def build_sitemap():
     io.open(os.path.join(OUT, "sitemap.xml"), "w", encoding="utf-8").write("\n".join(L))
     print("sitemap.xml  %d urls" % sum(len(g) for g in groups))
 
+# ---------- llms.txt ----------
+# A short Markdown map of the site at /llms.txt (the llmstxt.org format):
+# what DetailCrop is, and every indexed page with its own description. Built
+# from the same titles and descriptions as the pages, so it cannot go stale.
+LLMS_INTRO = """# DetailCrop
+
+> DetailCrop (디테일크롭, ディテールクロップ) is a free browser tool for Multi Crop: place up to six fixed-ratio crop boxes on every image in a batch and download every crop as one zip. Images are processed in the browser and never uploaded. No install; an account is optional and only stores settings presets.
+
+- Typical uses: several close-ups per product photo, artwork details, Instagram feed splits (3/6/9 tiles, numbered in posting order), one photo in several ratios.
+- Limits: up to 200 images, 200 MB each, 16384 px per side; up to six crops per image.
+- Output: WebP, JPEG or PNG, at the crop's own pixels or a fixed size; a file-name pattern of your choice.
+- There is a video version for cutting several fixed-ratio clips (9:16, 1:1, 4:5…) out of a video as mp4.
+- Interface in English, Korean and Japanese.
+"""
+
+def build_llms():
+    L = [LLMS_INTRO, "## Tools", ""]
+    for cfg, label in ((LANGS, "Image tool"), (VLANGS, "Video tool")):
+        for code, c in cfg.items():
+            L.append("- [%s (%s)](%s%s): %s" % (label, code, BASE, c["path"], c["desc"]))
+    L += ["", "## Guides", ""]
+    for slug in PAGES:
+        if slug == "privacy":
+            continue
+        for code in LANGS:
+            meta, _ = read_page(code, slug)
+            L.append("- [%s](%s%s): %s" % (meta["h1"], BASE, page_url(code, slug), meta["description"]))
+    L += ["", "## Optional", ""]
+    for code in LANGS:
+        meta, _ = read_page(code, "privacy")
+        L.append("- [%s](%s%s): %s" % (meta["h1"], BASE, page_url(code, "privacy"), meta["description"]))
+    io.open(os.path.join(OUT, "llms.txt"), "w", encoding="utf-8").write("\n".join(L) + "\n")
+    print("llms.txt  %d links" % sum(1 for l in L if l.startswith("- [")))
+
 # ---------- the Chrome extension ----------
 # The extension carries the stills tool itself, made from the same
 # template.html, so the web page and the extension are never two copies to
@@ -428,4 +463,5 @@ main()
 build_video()
 build_pages()
 build_sitemap()
+build_llms()
 build_extension()
