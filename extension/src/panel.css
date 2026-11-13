@@ -1,0 +1,45 @@
+/* The side panel: the tool's night palette, at side-panel width. */
+:root{
+  color-scheme:dark;
+  --sky:#080d12; --panel:#12212a; --sunk:#0d1a21; --line:#254250; --line-soft:#1a2f3a;
+  --ink:#e6f0f2; --ink-2:#a8c3ca; --muted:#6d8b96;
+  --amber:#e8b45a; --teal:#35b7e0; --coral:#fc6847; --green:#71e666;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100vh; display:flex; flex-direction:column; gap:10px; padding:12px;
+  background:var(--sky); color:var(--ink);
+  font:13px/1.45 Archivo,'Pretendard','Apple SD Gothic Neo','Hiragino Sans','Noto Sans JP','Malgun Gothic',system-ui,sans-serif}
+button{font:inherit; cursor:pointer}
+.top{display:flex; align-items:baseline; justify-content:space-between; gap:8px}
+.brand{font-family:Newsreader,Georgia,serif; font-size:20px}
+.brand em{color:var(--amber)}
+.linkbtn{background:none; border:0; padding:0; color:var(--teal); text-decoration:underline; text-underline-offset:2px}
+
+.drop{border:1.5px dashed var(--line); border-radius:6px; padding:14px 12px; text-align:center; color:var(--ink-2); background:var(--sunk)}
+.drop p{margin:0}
+.drop.over{border-color:var(--amber); color:var(--ink)}
+
+.sum{margin:0; color:var(--ink-2)}
+.perm{margin:0; padding:8px 10px; border-left:3px solid var(--amber); background:var(--sunk); color:var(--ink-2)}
+
+.items{list-style:none; margin:0; padding:0; display:grid; gap:6px; flex:1; align-content:start}
+.item{display:grid; grid-template-columns:52px 1fr auto; gap:8px; align-items:center;
+  padding:6px; border:1px solid var(--line-soft); border-radius:5px; background:var(--panel)}
+.item img{width:52px; height:52px; object-fit:cover; border-radius:3px; background:var(--sunk)}
+.item .meta{min-width:0}
+.item .host{display:block; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.item .state{display:block; font-size:12px; color:var(--muted)}
+.item[data-s="ready"] .state{color:var(--green)}
+.item[data-s="perm"] .state{color:var(--amber)}
+.item[data-s="sent"] .state{color:var(--muted)}
+.item[data-s="bad"]{opacity:.85}
+.item[data-s="bad"] .state{color:var(--coral)}
+.item .x{background:none; border:0; color:var(--muted); font-size:16px; padding:2px 6px}
+.item .x:hover{color:var(--ink)}
+
+.bottom{position:sticky; bottom:0; display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px;
+  padding:10px 0 2px; background:var(--sky)}
+.go{flex:1 1 100%; padding:10px 12px; border:0; border-radius:4px; background:var(--amber); color:#12100b; font-weight:600}
+.go:disabled{background:var(--line); color:var(--muted); cursor:default}
+.note{flex:1 1 100%; margin:0; color:var(--ink-2)}

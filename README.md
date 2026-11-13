@@ -600,7 +600,20 @@ the template, `EXTENSION` is true inside the extension: links then point at
 `https://detailcrop.com` and open in a new tab, and a tab opened with a
 picture skips the sample plate.
 
-**Permissions.** `contextMenus` only. Sites whose images cannot be read from
+**Side panel (1.1.0, a draft not yet on the store).** The toolbar button
+opens Chrome's side panel (`panel.html`, `panel.js`), so pictures can be
+gathered while the page stays in view: right-click → *Add to DetailCrop*, or
+drag a picture onto the panel. Each picture is read at once when the site
+allows it; one that can never come in says why as it is added (a background
+picture, a `blob:` address, not an image, refused with 401/403, gone with
+404/410), and a signed address with an expiry is flagged. Sites that need the
+host permission are only listed; *Crop them all* asks Chrome once for all of
+them together, then hands the set to the tool tab (the panel's `blob:`
+addresses share the tool's origin) — into the open tool tab if there is one.
+What was handed over stays listed as sent and is not sent twice. *Open with
+DetailCrop* still opens one picture straight in the tool.
+
+**Permissions.** `contextMenus` (and `sidePanel` from 1.1.0). Sites whose images cannot be read from
 another origin need a host permission; it is optional, asked for one site at
 a time, and only after the user clicks *Allow and open* in the tool. The
 reasons, in the words the store asks for, are in

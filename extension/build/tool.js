@@ -2541,7 +2541,7 @@ document.addEventListener("keydown", e => {
   let seen = null;
   try { seen = localStorage.getItem("mc.tour"); } catch {}
   if (!seen) $("#tourBtn").classList.add("pulse");
-  if (!(EXTENSION && location.hash.startsWith("#src="))) loadSample().catch(err => console.error(err));
+  if (!(EXTENSION && /^#(src=|batch$)/.test(location.hash))) loadSample().catch(err => console.error(err));
 })();
 
 /* expose a tiny hook for automated checks */
