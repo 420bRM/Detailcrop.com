@@ -361,8 +361,8 @@ shorter than 16 characters.
 
 ### Where visits come from, and AI search
 
-*어디서 오는가 · 유입 경로* groups every referrer host (`blob4`) into five:
-**AI 검색 · 검색 엔진 · SNS·커뮤니티 · 직접 · 기타**, as a bar, above the
+*어디서 오는가 · 유입 경로* groups every referrer host (`blob4`) into six:
+**AI 검색 · 검색 엔진 · SNS·커뮤니티 · 크롬 스토어 · 직접 · 기타**, as a bar, above the
 top hosts each tagged with its group. The grouping is `refGroup()` in
 `src/stats.js`; the SQL only returns hosts (up to 500 per window) and the
 matching happens in JS, so no Analytics Engine string functions are relied
@@ -578,6 +578,15 @@ by `_sample_interval`
 
 ## The Chrome extension
 
+**Published on the Chrome Web Store on 2026-11-13** (version 1.0.0). The
+store address is `CHROME_STORE_URL` in `build.py`, the one place it is
+written: the "Add to Chrome" lines on the stills tool's footer and at the
+foot of how-to and uses, and the line in `llms.txt`, all read it, and while it
+is empty the build leaves them out. They show on a desktop pointer only — a
+phone cannot install the extension — and the extension's own copy of the
+tool drops them (lines ending in `/* web-only */` are cut from its build).
+Visits from the store page count under *크롬 스토어* on /stats.
+
 `extension/` packs the stills tool as a Manifest V3 extension. The toolbar
 button opens the tool in a tab; on any web page, right-click an image →
 **Open with DetailCrop** puts that image in the tool (into the tool tab already
@@ -619,6 +628,8 @@ To ship a new version: raise `version` in `extension/src/manifest.json`, run
 `python3 build.py`, upload the new zip.
 
 ### Chrome 웹 스토어 등록 순서 (운영자가 직접)
+
+2026-11-13 게시 완료. 아래는 처음 등록할 때의 순서로 남겨 둡니다. 지금 할 일은 맨 아래 '새 버전을 낼 때'뿐입니다.
 
 1. **개발자 등록** — <https://chrome.google.com/webstore/devconsole> 에 구글 계정으로 들어가 약관에 동의하고 등록비(1회, 5달러)를 냅니다. 이메일 인증까지 마칩니다.
 2. **zip 받기** — GitHub 저장소에서 `extension/detailcrop-chrome.zip` 을 열고 *Download* 를 눌러 내려받습니다. 압축은 풀지 않습니다.

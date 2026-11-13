@@ -4,11 +4,12 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { statsPage, refGroup, AI_HOSTS } from "../src/stats.js";
 
-test("referrer hosts fall into five groups", () => {
+test("referrer hosts fall into six groups", () => {
   for (const h of AI_HOSTS) assert.equal(refGroup(h), "AI 검색", h);
   for (const h of ["www.perplexity.ai", "CHATGPT.COM", "chat.openai.com", "gemini.google.com"]) assert.equal(refGroup(h), "AI 검색", h);
   for (const h of ["www.google.com", "google.co.kr", "search.naver.com", "m.search.naver.com", "www.bing.com", "duckduckgo.com", "search.yahoo.co.jp"]) assert.equal(refGroup(h), "검색 엔진", h);
   for (const h of ["t.co", "m.facebook.com", "l.instagram.com", "blog.naver.com", "cafe.naver.com", "www.reddit.com", "youtube.com"]) assert.equal(refGroup(h), "SNS·커뮤니티", h);
+  for (const h of ["chromewebstore.google.com", "chrome.google.com"]) assert.equal(refGroup(h), "크롬 스토어", h);
   for (const h of ["", null, "detailcrop.com", "www.detailcrop.com"]) assert.equal(refGroup(h), "직접", String(h));
   for (const h of ["example.com", "notchatgpt.com", "claude.ai.evil.com", "newsletter"]) assert.equal(refGroup(h), "기타", h);
 });
