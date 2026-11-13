@@ -22,6 +22,7 @@
 <link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/how-to/">
 <link rel="alternate" hreflang="x-default" href="https://detailcrop.com/how-to/">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"複数の画像をまとめて切り抜く方法","description":"写真を何枚も同じ比率で一括トリミングする方法。DetailCropのマルチクロップで画像を読み込み、比率を決め、枠を置いて、zipでダウンロードするまでを画面つきで順番に説明します。","inLanguage":"ja","url":"https://detailcrop.com/ja/how-to/","isPartOf":{"@context":"https://schema.org","@type":"WebSite","name":"DetailCrop","alternateName":["Detail Crop","Multi Crop","디테일크롭","멀티크롭","ディテールクロップ","マルチクロップ"],"url":"https://detailcrop.com/"},"publisher":{"@type":"Organization","name":"DetailCrop","url":"https://detailcrop.com/"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"ja","mainEntity":[{"@type":"Question","name":"写真はサーバーにアップロードされますか？","acceptedAnswer":{"@type":"Answer","text":"いいえ。ファイルはパソコンの外に出ないので、アップロードを待つこともありません。"}},{"@type":"Question","name":"一度に何枚まで切り抜けますか？","acceptedAnswer":{"@type":"Answer","text":"一度に200枚まで、1枚200MBまで読み込めます。1枚の写真からは最大6カット切り出せます。"}},{"@type":"Question","name":"1枚の写真の中で比率を変えられますか？","acceptedAnswer":{"@type":"Answer","text":"はい。比率ボタンの上の切り替えを選択中のカットにすると、いま選んでいる枠だけ比率が変わります。"}},{"@type":"Question","name":"すべてのカットを同じサイズで書き出せますか？","acceptedAnswer":{"@type":"Answer","text":"出力サイズで固定サイズを選ぶと、すべてのカットが同じピクセル数にそろいます。比率の固定が必要です。"}},{"@type":"Question","name":"一部の写真を飛ばせますか？","acceptedAnswer":{"@type":"Answer","text":"その写真のカット数を0にすると、書き出しのときにスキップされます。"}}]}</script>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -72,6 +73,10 @@ article h3{font-size:16px; font-weight:600; color:var(--ink); margin:24px 0 4px}
 html[lang="ko"] body{font-family:'Pretendard Variable',Pretendard,'Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif; font-size:17px; line-height:1.75; letter-spacing:-.005em}
 html[lang="ko"] article h1,html[lang="ko"] article h2,html[lang="ko"] article h3{font-weight:700; letter-spacing:-.02em}
 html[lang="ko"] article h3{font-size:17px}
+/* questions and answers (build.py marks them): the letters are drawn here so
+   they stay out of the text, and the empty alt keeps screen readers quiet */
+article h3.faq-q::before{content:"Q. " / ""; color:var(--amber)}
+article p.faq-a::before{content:"A. " / ""; color:var(--muted); font-weight:600}
 html[lang="ko"] article strong{font-weight:700}
 article p{margin:0 0 14px}
 article ul{margin:0 0 16px; padding-left:1.2em}
@@ -161,6 +166,18 @@ footer p{margin:0}
   <tr><th>ホイール / <kbd>Ctrl</kbd>+ホイール</th><td>写真の上で枠を移動 / サイズ変更</td></tr>
 </table>
 <p>どう活かせるかは<a href="/ja/uses/">こんな使い方</a>にいくつか例をまとめました。</p>
+
+<h2>よくある質問</h2>
+<h3 class="faq-q">写真はサーバーにアップロードされますか？</h3>
+<p class="faq-a">いいえ。ファイルはパソコンの外に出ないので、アップロードを待つこともありません。</p>
+<h3 class="faq-q">一度に何枚まで切り抜けますか？</h3>
+<p class="faq-a">一度に200枚まで、1枚200MBまで読み込めます。1枚の写真からは最大6カット切り出せます。</p>
+<h3 class="faq-q">1枚の写真の中で比率を変えられますか？</h3>
+<p class="faq-a">はい。比率ボタンの上の切り替えを<em>選択中のカット</em>にすると、いま選んでいる枠だけ比率が変わります。</p>
+<h3 class="faq-q">すべてのカットを同じサイズで書き出せますか？</h3>
+<p class="faq-a">出力サイズで<em>固定サイズ</em>を選ぶと、すべてのカットが同じピクセル数にそろいます。比率の固定が必要です。</p>
+<h3 class="faq-q">一部の写真を飛ばせますか？</h3>
+<p class="faq-a">その写真のカット数を0にすると、書き出しのときにスキップされます。</p>
 </article>
 
 <div class="cta">

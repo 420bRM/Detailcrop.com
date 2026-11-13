@@ -22,6 +22,7 @@
 <link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/uses/">
 <link rel="alternate" hreflang="x-default" href="https://detailcrop.com/uses/">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"What people use Multi Crop for","description":"Product detail shots, Instagram grid splits, artwork close-ups, and one photo in several ratios. Real ways to use DetailCrop's Multi Crop, with the settings that go with them.","inLanguage":"en","url":"https://detailcrop.com/uses/","isPartOf":{"@context":"https://schema.org","@type":"WebSite","name":"DetailCrop","alternateName":["Detail Crop","Multi Crop","디테일크롭","멀티크롭","ディテールクロップ","マルチクロップ"],"url":"https://detailcrop.com/"},"publisher":{"@type":"Organization","name":"DetailCrop","url":"https://detailcrop.com/"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"en","mainEntity":[{"@type":"Question","name":"In what order do I post the Instagram grid tiles?","acceptedAnswer":{"@type":"Answer","text":"By the number on each tile. A profile grid shows the newest post top-left, so the bottom-right piece goes up first, and the files are named -post01 onward in that order."}},{"@type":"Question","name":"Can one photo give a feed post, a story and a thumbnail at once?","acceptedAnswer":{"@type":"Answer","text":"Yes. Switch the ratio toggle to Selected crop and give the boxes 4:5, 9:16 and 16:9. One export gives you all three."}},{"@type":"Question","name":"How do I keep full quality in artwork close-ups?","acceptedAnswer":{"@type":"Answer","text":"Keep the output at original pixels, so the area comes out of the high-res scan untouched."}},{"@type":"Question","name":"Can I use it just to crop many photos to one ratio?","acceptedAnswer":{"@type":"Answer","text":"Yes. Set the crop count to 1 and step through the photos, checking each position."}}]}</script>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -72,6 +73,10 @@ article h3{font-size:16px; font-weight:600; color:var(--ink); margin:24px 0 4px}
 html[lang="ko"] body{font-family:'Pretendard Variable',Pretendard,'Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif; font-size:17px; line-height:1.75; letter-spacing:-.005em}
 html[lang="ko"] article h1,html[lang="ko"] article h2,html[lang="ko"] article h3{font-weight:700; letter-spacing:-.02em}
 html[lang="ko"] article h3{font-size:17px}
+/* questions and answers (build.py marks them): the letters are drawn here so
+   they stay out of the text, and the empty alt keeps screen readers quiet */
+article h3.faq-q::before{content:"Q. " / ""; color:var(--amber)}
+article p.faq-a::before{content:"A. " / ""; color:var(--muted); font-weight:600}
 html[lang="ko"] article strong{font-weight:700}
 article p{margin:0 0 14px}
 article ul{margin:0 0 16px; padding-left:1.2em}
@@ -134,6 +139,16 @@ footer p{margin:0}
 <p>It doesn't have to be detail shots. If thirty photos all need to be 1:1, set the crop count to 1 and step through checking each position. For plain batch cropping it's quick enough.</p>
 
 <p>New to it? Start with <a href="/how-to/">how to crop many images at once</a>.</p>
+
+<h2>Questions</h2>
+<h3 class="faq-q">In what order do I post the Instagram grid tiles?</h3>
+<p class="faq-a">By the number on each tile. A profile grid shows the newest post top-left, so the bottom-right piece goes up first, and the files are named <code>-post01</code> onward in that order.</p>
+<h3 class="faq-q">Can one photo give a feed post, a story and a thumbnail at once?</h3>
+<p class="faq-a">Yes. Switch the ratio toggle to <em>Selected crop</em> and give the boxes 4:5, 9:16 and 16:9. One export gives you all three.</p>
+<h3 class="faq-q">How do I keep full quality in artwork close-ups?</h3>
+<p class="faq-a">Keep the output at <strong>original pixels</strong>, so the area comes out of the high-res scan untouched.</p>
+<h3 class="faq-q">Can I use it just to crop many photos to one ratio?</h3>
+<p class="faq-a">Yes. Set the crop count to 1 and step through the photos, checking each position.</p>
 </article>
 
 <div class="cta">

@@ -113,6 +113,17 @@ the llmstxt.org format: what the tool does, its limits, and every indexed
 page with its description, in all three languages. It is built from the same
 titles and descriptions as the pages, so editing a page's header updates it.
 
+**Questions and answers (FAQPage).** On any reading page, an `<h3>` that
+ends in `?` or `？` followed directly by `<p>` paragraphs is a question and its
+answer; two or more on a page make `build.py` add a FAQPage JSON-LD beside
+the page's own, with the text exactly as it reads on screen. About, how-to and
+uses carry them in all three languages. "Q." and "A." are drawn by CSS from
+the `faq-q` / `faq-a` classes the build adds, so they never enter the text,
+the JSON-LD or what a screen reader reads. Google has shown FAQ rich results
+only for government and health sites since 2023, so expect nothing in
+Google's results from this: the gain is Bing and answers in AI search that
+quote the page.
+
 ## Limits
 
 | | | why |

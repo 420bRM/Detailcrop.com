@@ -22,6 +22,7 @@
 <link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/about/">
 <link rel="alternate" hreflang="x-default" href="https://detailcrop.com/about/">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"AboutPage","name":"DetailCrop（ディテールクロップ）について","description":"DetailCrop（ディテールクロップ）は、1枚の画像から同じ比率のカットを何枚も、複数の画像をまとめて切り抜ける無料のマルチクロップツールです。インストール・登録・アップロード不要。","inLanguage":"ja","url":"https://detailcrop.com/ja/about/","isPartOf":{"@context":"https://schema.org","@type":"WebSite","name":"DetailCrop","alternateName":["Detail Crop","Multi Crop","디테일크롭","멀티크롭","ディテールクロップ","マルチクロップ"],"url":"https://detailcrop.com/"},"publisher":{"@type":"Organization","name":"DetailCrop","url":"https://detailcrop.com/"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"ja","mainEntity":[{"@type":"Question","name":"無料ですか？","acceptedAnswer":{"@type":"Answer","text":"はい。登録もインストールも要りません。ログインすると、自分好みの設定をプリセットとして保存し、どの端末からでも読み込めます。"}},{"@type":"Question","name":"画質は落ちませんか？","acceptedAnswer":{"@type":"Answer","text":"初期設定では元の画素をそのまま切り抜くので、選んだ形式と画質による圧縮以外の劣化はありません。出力サイズを固定していて枠がそれより小さいと拡大がかかってぼやけますが、その場合は画面に警告が出ます。"}},{"@type":"Question","name":"スマホでも使えますか？","acceptedAnswer":{"@type":"Answer","text":"開くことはできますが、枠をいくつも動かす作業なので、パソコンのブラウザの広い画面のほうがずっと快適です。"}},{"@type":"Question","name":"動画も切り抜けますか？","acceptedAnswer":{"@type":"Answer","text":"同じ考え方の動画版（ベータ）があります。1本の動画に枠をいくつか置くと、カットごとにmp4で書き出されます。"}}]}</script>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -72,6 +73,10 @@ article h3{font-size:16px; font-weight:600; color:var(--ink); margin:24px 0 4px}
 html[lang="ko"] body{font-family:'Pretendard Variable',Pretendard,'Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif; font-size:17px; line-height:1.75; letter-spacing:-.005em}
 html[lang="ko"] article h1,html[lang="ko"] article h2,html[lang="ko"] article h3{font-weight:700; letter-spacing:-.02em}
 html[lang="ko"] article h3{font-size:17px}
+/* questions and answers (build.py marks them): the letters are drawn here so
+   they stay out of the text, and the empty alt keeps screen readers quiet */
+article h3.faq-q::before{content:"Q. " / ""; color:var(--amber)}
+article p.faq-a::before{content:"A. " / ""; color:var(--muted); font-weight:600}
 html[lang="ko"] article strong{font-weight:700}
 article p{margin:0 0 14px}
 article ul{margin:0 0 16px; padding-left:1.2em}
@@ -134,14 +139,14 @@ footer p{margin:0}
 <p>処理はすべてお使いのブラウザの中で完結します。写真がサーバーに送られることはなく、送るためのコードもありません。発売前の商品写真やお客様から預かった元データも安心して使えます。記録するのは画像サイズ・枚数・選んだ設定といった匿名の利用統計だけです。初めて書き出したあとに一度だけ用途をお聞きし、お答えいただいた場合は選んだ項目も記録します。動画ツールも同じく、動画のサイズとカット数程度を記録します。どちらもツール下部からオフにできます。</p>
 
 <h2>よくある質問</h2>
-<h3>無料ですか？</h3>
-<p>はい。登録もインストールも要りません。ログインすると、自分好みの設定をプリセットとして保存し、どの端末からでも読み込めます。</p>
-<h3>画質は落ちませんか？</h3>
-<p>初期設定では元の画素をそのまま切り抜くので、選んだ形式と画質による圧縮以外の劣化はありません。出力サイズを固定していて枠がそれより小さいと拡大がかかってぼやけますが、その場合は画面に警告が出ます。</p>
-<h3>スマホでも使えますか？</h3>
-<p>開くことはできますが、枠をいくつも動かす作業なので、パソコンのブラウザの広い画面のほうがずっと快適です。</p>
-<h3>動画も切り抜けますか？</h3>
-<p>同じ考え方の<a href="/video/ja/">動画版（ベータ）</a>があります。1本の動画に枠をいくつか置くと、カットごとにmp4で書き出されます。</p>
+<h3 class="faq-q">無料ですか？</h3>
+<p class="faq-a">はい。登録もインストールも要りません。ログインすると、自分好みの設定をプリセットとして保存し、どの端末からでも読み込めます。</p>
+<h3 class="faq-q">画質は落ちませんか？</h3>
+<p class="faq-a">初期設定では元の画素をそのまま切り抜くので、選んだ形式と画質による圧縮以外の劣化はありません。出力サイズを固定していて枠がそれより小さいと拡大がかかってぼやけますが、その場合は画面に警告が出ます。</p>
+<h3 class="faq-q">スマホでも使えますか？</h3>
+<p class="faq-a">開くことはできますが、枠をいくつも動かす作業なので、パソコンのブラウザの広い画面のほうがずっと快適です。</p>
+<h3 class="faq-q">動画も切り抜けますか？</h3>
+<p class="faq-a">同じ考え方の<a href="/video/ja/">動画版（ベータ）</a>があります。1本の動画に枠をいくつか置くと、カットごとにmp4で書き出されます。</p>
 
 <h2>お問い合わせ</h2>
 <p>広告・提携や機能のご提案は<a class="mail" href="#">contact@detailcrop.com</a>までお送りください。</p>

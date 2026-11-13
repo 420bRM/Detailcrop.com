@@ -22,6 +22,7 @@
 <link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/uses/">
 <link rel="alternate" hreflang="x-default" href="https://detailcrop.com/uses/">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"マルチクロップ、こんな使い方","description":"商品ページのディテールカット、インスタグラムのフィード分割、作品の寄り、1枚から複数の比率まで。DetailCropのマルチクロップの実際の使い方を設定例つきで紹介します。","inLanguage":"ja","url":"https://detailcrop.com/ja/uses/","isPartOf":{"@context":"https://schema.org","@type":"WebSite","name":"DetailCrop","alternateName":["Detail Crop","Multi Crop","디테일크롭","멀티크롭","ディテールクロップ","マルチクロップ"],"url":"https://detailcrop.com/"},"publisher":{"@type":"Organization","name":"DetailCrop","url":"https://detailcrop.com/"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"ja","mainEntity":[{"@type":"Question","name":"インスタの分割ピースはどの順番で投稿しますか？","acceptedAnswer":{"@type":"Answer","text":"マスに付いた番号の順に投稿します。プロフィールは新しい投稿が左上に来るので右下のピースが先で、ファイル名も-post01からその順に付きます。"}},{"@type":"Question","name":"1枚の写真からフィード・ストーリー・サムネイルを一度に作れますか？","acceptedAnswer":{"@type":"Answer","text":"はい。比率の切り替えを選択中のカットにして、枠ごとに4:5・9:16・16:9を選べば、一度の書き出しで3つそろいます。"}},{"@type":"Question","name":"作品の寄りで画質を落とさないには？","acceptedAnswer":{"@type":"Answer","text":"出力サイズを元の解像度のままにしてください。高解像度のスキャンから必要な部分だけを手を加えずに切り出せます。"}},{"@type":"Question","name":"ディテールカットでなく、何枚も同じ比率で切るだけでも使えますか？","acceptedAnswer":{"@type":"Answer","text":"使えます。カット数を1にして、位置を確かめながら写真を送っていくだけです。"}}]}</script>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -72,6 +73,10 @@ article h3{font-size:16px; font-weight:600; color:var(--ink); margin:24px 0 4px}
 html[lang="ko"] body{font-family:'Pretendard Variable',Pretendard,'Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif; font-size:17px; line-height:1.75; letter-spacing:-.005em}
 html[lang="ko"] article h1,html[lang="ko"] article h2,html[lang="ko"] article h3{font-weight:700; letter-spacing:-.02em}
 html[lang="ko"] article h3{font-size:17px}
+/* questions and answers (build.py marks them): the letters are drawn here so
+   they stay out of the text, and the empty alt keeps screen readers quiet */
+article h3.faq-q::before{content:"Q. " / ""; color:var(--amber)}
+article p.faq-a::before{content:"A. " / ""; color:var(--muted); font-weight:600}
 html[lang="ko"] article strong{font-weight:700}
 article p{margin:0 0 14px}
 article ul{margin:0 0 16px; padding-left:1.2em}
@@ -134,6 +139,16 @@ footer p{margin:0}
 <p>ディテールカットでなくても大丈夫です。写真30枚をすべて1:1にしたいなら、カット数を1にして位置を確かめながら送っていくだけ。ふつうの一括トリミングとしても十分速く使えます。</p>
 
 <p>はじめてなら<a href="/ja/how-to/">使い方</a>にひととおり目を通してみてください。</p>
+
+<h2>よくある質問</h2>
+<h3 class="faq-q">インスタの分割ピースはどの順番で投稿しますか？</h3>
+<p class="faq-a">マスに付いた番号の順に投稿します。プロフィールは新しい投稿が左上に来るので右下のピースが先で、ファイル名も<code>-post01</code>からその順に付きます。</p>
+<h3 class="faq-q">1枚の写真からフィード・ストーリー・サムネイルを一度に作れますか？</h3>
+<p class="faq-a">はい。比率の切り替えを<em>選択中のカット</em>にして、枠ごとに4:5・9:16・16:9を選べば、一度の書き出しで3つそろいます。</p>
+<h3 class="faq-q">作品の寄りで画質を落とさないには？</h3>
+<p class="faq-a">出力サイズを<strong>元の解像度</strong>のままにしてください。高解像度のスキャンから必要な部分だけを手を加えずに切り出せます。</p>
+<h3 class="faq-q">ディテールカットでなく、何枚も同じ比率で切るだけでも使えますか？</h3>
+<p class="faq-a">使えます。カット数を1にして、位置を確かめながら写真を送っていくだけです。</p>
 </article>
 
 <div class="cta">

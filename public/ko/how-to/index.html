@@ -22,6 +22,7 @@
 <link rel="alternate" hreflang="ja" href="https://detailcrop.com/ja/how-to/">
 <link rel="alternate" hreflang="x-default" href="https://detailcrop.com/how-to/">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"사용법","description":"사진 여러 장을 같은 비율로 한 번에 자르는 방법. 디테일크롭에서 이미지를 불러오고, 비율을 정하고, 상자를 놓고, zip으로 받기까지 실제 화면과 함께 순서대로 설명합니다.","inLanguage":"ko","url":"https://detailcrop.com/ko/how-to/","isPartOf":{"@context":"https://schema.org","@type":"WebSite","name":"DetailCrop","alternateName":["Detail Crop","Multi Crop","디테일크롭","멀티크롭","ディテールクロップ","マルチクロップ"],"url":"https://detailcrop.com/"},"publisher":{"@type":"Organization","name":"DetailCrop","url":"https://detailcrop.com/"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"ko","mainEntity":[{"@type":"Question","name":"사진이 서버로 올라가나요?","acceptedAnswer":{"@type":"Answer","text":"아니요. 사진은 컴퓨터 밖으로 나가지 않습니다. 그래서 업로드를 기다릴 필요도 없습니다."}},{"@type":"Question","name":"한 번에 몇 장까지 자를 수 있나요?","acceptedAnswer":{"@type":"Answer","text":"한 번에 200장, 한 장에 200MB까지 넣을 수 있습니다. 사진 한 장에서는 최대 6컷까지 뽑습니다."}},{"@type":"Question","name":"사진 한 장 안에서 비율을 다르게 자를 수 있나요?","acceptedAnswer":{"@type":"Answer","text":"네. 비율 버튼 위의 토글을 선택한 컷으로 바꾸면 지금 선택한 상자 하나만 비율이 바뀝니다."}},{"@type":"Question","name":"모든 컷을 같은 크기로 받을 수 있나요?","acceptedAnswer":{"@type":"Answer","text":"출력 크기에서 고정 크기를 고르면 모든 컷이 같은 크기로 맞춰집니다. 고정 크기는 비율을 정해 둬야 쓸 수 있습니다."}},{"@type":"Question","name":"어떤 사진은 건너뛸 수 있나요?","acceptedAnswer":{"@type":"Answer","text":"그 사진의 컷 수에서 0을 고르면 내보낼 때 건너뜁니다."}}]}</script>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -72,6 +73,10 @@ article h3{font-size:16px; font-weight:600; color:var(--ink); margin:24px 0 4px}
 html[lang="ko"] body{font-family:'Pretendard Variable',Pretendard,'Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif; font-size:17px; line-height:1.75; letter-spacing:-.005em}
 html[lang="ko"] article h1,html[lang="ko"] article h2,html[lang="ko"] article h3{font-weight:700; letter-spacing:-.02em}
 html[lang="ko"] article h3{font-size:17px}
+/* questions and answers (build.py marks them): the letters are drawn here so
+   they stay out of the text, and the empty alt keeps screen readers quiet */
+article h3.faq-q::before{content:"Q. " / ""; color:var(--amber)}
+article p.faq-a::before{content:"A. " / ""; color:var(--muted); font-weight:600}
 html[lang="ko"] article strong{font-weight:700}
 article p{margin:0 0 14px}
 article ul{margin:0 0 16px; padding-left:1.2em}
@@ -161,6 +166,18 @@ footer p{margin:0}
   <tr><th>휠 / <kbd>Ctrl</kbd>+휠</th><td>사진 위에서 상자 이동 / 크기</td></tr>
 </table>
 <p>실제 작업 예시는 <a href="/ko/uses/">활용 예시</a>에 모아 두었습니다.</p>
+
+<h2>자주 묻는 질문</h2>
+<h3 class="faq-q">사진이 서버로 올라가나요?</h3>
+<p class="faq-a">아니요. 사진은 컴퓨터 밖으로 나가지 않습니다. 그래서 업로드를 기다릴 필요도 없습니다.</p>
+<h3 class="faq-q">한 번에 몇 장까지 자를 수 있나요?</h3>
+<p class="faq-a">한 번에 200장, 한 장에 200MB까지 넣을 수 있습니다. 사진 한 장에서는 최대 6컷까지 뽑습니다.</p>
+<h3 class="faq-q">사진 한 장 안에서 비율을 다르게 자를 수 있나요?</h3>
+<p class="faq-a">네. 비율 버튼 위의 토글을 <em>선택한 컷</em>으로 바꾸면 지금 선택한 상자 하나만 비율이 바뀝니다.</p>
+<h3 class="faq-q">모든 컷을 같은 크기로 받을 수 있나요?</h3>
+<p class="faq-a">출력 크기에서 <em>고정 크기</em>를 고르면 모든 컷이 같은 크기로 맞춰집니다. 고정 크기는 비율을 정해 둬야 쓸 수 있습니다.</p>
+<h3 class="faq-q">어떤 사진은 건너뛸 수 있나요?</h3>
+<p class="faq-a">그 사진의 컷 수에서 0을 고르면 내보낼 때 건너뜁니다.</p>
 </article>
 
 <div class="cta">
