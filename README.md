@@ -643,6 +643,14 @@ To ship a new version: raise `version` in `extension/src/manifest.json`, run
 
 새 버전을 낼 때는 `manifest.json` 의 `version` 을 올려 빌드한 zip을 같은 항목의 *패키지* 탭에 올리고 다시 제출합니다.
 
+**확장 새 버전은 이미지 시안 승인 뒤 제출합니다.** 스토어는 고칠 때마다 심사를 다시 받으므로, 올리기 전에 화면을 이미지로 보며 다듬습니다.
+
+1. **시안 이미지** — 실제 Chromium에 확장을 올려, 바뀐 화면을 상태별로 PC 폭(1440px 안팎, 한국어)에서 찍어 운영자에게 보냅니다. PR은 draft로 둡니다.
+2. **의견 반영** — 고친 뒤 같은 상태를 다시 찍어 전/후로 보여 줍니다. 승인 전에는 영어·일본어 마무리, 스토어 문구, 스크린샷 교체 같은 마감 작업을 하지 않습니다.
+3. **승인 → 마감** — 3개 언어, `extension/store/` 문구와 스크린샷, 개인정보 관행 답을 맞춥니다.
+4. **최종 확인** — 스토어에 올릴 화면 전체를 한 번 더 이미지로 확인받습니다.
+5. **제출** — 운영자가 zip을 올리고 검토를 제출합니다.
+
 ## Deliberately not done
 
 - **No Cloudflare Web Analytics.** The `/e` events already cover visits,
