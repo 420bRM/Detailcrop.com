@@ -600,7 +600,20 @@ the template, `EXTENSION` is true inside the extension: links then point at
 `https://detailcrop.com` and open in a new tab, and a tab opened with a
 picture skips the sample plate.
 
-**Permissions.** `contextMenus` only. Sites whose images cannot be read from
+**Side panel (1.1.0, a draft not yet on the store).** The toolbar button
+opens Chrome's side panel (`panel.html`, `panel.js`), so pictures can be
+gathered while the page stays in view: right-click → *Add to DetailCrop*, or
+drag a picture onto the panel. Each picture is read at once when the site
+allows it; one that can never come in says why as it is added (a background
+picture, a `blob:` address, not an image, refused with 401/403, gone with
+404/410), and a signed address with an expiry is flagged. Sites that need the
+host permission are only listed; *Crop them all* asks Chrome once for all of
+them together, then hands the set to the tool tab (the panel's `blob:`
+addresses share the tool's origin) — into the open tool tab if there is one.
+What was handed over stays listed as sent and is not sent twice. *Open with
+DetailCrop* still opens one picture straight in the tool.
+
+**Permissions.** `contextMenus` (and `sidePanel` from 1.1.0). Sites whose images cannot be read from
 another origin need a host permission; it is optional, asked for one site at
 a time, and only after the user clicks *Allow and open* in the tool. The
 reasons, in the words the store asks for, are in
@@ -629,6 +642,14 @@ To ship a new version: raise `version` in `extension/src/manifest.json`, run
 7. **검토 제출** — *검토를 위해 제출* 을 누릅니다. 보통 며칠 걸리고, 결과는 이메일로 옵니다. 반려되면 그 메일 내용을 그대로 보여 주세요.
 
 새 버전을 낼 때는 `manifest.json` 의 `version` 을 올려 빌드한 zip을 같은 항목의 *패키지* 탭에 올리고 다시 제출합니다.
+
+**확장 새 버전은 이미지 시안 승인 뒤 제출합니다.** 스토어는 고칠 때마다 심사를 다시 받으므로, 올리기 전에 화면을 이미지로 보며 다듬습니다.
+
+1. **시안 이미지** — 실제 Chromium에 확장을 올려, 바뀐 화면을 상태별로 PC 폭(1440px 안팎, 한국어)에서 찍어 운영자에게 보냅니다. PR은 draft로 둡니다.
+2. **의견 반영** — 고친 뒤 같은 상태를 다시 찍어 전/후로 보여 줍니다. 승인 전에는 영어·일본어 마무리, 스토어 문구, 스크린샷 교체 같은 마감 작업을 하지 않습니다.
+3. **승인 → 마감** — 3개 언어, `extension/store/` 문구와 스크린샷, 개인정보 관행 답을 맞춥니다.
+4. **최종 확인** — 스토어에 올릴 화면 전체를 한 번 더 이미지로 확인받습니다.
+5. **제출** — 운영자가 zip을 올리고 검토를 제출합니다.
 
 ## Deliberately not done
 

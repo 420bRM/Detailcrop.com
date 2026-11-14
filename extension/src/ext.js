@@ -109,13 +109,32 @@
   let myTab = null;
   chrome.tabs.getCurrent(tab => { myTab = tab ? tab.id : null; });
   chrome.runtime.onMessage.addListener((msg, sender, reply) => {
-    if (!msg || msg.type !== "dc-add" || msg.tab !== myTab) return;
-    reply(true);
-    bring(String(msg.src || ""));
+    if (!msg || msg.tab !== myTab) return;
+    if (msg.type === "dc-add") { reply(true); bring(String(msg.src || "")); }
+    if (msg.type === "dc-add-many") { reply(true); bringMany(msg.items || []); }
   });
 
-  /* the picture this tab was opened with */
-  if (location.hash.startsWith("#src=")) {
+  /* The side panel's collection: blob: addresses of the panel's page, which
+     shares this page's origin, so they read like local files. */
+  async function bringMany(items) {
+    if (!items.length) return;
+    say(t().loading);
+    const files = [];
+    for (const it of items) {
+      try {
+        const blob = await (await fetch(it.url)).blob();
+        files.push(new File([blob], it.name || nameFor("", blob.type), { type: blob.type }));
+      } catch (e) { console.warn("DetailCrop:", e); }
+    }
+    if (files.length) await addFiles(files);
+    if (files.length === items.length) quiet(); else fail();
+  }
+
+  /* the picture this tab was opened with, or the panel's batch */
+  if (location.hash === "#batch") {
+    history.replaceState(null, "", location.pathname);
+    chrome.runtime.sendMessage({ type: "dc-batch-get" }).then(bringMany).catch(() => {});
+  } else if (location.hash.startsWith("#src=")) {
     const src = decodeURIComponent(location.hash.slice(5));
     history.replaceState(null, "", location.pathname);
     bring(src);

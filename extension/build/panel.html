@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DetailCrop</title>
+<link rel="stylesheet" href="ext.css">
+<link rel="stylesheet" href="panel.css">
+</head>
+<body>
+<header class="top">
+  <span class="brand">Detail<em>Crop</em></span>
+  <button type="button" class="linkbtn" id="openTool"></button>
+</header>
+
+<section class="drop" id="drop">
+  <p id="dropText"></p>
+</section>
+
+<p class="sum" id="sum" role="status"></p>
+<p class="perm" id="perm" hidden></p>
+<ul class="items" id="items"></ul>
+
+<footer class="bottom">
+  <button type="button" class="go" id="goBtn" disabled></button>
+  <button type="button" class="linkbtn" id="clearBtn"></button>
+  <p class="note" id="note" role="status" hidden></p>
+</footer>
+<script src="panel.js"></script>
+</body>
+</html>

@@ -21,6 +21,15 @@
 쓰지 않는 권한: `tabs`, `activeTab`, `scripting`, `storage`, `downloads`, 콘텐츠 스크립트. 웹페이지에 아무 코드도 넣지 않습니다.
 툴바 버튼(`action`)은 권한이 필요 없습니다. 내려받기는 일반 웹페이지처럼 브라우저의 다운로드로 처리되어 `downloads` 권한이 필요 없습니다.
 
+### 1.1.0(사이드바 시안)을 올릴 때 더할 권한
+
+| 권한 | 언제 | 왜 | 대시보드에 붙여 넣을 문장 |
+|---|---|---|---|
+| `sidePanel` | 설치할 때 (설치 경고 없음) | 웹페이지를 띄운 채 옆에 디테일크롭 사이드바를 열어, 오른쪽 버튼으로 고른 그림을 모아 두기 위해 | Shows DetailCrop in Chrome's side panel, so pictures picked with the right-click menu can be gathered next to the page the user is reading, then cropped together. Gathered picture addresses stay in the browser. |
+
+호스트 권한은 그대로 선택 권한이지만, 묻는 시점이 바뀝니다. 사진마다 묻지 않고, 사이드바에서 "한 번에 작업"을 누를 때 필요한 사이트를 묶어 **한 번** 묻습니다.
+데이터 사용 답은 그대로입니다(수집 없음). 모은 그림 주소는 사이드바 페이지의 브라우저 저장 공간(localStorage)에만 남고 어디로도 보내지 않습니다.
+
 ## 원격 코드 (Remote code)
 
 **아니요, 원격 코드를 쓰지 않습니다.** — No, I am not using remote code.
