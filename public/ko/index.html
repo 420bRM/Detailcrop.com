@@ -488,6 +488,9 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
 .footBody{margin:0; max-width:66ch; line-height:1.75}
 .footSide{display:flex; flex-direction:column; gap:5px}
 .footSide p{margin:0}
+/* the Chrome extension cannot be installed on a phone: desktop pointer only */ /* web-only */
+.extLine a{color:var(--teal)} /* web-only */
+@media (max-width:820px), (pointer:coarse){ .extLine{display:none} } /* web-only */
 .footLinks{display:flex; flex-wrap:wrap; gap:4px 16px; margin-bottom:6px !important; font-size:13px}
 
 .todayLine{
@@ -825,6 +828,7 @@ footer{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14
     <p data-i="footFree">무료로 쓰세요.</p>
     <p><span data-i="footContact">광고·제휴 문의:</span> <a id="mailLink" href="#">&#8230;</a></p>
     <!-- WEB-ONLY -->
+    <p class="extLine"><a href="https://chromewebstore.google.com/detail/hmagggikamlgeicglpigpbfnpmgjdemo" target="_blank" rel="noopener" data-i="extAdd">Chrome 확장 프로그램도 있습니다. 웹페이지 사진을 오른쪽 버튼으로 바로 불러옵니다. Chrome에 추가 →</a></p>
     <p style="margin-top:6px"><span data-i="footStats">익명 사용 통계를 모읍니다. 사진은 기록하지도, 서버로 보내지도 않습니다.</span> <button type="button" class="linkbtn" id="statsToggle"></button></p>
     <p class="todayLine" id="todayLine" hidden></p>
     <!-- /WEB-ONLY -->
@@ -909,6 +913,7 @@ const I18N = {
     straighten:"Rotate", kHoriz:"Horiz.", kVert:"Vert.", resetZero:"Back to zero", alignTitle:"Alignment",
     footContact:"Advertising & partnerships:",
     footStats:"Anonymous usage stats. Your photos are never recorded or sent anywhere.",
+    extAdd:"Also a Chrome extension: open any image on a web page here with a right-click. Add to Chrome →", /* web-only */
     statsOn:"turn off",
     statsOff:"stats off · turn back on",
     footLead:"Multi Crop — detail crops for your whole product lineup, in one sitting.",
@@ -1027,6 +1032,7 @@ const I18N = {
     straighten:"회전", kHoriz:"수평", kVert:"수직", resetZero:"0으로 되돌리기", alignTitle:"정렬 보정",
     footContact:"광고·제휴 문의:",
     footStats:"익명 사용 통계를 모읍니다. 사진은 기록하지도, 서버로 보내지도 않습니다.",
+    extAdd:"Chrome 확장 프로그램도 있습니다. 웹페이지 사진을 오른쪽 버튼으로 바로 불러옵니다. Chrome에 추가 →", /* web-only */
     statsOn:"끄기",
     statsOff:"통계 꺼짐 · 다시 켜기",
     footLead:"멀티크롭 — 라인업 전체의 확대컷을, 한자리에서.",
@@ -1145,6 +1151,7 @@ const I18N = {
     straighten:"回転", kHoriz:"水平", kVert:"垂直", resetZero:"0に戻す", alignTitle:"傾き補正",
     footContact:"広告・提携のお問い合わせ:",
     footStats:"匿名の利用統計を取っています。写真は記録も送信もしません。",
+    extAdd:"Chrome拡張機能もあります。Webページの画像を右クリックでそのまま読み込めます。Chromeに追加 →", /* web-only */
     statsOn:"オフにする",
     statsOff:"統計オフ · 再びオンにする",
     footLead:"マルチクロップ — ラインナップ全体のディテールカットを、一度に。",

@@ -99,13 +99,13 @@ VLANGS = {
 PAGES = ["about", "how-to", "uses", "privacy"]
 
 PAGE_UI = {
-  "en": dict(open="Open DetailCrop", nav=["About", "How to use", "Use cases", "Privacy"], tool="The tool",
+  "en": dict(ext="Also a Chrome extension: right-click any image on a web page to open it here. Add to Chrome →", open="Open DetailCrop", nav=["About", "How to use", "Use cases", "Privacy"], tool="The tool",
              cta="Crop a whole batch of images at once, several crops each. Free, and nothing is uploaded.",
              privacy="Runs entirely in your browser. Your images are never uploaded."),
-  "ko": dict(open="디테일크롭 열기", nav=["About", "사용법", "활용 예시", "개인정보 처리방침"], tool="도구",
+  "ko": dict(ext="Chrome 확장 프로그램도 있습니다. 웹페이지 사진을 오른쪽 버튼으로 바로 불러옵니다. Chrome에 추가 →", open="디테일크롭 열기", nav=["About", "사용법", "활용 예시", "개인정보 처리방침"], tool="도구",
              cta="사진 여러 장을 한 번에, 한 장에서 여러 컷씩. 무료이고, 사진은 서버에 올라가지 않습니다.",
              privacy="사진은 브라우저 안에서만 처리되고 서버로 전송되지 않습니다."),
-  "ja": dict(open="DetailCropを開く", nav=["DetailCropについて", "使い方", "使い方の例", "プライバシーポリシー"], tool="ツール",
+  "ja": dict(ext="Chrome拡張機能もあります。Webページの画像を右クリックでそのまま読み込めます。Chromeに追加 →", open="DetailCropを開く", nav=["DetailCropについて", "使い方", "使い方の例", "プライバシーポリシー"], tool="ツール",
              cta="複数の画像をまとめて、1枚から何カットも。無料で、アップロードはありません。",
              privacy="処理はすべてブラウザ内で行われます。画像がアップロードされることはありません。"),
 }
@@ -222,6 +222,18 @@ def foot_hrefs(s, code):
 # The preset format lives in src/preset.js, where the Worker imports it. The
 # stills page gets the same file pasted in at its marker, minus `export`, so
 # the page and the server clean presets by one set of rules.
+# ---------- the Chrome Web Store listing ----------
+# The one place the store address lives. Every "Add to Chrome" link (the
+# stills tool's footer, how-to, uses) and llms.txt read it from here; while it
+# is empty those links are left out of the pages altogether.
+CHROME_STORE_URL = "https://chromewebstore.google.com/detail/hmagggikamlgeicglpigpbfnpmgjdemo"
+EXT_LINE_RE = re.compile(r'[ \t]*<p class="extLine">.*?</p>\n', re.S)
+
+def store_link(s):
+    if not CHROME_STORE_URL:
+        return EXT_LINE_RE.sub("", s)
+    return s.replace("__CHROME_STORE__", CHROME_STORE_URL)
+
 PRESET_JS = os.path.join(ROOT, "src", "preset.js")
 PRESET_MARK = "/* PRESET_FORMAT */"
 
@@ -248,6 +260,7 @@ def main():
         s = s.replace("__HEAD_URLS__", head_urls(cfg["path"]), 1)
         s = s.replace("__JSONLD__", jsonld(code, cfg), 1)
         s = s.replace('<a href="/" id="brandLink"', '<a href="%s" id="brandLink"' % cfg["path"], 1)
+        s = store_link(s)
         s = s.replace('<a class="crossban" id="crossBan" href="/video/"',
                       '<a class="crossban" id="crossBan" href="/video%s"' % cfg["path"], 1)
         s = foot_hrefs(s, code)
@@ -359,6 +372,8 @@ def build_pages():
               "publisher": {"@type": "Organization", "name": "DetailCrop", "url": BASE + "/"},
             }) + ("\n" + faq_ld(code, qa) if qa else "")
             s = tpl
+            ext = ('<p class="extLine"><a href="__CHROME_STORE__" target="_blank" rel="noopener">%s</a></p>\n' % ui["ext"]
+                   if slug in ("how-to", "uses") else "")
             if not meta.get("lead"):
                 s = s.replace('<p class="lead">__LEAD__</p>\n', "", 1)
             for k, v in (("__KAKAO__", KAKAO_OUT), ("__LANG__", code), ("__HEAD_EXTRA__", PAGE_HEAD[code]), ("__TITLE__", esc(meta["title"], True)),
@@ -368,8 +383,9 @@ def build_pages():
                          ("__FOOTLINKS__", footlinks), ("__H1__", meta["h1"]),
                          ("__LEAD__", meta.get("lead", "")), ("__CTA__", ui["cta"]),
                          ("__PRIVACY__", ui["privacy"]), ("__OPEN__", ui["open"]),
-                         ("__TOOL__", tool), ("__BODY__", body)):
+                         ("__TOOL__", tool), ("__EXT__", ext), ("__BODY__", body)):
                 s = s.replace(k, v)
+            s = store_link(s)
             assert not re.search(r"__[A-Z]+__", s) and KAKAO_OUT in s, (code, slug, re.findall(r"__[A-Z]+__", s))
             dest = os.path.join(OUT, path.strip("/"), "index.html")
             os.makedirs(os.path.dirname(dest), exist_ok=True)
@@ -413,6 +429,8 @@ LLMS_INTRO = """# DetailCrop
 
 def build_llms():
     L = [LLMS_INTRO, "## Tools", ""]
+    if CHROME_STORE_URL:
+        L.append("- [Chrome extension](%s): the image tool as a Chrome extension; right-click an image on any web page and choose \"Open with DetailCrop\". Everything stays in the extension." % CHROME_STORE_URL)
     for cfg, label in ((LANGS, "Image tool"), (VLANGS, "Video tool")):
         for code, c in cfg.items():
             L.append("- [%s (%s)](%s%s): %s" % (label, code, BASE, c["path"], c["desc"]))
@@ -436,7 +454,8 @@ def build_llms():
 # keep in step. What Manifest V3 and "nothing leaves the extension" ask for:
 #   - code between /* WEB-ONLY: <stub> */ and /* /WEB-ONLY */ (stats beacon,
 #     owner's counter, sign-in and presets) is swapped for the stub, and
-#     HTML between <!-- WEB-ONLY --> and <!-- /WEB-ONLY --> is dropped;
+#     HTML between <!-- WEB-ONLY --> and <!-- /WEB-ONLY --> is dropped, and
+#     so is any single line that ends in /* web-only */;
 #   - the page's one inline <script> becomes tool.js (no inline scripts);
 #   - Google Fonts become files in the package (no remote anything).
 # extension/src/ holds what only the extension has; it is copied as it is.
@@ -450,6 +469,9 @@ def extension_page(tpl):
     assert n == 4, "expected 4 WEB-ONLY code blocks in template.html, found %d" % n
     s, n = re.subn(r"[ \t]*<!-- WEB-ONLY -->\n.*?<!-- /WEB-ONLY -->\n", "", s, flags=re.S)
     assert n == 2, n   # the KakaoTalk hand-off in <head>, the stats line in the footer
+    # single lines the site needs and the extension does not, marked at their end
+    s, n = re.subn(r"^.*/\* web-only \*/\n", "", s, flags=re.M)
+    assert n >= 1, "no /* web-only */ lines in template.html"
     s = re.sub(r'<link rel="preconnect" href="https://fonts\.g[^"]*"[^>]*>\n', "", s)
     s, n = re.subn(r'<link rel="stylesheet" href="https://fonts\.googleapis\.com/[^"]*">', '<link rel="stylesheet" href="ext.css">', s)
     assert n == 1, n

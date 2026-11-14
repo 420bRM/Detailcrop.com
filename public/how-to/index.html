@@ -93,6 +93,11 @@ article figure img{display:block; max-width:100%; height:auto; border:1px solid 
 
 .cta{margin:48px 0 0; padding:22px; border:1px solid var(--line); border-radius:6px; background:var(--sunk); display:flex; flex-wrap:wrap; align-items:center; gap:12px 20px}
 .cta p{margin:0; flex:1 1 260px; color:var(--ink-2)}
+/* the Chrome extension cannot be installed on a phone, so the link is for a
+   desktop pointer only */
+.cta .extLine{flex-basis:100%; font-size:13px; color:var(--muted)}
+.extLine a{color:var(--teal)}
+@media (max-width:820px), (pointer:coarse){ .extLine{display:none} }
 
 footer{margin-top:48px; padding-top:18px; border-top:1px solid var(--line-soft); color:var(--muted); font-size:13px; line-height:1.7}
 footer nav{display:flex; flex-wrap:wrap; gap:4px 18px; margin-bottom:8px}
@@ -183,6 +188,7 @@ footer p{margin:0}
 <div class="cta">
   <p>Crop a whole batch of images at once, several crops each. Free, and nothing is uploaded.</p>
   <a class="go" href="/">Open DetailCrop →</a>
+  <p class="extLine"><a href="https://chromewebstore.google.com/detail/hmagggikamlgeicglpigpbfnpmgjdemo" target="_blank" rel="noopener">Also a Chrome extension: right-click any image on a web page to open it here. Add to Chrome →</a></p>
 </div>
 
 <footer>

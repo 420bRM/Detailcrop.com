@@ -72,12 +72,15 @@ const SOCIAL_HOSTS = [
   "medium.com", "note.com", "qiita.com", "hatena.ne.jp", "line.me"
 ];
 const OWN_HOSTS = ["detailcrop.com", "workers.dev"];
+/* the extension's store page; checked before search, since its host ends in google.com */
+const STORE_HOSTS = ["chromewebstore.google.com", "chrome.google.com"];
 const hostIn = (h, list) => list.some(d => h === d || h.endsWith("." + d));
-export const REF_GROUPS = ["AI 검색", "검색 엔진", "SNS·커뮤니티", "직접", "기타"];
+export const REF_GROUPS = ["AI 검색", "검색 엔진", "SNS·커뮤니티", "크롬 스토어", "직접", "기타"];
 export function refGroup(ref) {
   const h = String(ref || "").toLowerCase().trim().replace(/\.$/, "");
   if (!h || hostIn(h, OWN_HOSTS)) return "직접";
   if (hostIn(h, AI_HOSTS)) return "AI 검색";
+  if (hostIn(h, STORE_HOSTS)) return "크롬 스토어";
   if (hostIn(h, SOCIAL_HOSTS)) return "SNS·커뮤니티";   // before search: blog.naver.com is not a search
   if (SEARCH_RE.test(h)) return "검색 엔진";
   return "기타";
@@ -343,7 +346,7 @@ function histogram(buckets, opts) {
 
 /* Proportion bar for a part-to-whole split, always directly labelled so the
    colours are never the only thing carrying identity. */
-const SEG_COLORS = ["var(--teal)", "var(--amber)", "var(--pink)", "var(--fog)", "var(--green)"];
+const SEG_COLORS = ["var(--teal)", "var(--amber)", "var(--pink)", "var(--coral)", "var(--fog)", "var(--green)"];
 function segBar(label, rows) {
   const total = rows.reduce((a, r) => a + num(r.n), 0);
   if (!total) return "";
