@@ -578,7 +578,8 @@ by `_sample_interval`
 
 ## The Chrome extension
 
-**Published on the Chrome Web Store on 2026-11-13** (version 1.0.0). The
+**Published on the Chrome Web Store on 2026-11-13** (version 1.0.0):
+<https://chromewebstore.google.com/detail/hmagggikamlgeicglpigpbfnpmgjdemo>. The
 store address is `CHROME_STORE_URL` in `build.py`, the one place it is
 written: the "Add to Chrome" lines on the stills tool's footer and at the
 foot of how-to and uses, and the line in `llms.txt`, all read it, and while it

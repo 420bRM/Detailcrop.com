@@ -226,7 +226,7 @@ def foot_hrefs(s, code):
 # The one place the store address lives. Every "Add to Chrome" link (the
 # stills tool's footer, how-to, uses) and llms.txt read it from here; while it
 # is empty those links are left out of the pages altogether.
-CHROME_STORE_URL = ""
+CHROME_STORE_URL = "https://chromewebstore.google.com/detail/hmagggikamlgeicglpigpbfnpmgjdemo"
 EXT_LINE_RE = re.compile(r'[ \t]*<p class="extLine">.*?</p>\n', re.S)
 
 def store_link(s):

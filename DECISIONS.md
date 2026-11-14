@@ -594,8 +594,8 @@ Gemini에서 덜 인용될 수 있다. 바꾸려면 Cloudflare 대시보드의 A
 
 ## 21. Chrome 확장 게시와 사이트에서 가는 길 (2026-11-13)
 
-Chrome 웹 스토어에 1.0.0이 **2026-11-13 게시됐다**(비거래자, 무료, 데이터 수집 없음). 스토어 주소는 `build.py`의
-`CHROME_STORE_URL` 한 곳에만 적는다.
+Chrome 웹 스토어에 1.0.0이 **2026-11-13 게시됐다**(비거래자, 무료, 데이터 수집 없음). 스토어 주소(<https://chromewebstore.google.com/detail/hmagggikamlgeicglpigpbfnpmgjdemo>, 확장 ID로 만든 주소)는
+`build.py`의 `CHROME_STORE_URL` 한 곳에만 적는다.
 
 **링크는 세 곳, PC에서만.** 이미지 도구의 바닥글, 사용법·활용 예시 끝의 도구 열기 칸, 그리고 llms.txt. 홈의
 첫 화면(놓기 칸·상단)에는 두지 않았다 — 머리글과 첫 화면은 지금 하는 작업의 자리다(11번). 휴대폰은 확장을
