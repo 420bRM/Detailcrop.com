@@ -42,6 +42,9 @@ extension/
   detailcrop-chrome.zip the file to upload to the Chrome Web Store — generated
   store/                listing text, screenshots, privacy-practice answers
 wrangler.jsonc
+CLAUDE.md               what every Claude session reads first; pulls in docs/design.md
+docs/design.md          type sizes, line heights, grey text, spacing — the rules
+tools/ui_check.cjs      counts CSS that breaks them: node tools/ui_check.cjs
 ```
 
 Each tool's three language pages are the same file with a different default

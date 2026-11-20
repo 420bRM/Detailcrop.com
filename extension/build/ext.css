@@ -8,7 +8,7 @@
 
 /* the line ext.js shows while a picture from a web page comes in */
 .extNote{position:fixed; left:50%; top:12px; transform:translateX(-50%); z-index:60; max-width:min(560px, calc(100vw - 32px));
-  display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; padding:10px 14px; border:1px solid var(--line); border-radius:4px;
-  background:var(--panel, #10151a); color:var(--ink); font-size:13px; line-height:1.45; box-shadow:0 8px 30px rgba(0,0,0,.45)}
+  display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px; padding:8px 16px; border:1px solid var(--line); border-radius:4px;
+  background:var(--panel, #10151a); color:var(--ink); font-size:var(--fs-4); line-height:var(--lh-2); box-shadow:0 8px 30px rgba(0,0,0,.45)}
 .extNote[hidden]{display:none}
-.extNote .btn{width:auto; padding:6px 14px}
+.extNote .btn{width:auto; padding:8px 16px}
